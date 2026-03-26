@@ -29,7 +29,7 @@ The visual editor covers everything. Sources are auto-detected — open the edit
 
 ### Supported integrations
 
-- [PostNL](https://github.com/michaelarnauts/ha-postnl) integration
+- [PostNL](https://github.com/arjenbos/ha-postnl) integration
 - [Parcel](https://github.com/jmdevita/parcel-ha) integration
 
 Brand icons are optional: [custom-brand-icons](https://github.com/elax46/custom-brand-icons)
