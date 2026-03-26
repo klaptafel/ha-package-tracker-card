@@ -2,7 +2,7 @@ const CARD_VERSION = '0.1.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 
-const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"Anpost","aramex":"Aramex","at":"Austrian Post","au":"Australia Post","bartol":"Bartolini","blp":"Belpost","bluedart":"Blue Dart","bpost":"Bpost","bring":"Bring","canpar":"Canpar","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","china":"China Post","chrono":"Chronopost","cor":"Correos","corbra":"Correios","cp":"Canada Post","ctt":"CTT","cyclpcode":"Cycloon","dachser":"Dachser","dao365":"DAO365","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dk":"Post Danmark","dp":"Deutsche Post","dpd":"DPD Germany","dpdat":"DPD Austria","dpdgroup":"DPD Group","dpdie":"DPD Ireland","dpdpoland":"DPD Poland","dpduk":"DPD UK","dsv":"DSV","dtdc":"DTDC India","dx":"DX","dynalogic":"Dynalogic","easyship":"Easyship","econt":"Econt Express","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","ems":"EMS Russian Post","fedex":"FedEx","fedpl":"FedEx Poland","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","geodis":"Geodis","gso":"GLS US","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hung":"Magyar Posta","il":"Israel Post","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","it":"Poste Italiane","jp":"Japan Post","kerry":"Kerry Express","kor":"Korea Post","lp":"La poste (Colissimo)","lv":"Latvijas Pasts","malpos":"Malaysia Post","malta":"MaltaPost","meest":"Meest","mrw":"MRW","myher":"Evri","naqel":"Naqel Express","newp":"Nova Poshta","nor":"Norway Post","nzp":"New Zealand Post","ocs":"OCS Worldwide","ont":"OnTrac","p2g":"Parcel2Go","paack":"Paack","packeta":"Packeta","pandion":"Pandion","pbi":"PBI - Pitney Bowes","phlpost":"Philpost","pilot":"Pilot Freight","planzer":"Planzer","poland":"Poczta Polska","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","ppl":"PPL","prfc":"Parcelforce","puro":"Purolator","px":"4PX","redjep":"Instabox Red je pakketje","relay":"Mondial Relay","rm":"Royal Mail","rp":"Russian Post","sagawa":"Sagawa Express","sch":"DB Schenker","se":"Swedish Post","sendle":"Sendle","seur":"SEUR","sf":"SF Express","sing":"SingPost","slovak":"Slovenská pošta","slv":"Pošta Slovenije","speedpak":"SpeedPAK","star":"StarTrack Express","swiss":"Swiss Post","thai":"Thailand Post","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","tourline":"CTT Express","trnkrpcode":"Trunkrs","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","ukr":"Ukrpost","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","whistl":"Whistl","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
+const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"Anpost","aramex":"Aramex","at":"Austrian Post","au":"Australia Post","bartol":"Bartolini","blp":"Belpost","bluedart":"Blue Dart","bpost":"Bpost","bring":"Bring","canpar":"Canpar","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","china":"China Post","chrono":"Chronopost","cor":"Correos","corbra":"Correios","cp":"Canada Post","ctt":"CTT","cyclpcode":"Cycloon","dachser":"Dachser","dao365":"DAO365","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dk":"Post Danmark","dp":"Deutsche Post","dpd":"DPD Germany","dpdat":"DPD Austria","dpdgroup":"DPD Group","dpdie":"DPD Ireland","dpdpoland":"DPD Poland","dpduk":"DPD UK","dsv":"DSV","dtdc":"DTDC India","dx":"DX","dynalogic":"Dynalogic","easyship":"Easyship","econt":"Econt Express","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","ems":"EMS Russian Post","fedex":"FedEx","fedpl":"FedEx Poland","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","geodis":"Geodis","gso":"GLS US","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hung":"Magyar Posta","il":"Israel Post","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","it":"Poste Italiane","jp":"Japan Post","kerry":"Kerry Express","kor":"Korea Post","lp":"La poste (Colissimo)","lv":"Latvijas Pasts","malpos":"Malaysia Post","malta":"MaltaPost","meest":"Meest","mrw":"MRW","myher":"Evri","naqel":"Naqel Express","newp":"Nova Poshta","nor":"Norway Post","nzp":"New Zealand Post","ocs":"OCS Worldwide","ont":"OnTrac","p2g":"Parcel2Go","paack":"Paack","packeta":"Packeta","pandion":"Pandion","pbi":"PBI - Pitney Bowes","phlpost":"Philpost","pilot":"Pilot Freight","planzer":"Planzer","poland":"Poczta Polska","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","ppl":"PPL","prfc":"Parcelforce","puro":"Purolator","px":"4PX","redjep":"Instabox Red je pakketje","relay":"Mondial Relay","rm":"Royal Mail","rp":"Russian Post","sagawa":"Sagawa Express","sch":"DB Schenker","se":"Swedish Post","sendle":"Sendle","seur":"SEUR","sf":"SF Express","sing":"SingPost","slovak":"Slovenská pošta","slv":"Pošta Slovenije","speedpak":"SpeedPAK","star":"StarTrack Express","swiss":"Swiss Post","thai":"Thailand Post","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","postnl":"PostNL","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","tourline":"CTT Express","trnkrpcode":"Trunkrs","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","ukr":"Ukrpost","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","whistl":"Whistl","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
 
 let carriersCache = null, carriersFetchPromise = null;
 
@@ -98,11 +98,11 @@ const TRANSLATIONS = {
     hide_when_empty: 'Hide when empty', hide_when_empty_desc: 'Hide the card when there are no packages to show',
     parcel_row_label: 'Raw data',
     entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
-    entity_hint_postnl_sent: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
+    entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
-    integration_postnl: 'PostNL (Incoming)', integration_postnl_sent: 'PostNL (Outgoing)',
+    integration_postnl: 'PostNL (Incoming)', integration_postnl_outgoing: 'PostNL (Outgoing)',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
   nl: {
@@ -147,11 +147,11 @@ const TRANSLATIONS = {
     hide_when_empty: 'Verberg bij leeg', hide_when_empty_desc: 'Verberg de kaart als er geen pakketjes zijn om te tonen',
     parcel_row_label: 'Ruwe data',
     entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
-    entity_hint_postnl_sent: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
+    entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
-    integration_postnl: 'PostNL (Ontvangen)', integration_postnl_sent: 'PostNL (Verstuurd)',
+    integration_postnl: 'PostNL (Ontvangen)', integration_postnl_outgoing: 'PostNL (Verstuurd)',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
 };
@@ -272,7 +272,7 @@ function parcelStatus(code) {
 
 const INTEGRATIONS = {
 
-  postnl: {
+  postnl_incoming: {
     group:       'postnl',
     groupLabel:  'PostNL',
     rowLabel:    'Incoming',
@@ -282,7 +282,7 @@ const INTEGRATIONS = {
     label:       'PostNL (Incoming)',   // fallback
     icon:        'mdi:mailbox',
     direction:   'incoming',
-    url:         'https://github.com/michaelarnauts/ha-postnl',
+    url:         'https://github.com/arjenbos/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['deliver', 'ontvang', 'bezorg', 'lever', 'inbound', 'inkom', 'binnenkom', 'receiv', 'incom'],
     hasAttrs:    (a) => a.enroute !== undefined || a.delivered !== undefined,
@@ -320,12 +320,12 @@ const INTEGRATIONS = {
       return mkItem({ name: (item.name || '').trim(), line1, line2, icon, color,
         deliveryDate, slotActive, delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
-        tapUrl: item.url || null, source: 'postnl', direction: 'incoming', slotEnd,
+        tapUrl: item.url || null, source: 'postnl_incoming', direction: 'incoming', slotEnd,
         trackingCode: item.key || null });
     },
   },
 
-  postnl_sent: {
+  postnl_outgoing: {
     group:       'postnl',
     groupLabel:  'PostNL',
     rowLabel:    'Outgoing',
@@ -335,7 +335,7 @@ const INTEGRATIONS = {
     label:       'PostNL (Outgoing)',   // fallback
     icon:        'mdi:mailbox-up',
     direction:   'outgoing',
-    url:         'https://github.com/michaelarnauts/ha-postnl',
+    url:         'https://github.com/arjenbos/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['distribut', 'verstu', 'verzend', 'uitgang', 'uitgaand', 'outgo', 'outbound', 'sent', 'shipment', 'shipping'],
     hasAttrs:    (a) => a.enroute !== undefined || a.delivered !== undefined,
@@ -357,7 +357,7 @@ const INTEGRATIONS = {
       return mkItem({ name: (item.name || '').trim(), line1, icon, color,
         deliveryDate, delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
-        tapUrl: item.url || null, source: 'postnl_sent', direction: 'outgoing',
+        tapUrl: item.url || null, source: 'postnl_outgoing', direction: 'outgoing',
         trackingCode: item.key || null });
     },
   },
