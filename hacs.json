@@ -1,0 +1,6 @@
+{
+  "name": "Package Tracker Card",
+  "render_readme": true,
+  "content_in_root": true,
+  "filename": "package-tracker-card.js"
+}
