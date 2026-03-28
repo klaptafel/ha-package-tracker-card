@@ -33,8 +33,11 @@ const BRAND_ICONS = {
   fedex: 'phu:fedex', fedpl: 'phu:fedex',
 };
 
+let _brandIconsAvailable = false;
 function isBrandIconsAvailable() {
-  try { return 'phu' in (window.customIconsets || {}); } catch { return false; }
+  if (_brandIconsAvailable) return true;
+  try { _brandIconsAvailable = 'phu' in (window.customIconsets || {}); } catch {}
+  return _brandIconsAvailable;
 }
 
 function waitForBrandIcons(timeout = 5000) {
@@ -44,7 +47,7 @@ function waitForBrandIcons(timeout = 5000) {
     const iv    = setInterval(() => {
       if (isBrandIconsAvailable())      { clearInterval(iv); resolve(true);  return; }
       if (Date.now() - start > timeout) { clearInterval(iv); resolve(false); }
-    }, 100);
+    }, 500);
   });
 }
 
@@ -77,7 +80,6 @@ const TRANSLATIONS = {
     no_packages: 'No packages',
     not_found: ' — not found',
     install_integration: 'Install integration',
-    add: 'Add',
     status: 'Status', status_desc: 'Status line below the name',
     carrier: 'Carrier', carrier_desc: 'Name of the carrier',
     carrier_logo: 'Carrier logo', carrier_logo_desc: 'Carrier logo next to the name.', carrier_logo_link: 'Requires custom-brand-icons',
@@ -102,7 +104,6 @@ const TRANSLATIONS = {
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
-    integration_postnl: 'PostNL (Incoming)', integration_postnl_outgoing: 'PostNL (Outgoing)',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
   nl: {
@@ -126,7 +127,6 @@ const TRANSLATIONS = {
     no_packages: 'Geen pakketjes',
     not_found: ' — niet gevonden',
     install_integration: 'Installeer integratie',
-    add: 'Toevoegen',
     status: 'Status', status_desc: 'Statusregel onder de naam',
     carrier: 'Bezorgdienst', carrier_desc: 'Naam van de bezorgdienst',
     carrier_logo: 'Bezorgdienst logo', carrier_logo_desc: 'Logo van de bezorgdienst naast de naam.', carrier_logo_link: 'Vereist custom-brand-icons',
@@ -151,7 +151,6 @@ const TRANSLATIONS = {
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
-    integration_postnl: 'PostNL (Ontvangen)', integration_postnl_outgoing: 'PostNL (Verstuurd)',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
 };
@@ -169,10 +168,11 @@ function daysUntil(date) {
 
 function formatDay(date, tr) {
   const diff = daysUntil(date), d = new Date(date);
-  if (diff === 0) return tr.today;
-  if (diff === 1) return tr.tomorrow;
-  if (diff > 0 && diff < 7) return tr.days[d.getDay()];
-  if (diff < 0) { const a = Math.abs(diff); return a === 1 ? tr.yesterday : tr.days_ago(a); }
+  if (diff ===  0) return tr.today;
+  if (diff ===  1) return tr.tomorrow;
+  if (diff === -1) return tr.yesterday;
+  if (diff > 1 && diff < 7) return tr.days[d.getDay()];
+  if (diff < 0) return tr.days_ago(Math.abs(diff));
   return tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
 }
 
@@ -208,6 +208,19 @@ function formatTimeRemaining(toDate, tr, fromDate) {
   return tr.slot_within_minutes(m);
 }
 
+// parseDate: normalizes various date formats to a JS Date.
+// Handles ISO (2026-03-28T...) and DD.MM.YYYY HH:MM (Parcel event format).
+function parseDate(str) {
+  if (!str) return null;
+  // DD.MM.YYYY HH:MM → YYYY-MM-DDTHH:MM
+  const dot = str.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}:\d{2}))?$/);
+  if (dot) {
+    const iso = dot[3] + '-' + dot[2] + '-' + dot[1] + (dot[4] ? 'T' + dot[4] : '');
+    const d = new Date(iso); return isNaN(d) ? null : d;
+  }
+  const d = new Date(str); return isNaN(d) ? null : d;
+}
+
 function buildParcelUrl(code, tracking) {
   if (!code || !tracking) return null;
   return 'https://parcel.app/webtrack.php?platform=web&type=' + encodeURIComponent(code) + '&code=' + encodeURIComponent(tracking);
@@ -218,10 +231,10 @@ function buildParcelUrl(code, tracking) {
 function mkItem(overrides) {
   return {
     name: '', line1: null, line2: null, location: null,
-    icon: 'mdi:package-variant', color: 'grey',
+    icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, source: null, direction: 'incoming', slotEnd: null, trackingCode: null,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null,
     ...overrides,
   };
 }
@@ -231,6 +244,7 @@ function mkItem(overrides) {
 
 function postnlStatus(status) {
   const s = (status || '').toLowerCase();
+  if (s.includes('nog niet'))             return { icon: 'mdi:clock-outline',   color: 'grey'   };
   if (s.includes('verwacht'))             return { icon: 'mdi:clock-alert',    color: 'var(--amber-color, #FFC107)' };
   if (s.includes('bij postnl'))           return { icon: 'mdi:package-down',   color: 'blue'   };
   if (s.includes('gesorteerd'))           return { icon: 'mdi:sort-variant',   color: 'purple' };
@@ -261,14 +275,21 @@ function parcelStatus(code) {
 // To add a new integration: add one entry here. Nothing else needs to change.
 //
 // Each entry defines:
-//   label       — human readable name (editor)
-//   icon        — MDI icon for editor source list
 //   platforms   — integration platform strings (hass.entities[id].platform)
 //   entityHints — fallback: strings that may appear in entity IDs
 //   hasAttrs    — (attrs) => bool — confirms the right entity by attribute shape
 //   collect     — (attrs, ctx) => item[] — maps raw sensor data to normalised items
 //
 // ctx = { carriers, tr } — shared context passed to collect
+
+// Shared PostNL collect — both incoming and outgoing use the same sensor shape
+function collectPostnl(attrs, ctx, mapFn) {
+  return [
+    ...(attrs.enroute   || []).map(i => mapFn(i, false, ctx.tr)),
+    ...(attrs.delivered || []).map(i => mapFn(i, true,  ctx.tr)),
+  ];
+}
+const hasPostnlAttrs = (a) => a.enroute !== undefined || a.delivered !== undefined;
 
 const INTEGRATIONS = {
 
@@ -278,20 +299,12 @@ const INTEGRATIONS = {
     rowLabel:    'Incoming',
     rowLabelKey: 'incoming',
     entityHintText: 'entity_hint_postnl',
-    labelKey:    'integration_postnl',
-    label:       'PostNL (Incoming)',   // fallback
-    icon:        'mdi:mailbox',
     direction:   'incoming',
     url:         'https://github.com/arjenbos/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['deliver', 'ontvang', 'bezorg', 'lever', 'inbound', 'inkom', 'binnenkom', 'receiv', 'incom'],
-    hasAttrs:    (a) => a.enroute !== undefined || a.delivered !== undefined,
-    collect(attrs, ctx) {
-      return [
-        ...(attrs.enroute   || []).map(i => this._map(i, false, ctx.tr)),
-        ...(attrs.delivered || []).map(i => this._map(i, true,  ctx.tr)),
-      ];
-    },
+    hasAttrs: hasPostnlAttrs,
+    collect(attrs, ctx) { return collectPostnl(attrs, ctx, this._map.bind(this)); },
     _map(item, delivered, tr) {
       const { icon, color } = postnlStatus(item.status_message);
       let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
@@ -301,7 +314,7 @@ const INTEGRATIONS = {
       } else if (!delivered && item.planned_from) {
         const from = new Date(item.planned_from);
         const to   = item.planned_to ? new Date(item.planned_to) : null;
-        if (!isNaN(from) && daysUntil(from) >= 0) {
+        if (!isNaN(from)) {
           deliveryDate = from;
           slotActive   = to ? isSlotActive(item.planned_from, item.planned_to) : false;
           slotEnd      = to;
@@ -320,8 +333,9 @@ const INTEGRATIONS = {
       return mkItem({ name: (item.name || '').trim(), line1, line2, icon, color,
         deliveryDate, slotActive, delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
-        tapUrl: item.url || null, source: 'postnl_incoming', direction: 'incoming', slotEnd,
-        trackingCode: item.key || null });
+        tapUrl: item.url || null, direction: 'incoming', slotEnd,
+        // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
+        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
     },
   },
 
@@ -330,24 +344,15 @@ const INTEGRATIONS = {
     groupLabel:  'PostNL',
     rowLabel:    'Outgoing',
     rowLabelKey: 'outgoing',
-    entityHintText: 'entity_hint_postnl_sent',
-    labelKey:    'integration_postnl_sent',
-    label:       'PostNL (Outgoing)',   // fallback
-    icon:        'mdi:mailbox-up',
+    entityHintText: 'entity_hint_postnl_outgoing',
     direction:   'outgoing',
     url:         'https://github.com/arjenbos/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['distribut', 'verstu', 'verzend', 'uitgang', 'uitgaand', 'outgo', 'outbound', 'sent', 'shipment', 'shipping'],
-    hasAttrs:    (a) => a.enroute !== undefined || a.delivered !== undefined,
-    collect(attrs, ctx) {
-      return [
-        ...(attrs.enroute   || []).map(i => this._map(i, ctx.tr)),
-        ...(attrs.delivered || []).map(i => this._map(i, ctx.tr)),
-      ];
-    },
-    _map(item, tr) {
+    hasAttrs: hasPostnlAttrs,
+    collect(attrs, ctx) { return collectPostnl(attrs, ctx, this._map.bind(this)); },
+    _map(item, delivered, tr) {
       const { icon, color } = postnlStatus(item.status_message);
-      const delivered = !!item.delivered;
       let deliveryDate = null, line1 = null;
       if (item.delivery_date) {
         const d = new Date(item.delivery_date);
@@ -357,8 +362,9 @@ const INTEGRATIONS = {
       return mkItem({ name: (item.name || '').trim(), line1, icon, color,
         deliveryDate, delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
-        tapUrl: item.url || null, source: 'postnl_outgoing', direction: 'outgoing',
-        trackingCode: item.key || null });
+        tapUrl: item.url || null, direction: 'outgoing',
+        // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
+        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
     },
   },
 
@@ -368,9 +374,6 @@ const INTEGRATIONS = {
     rowLabel:    'Raw data',
     rowLabelKey: 'parcel_row_label',
     entityHintText: 'entity_hint_parcel',
-    labelKey:    null,
-    label:       'Parcel',
-    icon:        'mdi:package-variant',
     direction:   'incoming',
     url:         'https://github.com/jmdevita/parcel-ha',
     platforms:   ['parcel'],
@@ -383,25 +386,31 @@ const INTEGRATIONS = {
       const statusCode  = item.status_code ?? 5; // 5 = unknown when missing
       const delivered   = statusCode === 0;
       const { icon, color } = parcelStatus(statusCode);
-      const carrierCode = item.carrier_code || null;
+      const carrierCode = item.carrier_code ? item.carrier_code.toLowerCase() : null;
       const firstEvent  = Array.isArray(item.events) ? item.events[0] : null;
       let deliveryDate = null, line1 = null, line2 = null, slotActive = false;
-      if (item.date_expected) {
-        const d = new Date(item.date_expected.replace(' ', 'T'));
+
+      // For delivered packages, prefer the actual delivery time from events over date_expected
+      if (delivered && firstEvent?.date) {
+        const d = parseDate(firstEvent.date);
+        if (d) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
+      }
+
+      const expectedStr    = item.date_expected     ? item.date_expected.replace(' ', 'T')     : null;
+      const expectedEndStr = item.date_expected_end  ? item.date_expected_end.replace(' ', 'T')  : null;
+      if (!deliveryDate && expectedStr) {
+        const d = new Date(expectedStr);
         if (!isNaN(d)) {
           deliveryDate = d;
           const day = formatDay(d, tr), start = formatTime(d);
-          const end = item.date_expected_end ? formatTime(new Date(item.date_expected_end.replace(' ', 'T'))) : null;
+          const end = expectedEndStr ? formatTime(new Date(expectedEndStr)) : null;
           if (delivered || daysUntil(d) < 0) {
-            line1 = formatDeliveredText(d, tr);
+            if (!line1) line1 = formatDeliveredText(d, tr);
           } else {
-            slotActive = item.date_expected_end
-              ? isSlotActive(item.date_expected.replace(' ','T'), item.date_expected_end.replace(' ','T'))
-              : false;
+            slotActive  = expectedEndStr ? isSlotActive(expectedStr, expectedEndStr) : false;
             line1 = ensurePeriod(firstEvent?.event || '');
-            const endStr    = item.date_expected_end?.replace(' ','T') || null;
-            const pastSlotP = endStr && !slotActive && new Date() > new Date(endStr);
-            if      ((slotActive || pastSlotP) && endStr) line2 = formatTimeRemaining(endStr, tr, item.date_expected.replace(' ','T'));
+            const pastSlotP = expectedEndStr && !slotActive && new Date() > new Date(expectedEndStr);
+            if      ((slotActive || pastSlotP) && expectedEndStr) line2 = formatTimeRemaining(expectedEndStr, tr, expectedStr);
             else if (start === '00:00' && end) line2 = tr.delivery_before(day, end);
             else if (start === '00:00')        line2 = tr.delivery_on(day);
             else if (end)                      line2 = tr.delivery_between(day, start, end);
@@ -416,8 +425,8 @@ const INTEGRATIONS = {
         carrier:   carrierName(carrierCode, carriers),
         brandIcon: getBrandIcon(carrierCode),
         tapUrl:    buildParcelUrl(carrierCode, item.tracking_number),
-        source:    'parcel', direction: 'incoming',
-        slotEnd:   item.date_expected_end ? new Date(item.date_expected_end.replace(' ','T')) : null,
+        direction: 'incoming',
+        slotEnd:   expectedEndStr ? new Date(expectedEndStr) : null,
         trackingCode: item.tracking_number || null });
     },
   },
@@ -434,12 +443,9 @@ function candidatesForType(type, hass) {
   if (!def) return [];
   const results = [];
   for (const [entityId, info] of Object.entries(hass.entities || {})) {
-    const platform = (info.platform || '').toLowerCase();
-    const attrs    = hass.states[entityId]?.attributes;
-    if (!attrs) continue;
-    const platformMatch = def.platforms?.some(p => platform.includes(p));
-    if (!platformMatch) continue;
-    if (!def.hasAttrs(attrs)) continue;
+    if (!def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) continue;
+    const attrs = hass.states[entityId]?.attributes;
+    if (!attrs || !def.hasAttrs(attrs)) continue;
     results.push(entityId);
   }
   return results;
@@ -457,7 +463,7 @@ function isPlatformInstalled(type, hass) {
 
 // Split an entity ID into segments: sensor.postnl_verstuurd → ['postnl', 'verstuurd']
 function entitySegments(entityId) {
-  return entityId.toLowerCase().replace(/^[^.]+\./, '').split(/[_\-]/);
+  return entityId.toLowerCase().replace(/^[^.]+\./, '').split(/[_-]/);
 }
 
 // Score a hint against an entity ID:
@@ -466,11 +472,10 @@ function entitySegments(entityId) {
 // 1 = substring match anywhere in the full entity ID
 // 0 = no match
 function hintScore(hint, entityId) {
-  const h        = hint.toLowerCase();
   const segments = entitySegments(entityId);
-  if (segments.includes(h)) return 3;
-  if (segments.some(s => s.startsWith(h))) return 2;
-  if (entityId.toLowerCase().includes(h)) return 1;
+  if (segments.includes(hint)) return 3;
+  if (segments.some(s => s.startsWith(hint))) return 2;
+  if (entityId.toLowerCase().includes(hint)) return 1;
   return 0;
 }
 
@@ -506,31 +511,12 @@ function detectTypeFromHass(entityId, hass) {
   return bestTypeByHints(entityId, Object.keys(INTEGRATIONS));
 }
 
-let _discoverCache = null, _discoverCacheKey = null;
-
-function discoverSources(hass) {
-  if (!hass) return [];
-  const cacheKey = Object.keys(hass.entities || {}).sort().join(',');
-  if (cacheKey === _discoverCacheKey) return _discoverCache;
-  const found = [];
-  for (const entityId of Object.keys(hass.entities || {})) {
-    const attrs = hass.states[entityId]?.attributes;
-    if (!attrs) continue;
-    const type = detectTypeFromHass(entityId, hass);
-    if (!type || !INTEGRATIONS[type].hasAttrs(attrs)) continue;
-    found.push({ entity: entityId, type });
-  }
-  _discoverCacheKey = cacheKey;
-  _discoverCache    = found;
-  return found;
-}
-
 // ─── Filtering ────────────────────────────────────────────────────────────────
 
 function applyFilter(items, filter) {
   if (!filter) return items;
   let r = items;
-  const state = filter.state || 'enroute';
+  const state = filter.state || 'all';
   if (state === 'enroute')   r = r.filter(i => !i.delivered);
   if (state === 'delivered') r = r.filter(i => i.delivered);
   if (filter.carrier) {
@@ -538,17 +524,8 @@ function applyFilter(items, filter) {
     r = r.filter(i => i.carrierCode?.toLowerCase() === fc);
   }
   if (filter.date !== undefined && filter.date !== null) {
-    if (typeof filter.date === 'object') {
-      const { from = null, to = null } = filter.date;
-      r = r.filter(i => {
-        if (!i.deliveryDate) return false;
-        const d = daysUntil(i.deliveryDate);
-        return (from === null || d >= from) && (to === null || d <= to);
-      });
-    } else {
-      const t = parseInt(filter.date);
-      r = r.filter(i => i.deliveryDate && daysUntil(i.deliveryDate) === t);
-    }
+    const t = Number(filter.date);
+    if (!isNaN(t)) r = r.filter(i => i.deliveryDate && daysUntil(i.deliveryDate) === t);
   }
   if (filter.direction && filter.direction !== 'all') {
     r = r.filter(i => i.direction === filter.direction);
@@ -556,6 +533,38 @@ function applyFilter(items, filter) {
   if (filter.slot_active) r = r.filter(i => i.slotActive);
   return r;
 }
+
+// Sort priority for package items (used by _sortItems)
+function itemPriority(item, now, today) {
+  if (item.delivered) return 5;
+  if (item.slotActive) return 0;
+  if (item.slotEnd && now > item.slotEnd) return 1;
+  if (item.deliveryDate) {
+    const d = new Date(item.deliveryDate.getTime()); d.setHours(0,0,0,0);
+    return d.getTime() === today.getTime() ? 2 : 3;
+  }
+  return 4;
+}
+
+// ─── Card defaults ───────────────────────────────────────────────────────────
+// Single source of truth — shared by PackageTrackerCard.setConfig and the editor.
+
+const CARD_DEFAULTS = {
+  max:    5,
+  layout: 'single',
+  show: {
+    carrier:        true,
+    status:         true,
+    badge:          true,
+    dim_delivered:  true,
+    location:       false,
+    brand_icon:     true,
+    hide_when_empty: false,
+  },
+  filter: {
+    state: 'all',
+  },
+};
 
 // ─── Card CSS ─────────────────────────────────────────────────────────────────
 
@@ -712,8 +721,8 @@ class PackageTrackerCard extends HTMLElement {
 
   _hasActiveSlot() {
     if (!this._hass || !this._config) return false;
-    const tr  = TRANSLATIONS[this._hass.language] || TRANSLATIONS['en'];
-    const ctx = { carriers: this._carriers, tr };
+    // Use a minimal ctx — we only care about slotActive, not display text
+    const ctx = { carriers: this._carriers, tr: TRANSLATIONS['en'] };
     for (const source of this._config.sources) {
       const def   = INTEGRATIONS[source.type];
       const attrs = source.entity ? this._hass.states[source.entity]?.attributes : null;
@@ -727,9 +736,10 @@ class PackageTrackerCard extends HTMLElement {
     if (!config) throw new Error('package-tracker-card: missing config');
     if (!Array.isArray(config.sources)) throw new Error('package-tracker-card: sources must be an array');
     this._config = {
-      max: 5, layout: 'single', ...config,
-      show:   { carrier: true, status: true, badge: true, dim_delivered: true, location: false, brand_icon: true, hide_when_empty: false, ...(config.show   || {}) },
-      filter: { state: 'all',                                                                                       ...(config.filter || {}) },
+      ...CARD_DEFAULTS,
+      ...config,
+      show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
+      filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
     };
     this._lastHashes = {};
     if (this._countdownTimer) this._startCountdownTimer();
@@ -772,26 +782,9 @@ class PackageTrackerCard extends HTMLElement {
   _sortItems(items) {
     const now   = new Date();
     const today = new Date(); today.setHours(0,0,0,0);
-
-    // Priority group for enroute items:
-    // 0 = active slot (sort by slot end asc)
-    // 1 = past slot / late (sort by slot end asc)
-    // 2 = today (sort by deliveryDate asc)
-    // 3 = future (sort by deliveryDate asc)
-    // 4 = no date
-    function priority(item) {
-      if (item.delivered) return 5;
-      if (item.slotActive) return 0;
-      if (item.slotEnd && now > item.slotEnd) return 1; // past slot
-      if (item.deliveryDate) {
-        const d = new Date(item.deliveryDate); d.setHours(0,0,0,0);
-        return d.getTime() === today.getTime() ? 2 : 3;
-      }
-      return 4;
-    }
-
+    // Priority groups: 0=active slot, 1=past slot, 2=today, 3=future, 4=no date, 5=delivered
     return [...items].sort((a, b) => {
-      const pa = priority(a), pb = priority(b);
+      const pa = itemPriority(a, now, today), pb = itemPriority(b, now, today);
       if (pa !== pb) return pa - pb;
       // Within delivered: newest first
       if (a.delivered) return (b.deliveryDate || 0) - (a.deliveryDate || 0);
@@ -805,13 +798,13 @@ class PackageTrackerCard extends HTMLElement {
 
   _render() {
     if (!this._hass || !this._config) return;
-    this._built = true;
     let items = applyFilter(this._sortItems(this._collectItems()), this._config.filter);
-    if (this._config.max) items = items.slice(0, this._config.max);
+    if (this._config.max > 0) items = items.slice(0, this._config.max);
     const show   = this._config.show;
     const layout = this._config.layout || 'single';
     const tr     = TRANSLATIONS[this._hass.language] || TRANSLATIONS['en'];
 
+    this._built = true;
     if (!items.length && show.hide_when_empty) {
       this.classList.add('hidden');
       this._root.innerHTML = '';
@@ -858,12 +851,12 @@ class PackageTrackerCard extends HTMLElement {
   }
 
   getCardSize() {
-    if (this._config?.show?.hide_when_empty && this.style.display === 'none') return 0;
+    if (this._config?.show?.hide_when_empty && this.classList.contains('hidden')) return 0;
     return 3;
   }
 
   static getConfigElement() { return document.createElement('package-tracker-card-editor'); }
-  static getStubConfig()    { return { sources: [], layout: 'single', max: 5,  filter: { state: 'all'     }, show: { carrier: true, status: true, badge: true } }; }
+  static getStubConfig()    { return { sources: [], ...CARD_DEFAULTS }; }
 }
 
 customElements.define('package-tracker-card', PackageTrackerCard);
@@ -883,18 +876,10 @@ const EDITOR_CSS = `
   .tab-content { padding: 16px; }
   .item-list { display: flex; flex-direction: column; gap: 16px; }
   .source-group { border: 1px solid var(--divider-color); border-radius: 8px; overflow: hidden; }
-  .item-entry { border-bottom: 1px solid var(--divider-color); }
-  .item-entry:last-child { border-bottom: none; }
-  .item-row { display: flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px 0 12px; }
-  .row-label-wrap { flex: 1; min-width: 0; }
-  .row-label { font-size: 14px; color: var(--primary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .unconfigured .row-label { color: var(--secondary-text-color); }
-  .row-sub { font-size: 11px; color: var(--secondary-text-color); margin-top: 1px; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row-action { width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .add-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
   .delete-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--secondary-text-color); }
   .delete-btn:hover { color: var(--error-color, #db4437); }
-  .item-body { padding: 8px 12px 14px; }
   .body-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary-text-color); margin: 14px 0 4px; }
   .body-label:first-child { margin-top: 6px; }
   .body-label-sub { font-size: 11px; color: var(--secondary-text-color); opacity: .7; margin: -2px 0 4px; }
@@ -915,8 +900,6 @@ const EDITOR_CSS = `
   .advanced-toggle ha-icon { --mdc-icon-size: 14px; transition: transform .15s; }
   .advanced-toggle.open ha-icon { transform: rotate(180deg); }
   .advanced-content { margin-top: 8px; }
-  .text-btn { background: none; border: none; font-family: inherit; font-size: var(--ha-font-size-s, 12px); color: var(--primary-color); cursor: pointer; padding: 4px 0; white-space: nowrap; }
-  .text-btn:hover { text-decoration: underline; }
   .version-link { display: block; font-size: 11px; color: var(--secondary-text-color); text-decoration: none; text-align: center; padding: 10px 16px 12px; border-top: 1px solid var(--divider-color); }
   .version-link:hover { text-decoration: underline; }
 `;
@@ -931,7 +914,6 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._ownFire  = false;
     this._tab           = 'sources';
     this._filterAdvOpen = false;
-    this._sourceExpanded = {};
   }
 
   set hass(hass) {
@@ -948,10 +930,11 @@ class PackageTrackerCardEditor extends HTMLElement {
 
   _normalize(config) {
     return {
-      sources: [], layout: 'single', max: 5,
+      sources: [],
+      ...CARD_DEFAULTS,
       ...config,
-      show:   { carrier: true, status: true, badge: true, dim_delivered: true, location: false, brand_icon: true, hide_when_empty: false, ...(config.show   || {}) },
-      filter: { state: 'all',                                                                                       ...(config.filter || {}) },
+      show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
+      filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
     };
   }
 
@@ -961,7 +944,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     this.dispatchEvent(new CustomEvent('config-changed', { detail: { config }, bubbles: true, composed: true }));
   }
 
-  _fireAndRender(config) { this._fire(config); this._ownFire = false; this._renderTab(); }
+  _fireAndRender(config) { this._fire(config); this._renderTab(); }
 
   _init() {
     this._built = true;
@@ -1004,7 +987,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._content.innerHTML = '';
     if      (this._tab === 'sources')    this._renderSources();
     else if (this._tab === 'filter')     this._renderFilter();
-    else if (this._tab === 'appearance') this._renderWeergave();
+    else if (this._tab === 'appearance') this._renderAppearance();
     if (this._hass) this.shadowRoot.querySelectorAll('ha-form').forEach(f => { f.hass = this._hass; });
   }
 
@@ -1174,7 +1157,7 @@ class PackageTrackerCardEditor extends HTMLElement {
       { value: 'delivered', label: uiTr.delivered },
       { value: 'all',       label: uiTr.all },
     ] } } }];
-    statusForm.data = { state: filter.state || 'enroute' };
+    statusForm.data = { state: filter.state || 'all' };
     statusForm.computeLabel = () => '';
     statusForm.addEventListener('value-changed', (e) => { if (e.detail.value.state) save({ ...filter, state: e.detail.value.state }); });
     statusGroup.appendChild(statusForm);
@@ -1205,7 +1188,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     advBtn.className = 'advanced-toggle' + (this._filterAdvOpen ? ' open' : '');
     const advIco = document.createElement('ha-icon'); advIco.setAttribute('icon', 'mdi:chevron-down');
     advBtn.appendChild(advIco);
-    advBtn.appendChild(document.createTextNode(' ' + (uiTr.advanced || 'Advanced')));
+    advBtn.appendChild(document.createTextNode(' ' + uiTr.advanced));
     const advContent = document.createElement('div');
     advContent.className = 'advanced-content';
     advContent.style.display = this._filterAdvOpen ? '' : 'none';
@@ -1218,13 +1201,13 @@ class PackageTrackerCardEditor extends HTMLElement {
     // Specific day
     advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', style: 'margin-top:0', textContent: uiTr.filter_date }));
     const dateGroup = document.createElement('div'); dateGroup.className = 'settings-group';
-    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label || uiTr.filter_date, filter.date, null, null, '', uiTr.filter_date_desc, (val) => upd('date', val !== '' ? Number(val) : undefined)));
+    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label, filter.date, null, null, '', uiTr.filter_date_desc, (val) => upd('date', val !== '' ? Number(val) : undefined)));
     advContent.appendChild(dateGroup);
 
     // Time slot
     advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_slot }));
     const slotGroup = document.createElement('div'); slotGroup.className = 'settings-group';
-    const slotDisabled = (filter.state || 'enroute') !== 'enroute';
+    const slotDisabled = (filter.state || 'all') !== 'enroute';
     const slotRow = this._mkToggleRow(uiTr.filter_slot_active, !!filter.slot_active, slotDisabled ? null : uiTr.filter_slot_desc,
       (val) => upd('slot_active', val || undefined),
       { disabled: slotDisabled, disabledReason: uiTr.filter_slot_requires_enroute }
@@ -1253,7 +1236,7 @@ class PackageTrackerCardEditor extends HTMLElement {
 
   // ── Weergave ──────────────────────────────────────────────────────────────
 
-  _renderWeergave() {
+  _renderAppearance() {
     const root  = this._content;
     const c     = this._config;
     const show  = c.show || {};
@@ -1270,7 +1253,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     layoutForm.computeLabel = () => '';
     layoutForm.addEventListener('value-changed', (e) => { if (e.detail.value.layout) this._fireAndRender({ ...c, layout: e.detail.value.layout }); });
     layoutGroup.appendChild(layoutForm);
-    layoutGroup.appendChild(this._mkNumberRow(uiTr.max_packages, c.max || 10, 1, 50, '', null, (val) => this._fireAndRender({ ...c, max: val !== '' ? Number(val) : 10 })));
+    layoutGroup.appendChild(this._mkNumberRow(uiTr.max_packages, c.max ?? 5, 1, 50, '', null, (val) => this._fireAndRender({ ...c, max: val !== '' ? Number(val) : 5 })));
     root.appendChild(layoutGroup);
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.show }));
@@ -1299,7 +1282,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     }
     showGroup.appendChild(brandRow);
     showGroup.appendChild(mkShow(uiTr.badge,    'badge',    uiTr.badge_desc));
-    showGroup.appendChild(this._mkToggleRow(uiTr.location, !!show.location, uiTr.location_desc,
+    showGroup.appendChild(this._mkToggleRow(uiTr.location, show.location === true, uiTr.location_desc,
       (val) => this._fireAndRender({ ...c, show: { ...show, location: val } })
     ));
     root.appendChild(showGroup);
@@ -1337,7 +1320,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     if (max !== null) field.setAttribute('max', max);
     if (unit) field.setAttribute('suffix', unit);
     field.setAttribute('no-spinner', '');
-    field.value = (value !== undefined && value !== null) ? value : '';
+    field.value = value ?? '';
     field.addEventListener('change', () => onChange(field.value));
     row.append(tw, field);
     return row;
