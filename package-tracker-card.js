@@ -209,16 +209,30 @@ function formatTimeRemaining(toDate, tr, fromDate) {
 }
 
 // parseDate: normalizes various date formats to a JS Date.
-// Handles ISO (2026-03-28T...) and DD.MM.YYYY HH:MM (Parcel event format).
+// Handles ISO, DD.MM.YYYY HH:MM, and 'dayname DD monthname HH:MM' (Parcel/Amazon).
+const _MONTH_NL = {januari:1,februari:2,maart:3,april:4,mei:5,juni:6,juli:7,augustus:8,september:9,oktober:10,november:11,december:12};
+const _MONTH_EN = {january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+
 function parseDate(str) {
   if (!str) return null;
-  // DD.MM.YYYY HH:MM → YYYY-MM-DDTHH:MM
-  const dot = str.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}:\d{2}))?$/);
+  const s = str.trim();
+  // DD.MM.YYYY HH:MM
+  const dot = s.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}:\d{2}))?$/);
   if (dot) {
     const iso = dot[3] + '-' + dot[2] + '-' + dot[1] + (dot[4] ? 'T' + dot[4] : '');
-    const d = new Date(iso); return isNaN(d) ? null : d;
+    const d = new Date(iso); if (!isNaN(d)) return d;
   }
-  const d = new Date(str); return isNaN(d) ? null : d;
+  // 'dinsdag 31 maart 19:44' or 'Tuesday 31 March 19:44'
+  const verbal = s.match(/^\w+\s+(\d{1,2})\s+(\w+)(?:\s+(\d{2}:\d{2}))?$/);
+  if (verbal) {
+    const month = _MONTH_NL[verbal[2].toLowerCase()] || _MONTH_EN[verbal[2].toLowerCase()];
+    if (month) {
+      const year = new Date().getFullYear();
+      const iso  = year + '-' + String(month).padStart(2,'0') + '-' + String(verbal[1]).padStart(2,'0') + (verbal[3] ? 'T' + verbal[3] : '');
+      const d = new Date(iso); if (!isNaN(d)) return d;
+    }
+  }
+  const d = new Date(s); return isNaN(d) ? null : d;
 }
 
 function buildParcelUrl(code, tracking) {
