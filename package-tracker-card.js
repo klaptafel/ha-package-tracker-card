@@ -1,4 +1,4 @@
-const CARD_VERSION = '0.1.0';
+const CARD_VERSION = '0.1.1';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 
@@ -180,7 +180,7 @@ function formatTime(d) {
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
-function ensurePeriod(s) { return s && !s.endsWith('.') ? s + '.' : (s || ''); }
+function ensurePeriod(s) { const t = (s || '').trimEnd(); return t && !t.endsWith('.') ? t + '.' : t; }
 
 function formatDeliveredText(date, tr) {
   const day = formatDay(date, tr);
@@ -410,8 +410,8 @@ const INTEGRATIONS = {
         if (d) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
       }
 
-      const expectedStr    = item.date_expected     ? item.date_expected.replace(' ', 'T')     : null;
-      const expectedEndStr = item.date_expected_end  ? item.date_expected_end.replace(' ', 'T')  : null;
+      const expectedStr    = (item.timestamp_expected     || item.date_expected)     ? (item.timestamp_expected     || item.date_expected).replace(' ', 'T')     : null;
+      const expectedEndStr = (item.timestamp_expected_end || item.date_expected_end) ? (item.timestamp_expected_end || item.date_expected_end).replace(' ', 'T') : null;
       if (!deliveryDate && expectedStr) {
         const d = new Date(expectedStr);
         if (!isNaN(d)) {
