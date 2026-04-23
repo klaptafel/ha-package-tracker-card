@@ -99,6 +99,7 @@ const TRANSLATIONS = {
     all_codes: 'all codes',
     hide_when_empty: 'Hide when empty', hide_when_empty_desc: 'Hide the card when there are no packages to show',
     parcel_row_label: 'Raw data',
+    letterbox: 'Fits in your letterbox.',
     entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
     entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
@@ -146,6 +147,7 @@ const TRANSLATIONS = {
     all_codes: 'alle codes',
     hide_when_empty: 'Verberg bij leeg', hide_when_empty_desc: 'Verberg de kaart als er geen pakketjes zijn om te tonen',
     parcel_row_label: 'Ruwe data',
+    letterbox: 'Past door de brievenbus.',
     entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
     entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
@@ -248,7 +250,7 @@ function mkItem(overrides) {
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false,
     ...overrides,
   };
 }
@@ -348,6 +350,7 @@ const INTEGRATIONS = {
         deliveryDate, slotActive, delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'incoming', slotEnd,
+        letterbox: item.shipment_type === 'LetterboxParcel',
         // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
         trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
     },
@@ -626,6 +629,7 @@ const CARD_CSS = `
     margin-top: 6px; display: flex; align-items: center; gap: 3px;
   }
   .carrier ha-icon { flex-shrink: 0; position: relative; top: 0; }
+  .carrier-sep { margin: 0 2px; opacity: .5; }
   .split-wrapper { display: flex; flex-direction: column; gap: 8px; }
   .empty {
     padding: 28px 16px; text-align: center; color: var(--secondary-text-color);
@@ -641,7 +645,7 @@ function mk(tag, cls, text) {
   return el;
 }
 
-function renderRow(item, show) {
+function renderRow(item, show, tr) {
   const hex  = item.color || 'grey';
   const days = (!item.delivered && item.deliveryDate) ? daysUntil(item.deliveryDate) : null;
 
@@ -676,15 +680,25 @@ function renderRow(item, show) {
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
   if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
-  if (show.carrier && item.carrier) {
-    const carrier = mk('span', 'carrier');
-    if (show.brand_icon !== false && item.brandIcon) {
-      const ico = document.createElement('ha-icon');
-      ico.setAttribute('icon', item.brandIcon);
-      ico.style.setProperty('--mdc-icon-size', '14px');
-      carrier.appendChild(ico);
+  if ((show.carrier && item.carrier) || item.letterbox) {
+    const carrier = mk('div', 'carrier');
+    if (show.carrier && item.carrier) {
+      if (show.brand_icon !== false && item.brandIcon) {
+        const ico = document.createElement('ha-icon');
+        ico.setAttribute('icon', item.brandIcon);
+        ico.style.setProperty('--mdc-icon-size', '14px');
+        carrier.appendChild(ico);
+      }
+      carrier.appendChild(document.createTextNode(item.carrier));
     }
-    carrier.appendChild(document.createTextNode(item.carrier));
+    if (item.letterbox) {
+      if (show.carrier && item.carrier) carrier.appendChild(mk('span', 'carrier-sep', '·'));
+      const ico = document.createElement('ha-icon');
+      ico.setAttribute('icon', 'mdi:mailbox');
+      ico.style.setProperty('--mdc-icon-size', '13px');
+      carrier.appendChild(ico);
+      carrier.appendChild(document.createTextNode((tr && tr.letterbox) || 'Fits in your letterbox.'));
+    }
     content.appendChild(carrier);
   }
 
@@ -841,7 +855,7 @@ class PackageTrackerCard extends HTMLElement {
     }
 
     const buildRow = (item) => {
-      const row = renderRow(item, show);
+      const row = renderRow(item, show, tr);
       if (item.tapUrl) row.querySelector('.icon-wrap.clickable')
         ?.addEventListener('click', () => window.open(item.tapUrl, '_blank'));
       return row;
