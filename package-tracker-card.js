@@ -680,7 +680,7 @@ function renderRow(item, show, tr) {
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
   if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
-  if ((show.carrier && item.carrier) || item.letterbox) {
+  if ((show.carrier && item.carrier) || (item.letterbox && !item.delivered)) {
     const carrier = mk('div', 'carrier');
     if (show.carrier && item.carrier) {
       if (show.brand_icon !== false && item.brandIcon) {
@@ -691,7 +691,7 @@ function renderRow(item, show, tr) {
       }
       carrier.appendChild(document.createTextNode(item.carrier));
     }
-    if (item.letterbox) {
+    if (item.letterbox && !item.delivered) {
       if (show.carrier && item.carrier) carrier.appendChild(mk('span', 'carrier-sep', '·'));
       const ico = document.createElement('ha-icon');
       ico.setAttribute('icon', 'mdi:mailbox');
