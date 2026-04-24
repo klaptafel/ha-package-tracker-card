@@ -31,6 +31,7 @@ const BRAND_ICONS = {
   usps: 'phu:usps',
   ups: 'phu:ups-dlv', upsmi: 'phu:ups-dlv',
   fedex: 'phu:fedex', fedpl: 'phu:fedex',
+  amzlnl: 'phu:amazon-logo',
 };
 
 let _brandIconsAvailable = false;
@@ -347,7 +348,7 @@ const INTEGRATIONS = {
       }
       if (!line1) line1 = ensurePeriod(item.status_message || '');
       return mkItem({ name: (item.name || '').trim(), line1, line2, icon, color,
-        deliveryDate, slotActive, delivered,
+        deliveryDate, slotActive, delivered: delivered || !!item.delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'incoming', slotEnd,
         letterbox: item.shipment_type === 'LetterboxParcel',
