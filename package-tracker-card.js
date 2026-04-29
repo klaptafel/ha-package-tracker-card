@@ -414,8 +414,14 @@ const INTEGRATIONS = {
         if (d) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
       }
 
-      const expectedStr    = (item.timestamp_expected     || item.date_expected)     ? (item.timestamp_expected     || item.date_expected).replace(' ', 'T')     : null;
-      const expectedEndStr = (item.timestamp_expected_end || item.date_expected_end) ? (item.timestamp_expected_end || item.date_expected_end).replace(' ', 'T') : null;
+      function parseExpected(ts, fallback) {
+        if (ts !== undefined && ts !== null) {
+          return typeof ts === 'number' ? new Date(ts * 1000).toISOString() : String(ts).replace(' ', 'T');
+        }
+        return fallback ? String(fallback).replace(' ', 'T') : null;
+      }
+      const expectedStr    = parseExpected(item.timestamp_expected,     item.date_expected);
+      const expectedEndStr = parseExpected(item.timestamp_expected_end, item.date_expected_end);
       if (!deliveryDate && expectedStr) {
         const d = new Date(expectedStr);
         if (!isNaN(d)) {
@@ -594,8 +600,7 @@ const CARD_CSS = `
   }
   :host(.hidden) { display: none !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
   .row { display: flex; align-items: center; padding: 12px 16px; gap: 14px; }
-  .single .row { border-bottom: 1px solid var(--divider-color, rgba(0,0,0,.08)); }
-  .single .row:last-child { border-bottom: none; }
+
   .row.delivered { opacity: .45; }
   .icon-container { position: relative; flex-shrink: 0; }
   .icon-wrap {
@@ -631,6 +636,8 @@ const CARD_CSS = `
   }
   .carrier ha-icon { flex-shrink: 0; position: relative; top: 0; }
   .carrier-sep { margin: 0 2px; opacity: .5; }
+  .single .row { border-bottom: 1px solid var(--divider-color, rgba(0,0,0,.08)); }
+  .single .row:last-child { border-bottom: none; }
   .split-wrapper { display: flex; flex-direction: column; gap: 8px; }
   .empty {
     padding: 28px 16px; text-align: center; color: var(--secondary-text-color);
