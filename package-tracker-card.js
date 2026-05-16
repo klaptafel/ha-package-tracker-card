@@ -2,7 +2,7 @@ const CARD_VERSION = '0.1.1';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 
-const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"Anpost","aramex":"Aramex","at":"Austrian Post","au":"Australia Post","bartol":"Bartolini","blp":"Belpost","bluedart":"Blue Dart","bpost":"Bpost","bring":"Bring","canpar":"Canpar","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","china":"China Post","chrono":"Chronopost","cor":"Correos","corbra":"Correios","cp":"Canada Post","ctt":"CTT","cyclpcode":"Cycloon","dachser":"Dachser","dao365":"DAO365","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dk":"Post Danmark","dp":"Deutsche Post","dpd":"DPD Germany","dpdat":"DPD Austria","dpdgroup":"DPD Group","dpdie":"DPD Ireland","dpdpoland":"DPD Poland","dpduk":"DPD UK","dsv":"DSV","dtdc":"DTDC India","dx":"DX","dynalogic":"Dynalogic","easyship":"Easyship","econt":"Econt Express","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","ems":"EMS Russian Post","fedex":"FedEx","fedpl":"FedEx Poland","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","geodis":"Geodis","gso":"GLS US","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hung":"Magyar Posta","il":"Israel Post","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","it":"Poste Italiane","jp":"Japan Post","kerry":"Kerry Express","kor":"Korea Post","lp":"La poste (Colissimo)","lv":"Latvijas Pasts","malpos":"Malaysia Post","malta":"MaltaPost","meest":"Meest","mrw":"MRW","myher":"Evri","naqel":"Naqel Express","newp":"Nova Poshta","nor":"Norway Post","nzp":"New Zealand Post","ocs":"OCS Worldwide","ont":"OnTrac","p2g":"Parcel2Go","paack":"Paack","packeta":"Packeta","pandion":"Pandion","pbi":"PBI - Pitney Bowes","phlpost":"Philpost","pilot":"Pilot Freight","planzer":"Planzer","poland":"Poczta Polska","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","ppl":"PPL","prfc":"Parcelforce","puro":"Purolator","px":"4PX","redjep":"Instabox Red je pakketje","relay":"Mondial Relay","rm":"Royal Mail","rp":"Russian Post","sagawa":"Sagawa Express","sch":"DB Schenker","se":"Swedish Post","sendle":"Sendle","seur":"SEUR","sf":"SF Express","sing":"SingPost","slovak":"Slovenská pošta","slv":"Pošta Slovenije","speedpak":"SpeedPAK","star":"StarTrack Express","swiss":"Swiss Post","thai":"Thailand Post","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","postnl":"PostNL","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","tourline":"CTT Express","trnkrpcode":"Trunkrs","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","ukr":"Ukrpost","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","whistl":"Whistl","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
+const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"Anpost","aramex":"Aramex","at":"Austrian Post","au":"Australia Post","bartol":"Bartolini","blp":"Belpost","bluedart":"Blue Dart","bpost":"Bpost","bring":"Bring","canpar":"Canpar","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","china":"China Post","chrono":"Chronopost","cor":"Correos","corbra":"Correios","cp":"Canada Post","ctt":"CTT","cyclpcode":"Cycloon","dachser":"Dachser","dao365":"DAO365","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlnlpcode":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dk":"Post Danmark","dp":"Deutsche Post","dpd":"DPD Germany","dpdat":"DPD Austria","dpdgroup":"DPD Group","dpdie":"DPD Ireland","dpdpoland":"DPD Poland","dpduk":"DPD UK","dsv":"DSV","dtdc":"DTDC India","dx":"DX","dynalogic":"Dynalogic","easyship":"Easyship","econt":"Econt Express","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","ems":"EMS Russian Post","fedex":"FedEx","fedpl":"FedEx Poland","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","geodis":"Geodis","gso":"GLS US","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hung":"Magyar Posta","il":"Israel Post","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","it":"Poste Italiane","jp":"Japan Post","kerry":"Kerry Express","kor":"Korea Post","lp":"La poste (Colissimo)","lv":"Latvijas Pasts","malpos":"Malaysia Post","malta":"MaltaPost","meest":"Meest","mrw":"MRW","myher":"Evri","naqel":"Naqel Express","newp":"Nova Poshta","nor":"Norway Post","nzp":"New Zealand Post","ocs":"OCS Worldwide","ont":"OnTrac","p2g":"Parcel2Go","paack":"Paack","packeta":"Packeta","pandion":"Pandion","pbi":"PBI - Pitney Bowes","phlpost":"Philpost","pilot":"Pilot Freight","planzer":"Planzer","poland":"Poczta Polska","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","ppl":"PPL","prfc":"Parcelforce","puro":"Purolator","px":"4PX","redjep":"Instabox Red je pakketje","relay":"Mondial Relay","rm":"Royal Mail","rp":"Russian Post","sagawa":"Sagawa Express","sch":"DB Schenker","se":"Swedish Post","sendle":"Sendle","seur":"SEUR","sf":"SF Express","sing":"SingPost","slovak":"Slovenská pošta","slv":"Pošta Slovenije","speedpak":"SpeedPAK","star":"StarTrack Express","swiss":"Swiss Post","thai":"Thailand Post","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","postnl":"PostNL","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","tourline":"CTT Express","trnkrpcode":"Trunkrs","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","ukr":"Ukrpost","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","whistl":"Whistl","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
 
 let carriersCache = null, carriersFetchPromise = null;
 
@@ -26,7 +26,7 @@ function carrierName(code, carriers) {
 const BRAND_ICONS = {
   // Verified available in custom-brand-icons
   postnl: 'phu:postnl', tntp: 'phu:postnl', tntpit: 'phu:postnl',
-  dhl: 'phu:dhl', dhlnl: 'phu:dhl', dhluk: 'phu:dhl', dhlgm: 'phu:dhl', dhlfreight: 'phu:dhl', dhlsc: 'phu:dhl',
+  dhl: 'phu:dhl', dhlnl: 'phu:dhl', dhlnlpcode: 'phu:dhl', dhluk: 'phu:dhl', dhlgm: 'phu:dhl', dhlfreight: 'phu:dhl', dhlsc: 'phu:dhl',
   rm: 'phu:royalmail',
   usps: 'phu:usps',
   ups: 'phu:ups-dlv', upsmi: 'phu:ups-dlv',
@@ -100,7 +100,9 @@ const TRANSLATIONS = {
     all_codes: 'all codes',
     hide_when_empty: 'Hide when empty', hide_when_empty_desc: 'Hide the card when there are no packages to show',
     parcel_row_label: 'Raw data',
-    letterbox: 'Fits in your letterbox.',
+    letterbox: 'Fits in your letterbox',
+    rerouted: 'Delivery to a pickup point.',
+    service_point: 'Delivery to a PostNL point.',
     entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
     entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
@@ -148,7 +150,9 @@ const TRANSLATIONS = {
     all_codes: 'alle codes',
     hide_when_empty: 'Verberg bij leeg', hide_when_empty_desc: 'Verberg de kaart als er geen pakketjes zijn om te tonen',
     parcel_row_label: 'Ruwe data',
-    letterbox: 'Past door de brievenbus.',
+    letterbox: 'Past door de brievenbus',
+    rerouted: 'Levering op een afhaalpunt.',
+    service_point: 'Levering op een PostNL-punt.',
     entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
     entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
@@ -243,6 +247,19 @@ function buildParcelUrl(code, tracking) {
   return 'https://parcel.app/webtrack.php?platform=web&type=' + encodeURIComponent(code) + '&code=' + encodeURIComponent(tracking);
 }
 
+function parseExpected(ts, fallback) {
+  if (ts !== undefined && ts !== null) {
+    if (typeof ts === 'number') {
+      const d = new Date(ts * 1000);
+      const pad = n => String(n).padStart(2, '0');
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+             'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+    return String(ts).replace(' ', 'T');
+  }
+  return fallback ? String(fallback).replace(' ', 'T') : null;
+}
+
 // ─── Normalised item model ────────────────────────────────────────────────────
 
 function mkItem(overrides) {
@@ -251,7 +268,7 @@ function mkItem(overrides) {
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false,
     ...overrides,
   };
 }
@@ -352,6 +369,8 @@ const INTEGRATIONS = {
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'incoming', slotEnd,
         letterbox: item.shipment_type === 'LetterboxParcel',
+        rerouted:     item.delivery_address_type === 'Rerouted',
+        servicePoint: item.delivery_address_type === 'ServicePoint',
         // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
         trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
     },
@@ -378,7 +397,7 @@ const INTEGRATIONS = {
       }
       if (!line1) line1 = ensurePeriod(item.status_message || '');
       return mkItem({ name: (item.name || '').trim(), line1, icon, color,
-        deliveryDate, delivered,
+        deliveryDate, delivered: delivered || !!item.delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'outgoing',
         // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
@@ -414,12 +433,6 @@ const INTEGRATIONS = {
         if (d) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
       }
 
-      function parseExpected(ts, fallback) {
-        if (ts !== undefined && ts !== null) {
-          return typeof ts === 'number' ? new Date(ts * 1000).toISOString() : String(ts).replace(' ', 'T');
-        }
-        return fallback ? String(fallback).replace(' ', 'T') : null;
-      }
       const expectedStr    = parseExpected(item.timestamp_expected,     item.date_expected);
       const expectedEndStr = parseExpected(item.timestamp_expected_end, item.date_expected_end);
       if (!deliveryDate && expectedStr) {
@@ -443,6 +456,10 @@ const INTEGRATIONS = {
         }
       }
       if (!line1) line1 = ensurePeriod(firstEvent?.event || '');
+      if (!deliveryDate && carrierCode === 'gls' && firstEvent?.event?.toLowerCase().includes('expected to be delivered during the day')) {
+        deliveryDate = new Date();
+        line2 = tr.delivery_on(formatDay(deliveryDate, tr));
+      }
       return mkItem({ name: (item.description || '').trim(), line1, line2,
         location: firstEvent?.location || null,
         icon, color, deliveryDate, slotActive, delivered, carrierCode,
@@ -688,7 +705,7 @@ function renderRow(item, show, tr) {
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
   if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
-  if ((show.carrier && item.carrier) || (item.letterbox && !item.delivered)) {
+  if ((show.carrier && item.carrier) || (item.letterbox && !item.delivered) || item.rerouted || item.servicePoint) {
     const carrier = mk('div', 'carrier');
     if (show.carrier && item.carrier) {
       if (show.brand_icon !== false && item.brandIcon) {
@@ -705,7 +722,23 @@ function renderRow(item, show, tr) {
       ico.setAttribute('icon', 'mdi:mailbox');
       ico.style.setProperty('--mdc-icon-size', '13px');
       carrier.appendChild(ico);
-      carrier.appendChild(document.createTextNode((tr && tr.letterbox) || 'Fits in your letterbox.'));
+      carrier.appendChild(document.createTextNode((tr && tr.letterbox) || 'Fits in your letterbox'));
+    }
+    if (item.rerouted) {
+      if ((show.carrier && item.carrier) || (item.letterbox && !item.delivered)) carrier.appendChild(mk('span', 'carrier-sep', '·'));
+      const ico = document.createElement('ha-icon');
+      ico.setAttribute('icon', 'mdi:store-marker');
+      ico.style.setProperty('--mdc-icon-size', '13px');
+      carrier.appendChild(ico);
+      carrier.appendChild(document.createTextNode((tr && tr.rerouted) || 'Delivery to a pickup point.'));
+    }
+    if (item.servicePoint) {
+      if ((show.carrier && item.carrier) || (item.letterbox && !item.delivered) || item.rerouted) carrier.appendChild(mk('span', 'carrier-sep', '·'));
+      const ico = document.createElement('ha-icon');
+      ico.setAttribute('icon', 'mdi:store-marker');
+      ico.style.setProperty('--mdc-icon-size', '13px');
+      carrier.appendChild(ico);
+      carrier.appendChild(document.createTextNode((tr && tr.service_point) || 'Delivery to a PostNL point.'));
     }
     content.appendChild(carrier);
   }
@@ -732,6 +765,7 @@ class PackageTrackerCard extends HTMLElement {
     this._lastLang     = null;
     this._countdownTimer = null;
     this._built         = false;
+    this._cachedItems   = [];
   }
 
   connectedCallback() {
@@ -756,16 +790,7 @@ class PackageTrackerCard extends HTMLElement {
   }
 
   _hasActiveSlot() {
-    if (!this._hass || !this._config) return false;
-    // Use a minimal ctx — we only care about slotActive, not display text
-    const ctx = { carriers: this._carriers, tr: TRANSLATIONS['en'] };
-    for (const source of this._config.sources) {
-      const def   = INTEGRATIONS[source.type];
-      const attrs = source.entity ? this._hass.states[source.entity]?.attributes : null;
-      if (!def || !attrs) continue;
-      if (def.collect(attrs, ctx).some(i => i.slotActive)) return true;
-    }
-    return false;
+    return this._cachedItems.some(i => i.slotActive);
   }
 
   setConfig(config) {
@@ -778,6 +803,7 @@ class PackageTrackerCard extends HTMLElement {
       filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
     };
     this._lastHashes = {};
+    this._cachedItems = [];
     if (this._countdownTimer) this._startCountdownTimer();
   }
 
@@ -834,7 +860,8 @@ class PackageTrackerCard extends HTMLElement {
 
   _render() {
     if (!this._hass || !this._config) return;
-    let items = applyFilter(this._sortItems(this._collectItems()), this._config.filter);
+    this._cachedItems = this._collectItems();
+    let items = applyFilter(this._sortItems(this._cachedItems), this._config.filter);
     if (this._config.max > 0) items = items.slice(0, this._config.max);
     const show   = this._config.show;
     const layout = this._config.layout || 'single';
