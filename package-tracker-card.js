@@ -1,20 +1,11 @@
-const CARD_VERSION = '0.1.1';
+const CARD_VERSION = '0.1.2';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 
-const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"Anpost","aramex":"Aramex","at":"Austrian Post","au":"Australia Post","bartol":"Bartolini","blp":"Belpost","bluedart":"Blue Dart","bpost":"Bpost","bring":"Bring","canpar":"Canpar","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","china":"China Post","chrono":"Chronopost","cor":"Correos","corbra":"Correios","cp":"Canada Post","ctt":"CTT","cyclpcode":"Cycloon","dachser":"Dachser","dao365":"DAO365","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlnlpcode":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dk":"Post Danmark","dp":"Deutsche Post","dpd":"DPD Germany","dpdat":"DPD Austria","dpdgroup":"DPD Group","dpdie":"DPD Ireland","dpdpoland":"DPD Poland","dpduk":"DPD UK","dsv":"DSV","dtdc":"DTDC India","dx":"DX","dynalogic":"Dynalogic","easyship":"Easyship","econt":"Econt Express","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","ems":"EMS Russian Post","fedex":"FedEx","fedpl":"FedEx Poland","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","geodis":"Geodis","gso":"GLS US","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hung":"Magyar Posta","il":"Israel Post","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","it":"Poste Italiane","jp":"Japan Post","kerry":"Kerry Express","kor":"Korea Post","lp":"La poste (Colissimo)","lv":"Latvijas Pasts","malpos":"Malaysia Post","malta":"MaltaPost","meest":"Meest","mrw":"MRW","myher":"Evri","naqel":"Naqel Express","newp":"Nova Poshta","nor":"Norway Post","nzp":"New Zealand Post","ocs":"OCS Worldwide","ont":"OnTrac","p2g":"Parcel2Go","paack":"Paack","packeta":"Packeta","pandion":"Pandion","pbi":"PBI - Pitney Bowes","phlpost":"Philpost","pilot":"Pilot Freight","planzer":"Planzer","poland":"Poczta Polska","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","ppl":"PPL","prfc":"Parcelforce","puro":"Purolator","px":"4PX","redjep":"Instabox Red je pakketje","relay":"Mondial Relay","rm":"Royal Mail","rp":"Russian Post","sagawa":"Sagawa Express","sch":"DB Schenker","se":"Swedish Post","sendle":"Sendle","seur":"SEUR","sf":"SF Express","sing":"SingPost","slovak":"Slovenská pošta","slv":"Pošta Slovenije","speedpak":"SpeedPAK","star":"StarTrack Express","swiss":"Swiss Post","thai":"Thailand Post","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","postnl":"PostNL","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","tourline":"CTT Express","trnkrpcode":"Trunkrs","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","ukr":"Ukrpost","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","whistl":"Whistl","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
-
-let carriersCache = null, carriersFetchPromise = null;
-
-function fetchCarriers() {
-  if (carriersCache) return Promise.resolve(carriersCache);
-  if (carriersFetchPromise) return carriersFetchPromise;
-  carriersFetchPromise = fetch('https://api.parcel.app/external/supported_carriers.json')
-    .then(r => r.json())
-    .then(d => { carriersCache = d; return d; })
-    .catch(() => { carriersCache = CARRIERS_FALLBACK; return CARRIERS_FALLBACK; });
-  return carriersFetchPromise;
-}
+// Source: https://api.parcel.app/external/supported_carriers.json
+// Carrier names — source: https://api.parcel.app/external/supported_carriers.json
+// Custom additions not in API: dhlnlpcode (DHL Netherlands variant), postnl (direct alias for tntp)
+const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"An Post","apcpli":"APC-PLI","apge":"APG eCommerce","apple":"Apple Store Orders","appleexp":"Apple Express","aquiline":"Aquiline","aramex":"Aramex","arrowxl":"Arrow XL","asendia":"Asendia USA","asendiag":"Asendia","asl":"ASL","asmred":"GLS Spain","at":"Austrian Post","au":"Australia Post","azer":"Azerpost","bartol":"Bartolini","bettert":"Better Trucks","blp":"Belpost","bluecare":"Bluecare Express","bluedart":"Blue Dart","bolg":"Bulgarian Post","bonshaw":"Postmedia Parcel Services","bpost":"Bpost","bring":"Bring","buylogic":"Buylogic","canpar":"Canpar","cdl":"CDL Last Mile","celeritas":"Celeritas","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","chilex":"Chilexpress","china":"China Post","chitchats":"Chit Chats","chrexp":"Correos Express","chrono":"Chronopost","chronop":"Chronopost Portugal","cirro":"Cirro","cjpacket":"CJPacket","colicoli":"Colicoli","colomb":"Colombia post (4-72)","colp":"Collect+","cope":"COPE","cor":"Correos","corbra":"Correios","corm":"Correos de Mexico","corurg":"Correo Uruguayo","coup":"CourierPost","couple":"Couriers Please","cp":"Canada Post","cse":"CSE","ctt":"CTT","cyclpcode":"Cycloon","cypr":"Cyprus Post","dachser":"Dachser","dao365":"DAO365","deliverit":"Deliver-it","dellin":"Delovie Linii","delmas":"Delmas","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlnlpcode":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dimex":"Dimex","direct":"Direct Link","dk":"Post Danmark","doordash":"DoorDash","dp":"Deutsche Post","dpdat":"DPD Austria","dpdfrpcode":"DPD France","dpdgpcode":"DPD Group","dpdie":"DPD Ireland","dpdpcode":"DPD Germany","dpdpoland":"DPD Poland","dpduk":"DPD UK","dpexw":"DPEX Worldwide","dpr":"Deutsche Post Brief","dragonfly":"Dragonfly","dragonnl":"Dragonfly Netherlands","dsv":"DSV","dtdc":"DTDC India","dynalogic":"Dynalogic","dynamex":"Dynamex","easyship":"Easyship","ecms":"ECMS","econt":"Econt Express","ecoscoot":"EcoScooting","edos":"CDEK","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","emps":"Emps","ems":"EMS Russian Post","energia":"TK Energia","envia":"Ontime - Envialia","eshopw":"eShopWorld","estafe":"Estafeta","ets":"ETS Express","fastau":"Fastway AU","fastie":"Fastway Ireland","fastnz":"Fastway NZ","fedex":"FedEx","fedpl":"FedEx Poland","fivepost":"5post","fleetpcode":"FleetOptics","gelpcode":"GEL Express","geniki":"Geniki Taxydromiki","geodis":"Geodis","globalp":"GlobalPost","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","gofo":"GOFO Express","gofofr":"GOFO Express France","gofoit":"GOFO Express Italy","gofonl":"GOFO Express Netherlands","gofous":"GOFO Express US","gover":"General-Overnight","gso":"GLS US","hawai":"Hawaiian Air Cargo","her2mann":"Hermes 2-Mann-Handling","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hrpar":"HR Parcel","hung":"Magyar Posta","ics":"ICS Courier","il":"Israel Post","iloxx":"iloxx","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpespcode":"Inpost Spain","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","intelc":"Dragonfly - Intelcom","inter":"Interlink","ipar":"i-parcel","it":"Poste Italiane","jcex":"JCEX","jde":"JDE","jitsu":"Jitsu","joeyco":"JoeyCo","jordan":"Jordan Post","jp":"Japan Post","keavo":"Keavo","kerry":"Kerry Express","komon":"Komon Express","kor":"Korea Post","koreanair":"Korean Air Cargo","kz":"Kazpost","landmark":"Landmark Global","laser":"OnTrac - Lasership","litva":"Lietuvos paštas","loom":"Loomis Express","lp":"La poste (Colissimo)","lso":"Lone Star Overnight","lv":"Latvijas Pasts","major":"Major Express","malpos":"Malaysia Post","malta":"MaltaPost","matka":"Matkahuolto","meest":"Meest","mengtu":"Mengtu","moldov":"Moldova Post","mrw":"MRW","mscgva":"MSC","myher":"Evri","nacex":"Nacex","naqel":"Naqel Express","nationex":"Nationex","newp":"Nova Poshta","nor":"Norway Post","northline":"Northline","nzp":"New Zealand Post","oca":"OCA Argentina","ocs":"OCS Worldwide","ont":"OnTrac","optima":"Optima","p2g":"Parcel2Go","p4d":"P4D","paack":"Paack","packeta":"Packeta","paczka":"OrlenPaczka","pandion":"Pandion","paquet":"Paquetexpress","parcelpnt":"ParcelPoint","pbi":"PBI - Pitney Bowes","pbt":"PBT New Zealand","pec":"PEC","pfl":"Parcel Freight Logistics","phlpost":"Philpost","pilot":"Pilot Freight","pk":"Pakistan Post","planzer":"Planzer","poland":"Poczta Polska","posthas":"Post Haste","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","postnl":"PostNL","ppl":"PPL","ppx":"PPX (RR Donnelley)","prfc":"Parcelforce","ptl":"P&T Luxembourg","puro":"Purolator","puropost":"PuroPost","px":"4PX","quickpac":"Quickpac","qxpress":"Qxpress","raven":"Raven Force Couriers","redjep":"Instabox Red je pakketje","redpack":"Redpack","relais":"Relais Colis","relay":"Mondial Relay","relaypcode":"Relay UK","rm":"Royal Mail","roadie":"Roadie","rp":"Russian Post","safmar":"Safmarine","safr":"South African Post Office","sagawa":"Sagawa Express","saudi":"Saudi Post","sch":"DB Schenker","se":"Swedish Post","seabour":"Seabourne Logistics","sendle":"Sendle","serbia":"Serbia Post","serpost":"Serpost","seur":"SEUR","sf":"SF Express","sfc":"SendFromChina","shipbob":"ShipBob","shiptor":"Shiptor","sing":"SingPost","skynetm":"Skynet Malaysia","skynetw":"SkyNet Worldwide Express","slovak":"Slovenská pošta","slv":"Pošta Slovenije","smsa":"SMSA Express","speedpak":"SpeedPAK","speedx":"SpeedX","sprintstar":"Sprintstar","star":"StarTrack Express","straight":"Straightship","swiship":"Swiship","swiss":"Swiss Post","syncreon":"Syncreon","sypost":"Sypost - SunYou Logistics","thai":"Thailand Post","tipsac":"Tipsa","tkkit":"TK KIT","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","topyou":"TopYou Logistics","tourline":"CTT Express","transm":"TransMission","trnkrpcode":"Trunkrs","trpack":"TrakPak","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","udsa":"UDS - United Delivery Service","ukr":"Ukrpost","unex":"Unex","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","vasp":"Vasp Expresso","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","walmart":"Walmart Shipping","wanb":"WANB Express","whistl":"Whistl","wish":"Wish Post","wnd":"wnDirect","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
 
 function carrierName(code, carriers) {
   if (!code) return null;
@@ -61,6 +52,7 @@ function getBrandIcon(code) {
 
 const TRANSLATIONS = {
   en: {
+    _locale: 'en',
     days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     today: 'today', tomorrow: 'tomorrow', yesterday: 'yesterday',
@@ -81,11 +73,13 @@ const TRANSLATIONS = {
     no_packages: 'No packages',
     not_found: ' — not found',
     install_integration: 'Install integration',
+    source_repo_link: 'View integration', source_repo_link_desc: 'Open the GitHub page for this integration',
     status: 'Status', status_desc: 'Status line below the name',
     carrier: 'Carrier', carrier_desc: 'Name of the carrier',
     carrier_logo: 'Carrier logo', carrier_logo_desc: 'Carrier logo next to the name.', carrier_logo_link: 'Requires custom-brand-icons',
     carrier_logo_requires_carrier: 'Enable Carrier to use this setting.',
     badge: 'Badge', badge_desc: 'Days until delivery, shown on the icon',
+    details: 'Event history', details_desc: 'Show expandable event timeline per package',
     dim_delivered: 'Dim delivered packages', dim_delivered_desc: 'Show delivered packages at reduced opacity',
     location: 'Location', location_desc: 'Last known location, if available',
     layout: 'Card', single_card: 'Single card', split_cards: 'Separate cards',
@@ -102,15 +96,20 @@ const TRANSLATIONS = {
     parcel_row_label: 'Raw data',
     letterbox: 'Fits in your letterbox',
     rerouted: 'Delivery to a pickup point.',
-    service_point: 'Delivery to a PostNL point.',
+    service_point: (carrier) => 'Delivery to a ' + (carrier || 'pickup') + ' point.',
     entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
     entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
+    entity_hint_dhl_nl_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels. This already includes parcels heading to a DHL ServicePoint.',
+    entity_hint_dhl_nl_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    dhl_nl_incoming_label: 'Incoming (active)', dhl_nl_delivered_label: 'Delivered (history)',
+    alpha_badge: 'Alpha', alpha_badge_desc: 'Based on an unreleased beta of the DHL NL integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
   nl: {
+    _locale: 'nl',
     days: ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],
     months: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],
     today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren',
@@ -131,11 +130,13 @@ const TRANSLATIONS = {
     no_packages: 'Geen pakketjes',
     not_found: ' — niet gevonden',
     install_integration: 'Installeer integratie',
+    source_repo_link: 'Bekijk integratie', source_repo_link_desc: 'Open de GitHub-pagina van deze integratie',
     status: 'Status', status_desc: 'Statusregel onder de naam',
     carrier: 'Bezorgdienst', carrier_desc: 'Naam van de bezorgdienst',
     carrier_logo: 'Bezorgdienst logo', carrier_logo_desc: 'Logo van de bezorgdienst naast de naam.', carrier_logo_link: 'Vereist custom-brand-icons',
     carrier_logo_requires_carrier: 'Zet Bezorgdienst aan om deze instelling te gebruiken.',
     badge: 'Badge', badge_desc: 'Dagen tot levering, weergegeven op het icoon',
+    details: 'Eventgeschiedenis', details_desc: 'Toon uitklapbare tijdlijn per pakket',
     dim_delivered: 'Dim bezorgde pakketten', dim_delivered_desc: 'Bezorgde pakketten met verminderde helderheid weergeven',
     location: 'Locatie', location_desc: 'Laatste bekende locatie, indien beschikbaar',
     layout: 'Kaart', single_card: 'Enkele kaart', split_cards: 'Losse kaarten',
@@ -152,10 +153,14 @@ const TRANSLATIONS = {
     parcel_row_label: 'Ruwe data',
     letterbox: 'Past door de brievenbus',
     rerouted: 'Levering op een afhaalpunt.',
-    service_point: 'Levering op een PostNL-punt.',
+    service_point: (carrier) => 'Levering op een ' + (carrier || 'afhaal') + '-punt.',
     entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
     entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
+    entity_hint_dhl_nl_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels. Dit bevat al pakketten die naar een DHL ServicePoint gaan.',
+    entity_hint_dhl_nl_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    dhl_nl_incoming_label: 'Onderweg (actief)', dhl_nl_delivered_label: 'Bezorgd (geschiedenis)',
+    alpha_badge: 'Alpha', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta van de DHL NL integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
@@ -242,6 +247,16 @@ function parseDate(str) {
   const d = new Date(s); return isNaN(d) ? null : d;
 }
 
+function copyFallback(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(_) {}
+  document.body.removeChild(ta);
+}
+
 function buildParcelUrl(code, tracking) {
   if (!code || !tracking) return null;
   return 'https://parcel.app/webtrack.php?platform=web&type=' + encodeURIComponent(code) + '&code=' + encodeURIComponent(tracking);
@@ -268,7 +283,7 @@ function mkItem(overrides) {
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [],
     ...overrides,
   };
 }
@@ -325,6 +340,84 @@ function collectPostnl(attrs, ctx, mapFn) {
 }
 const hasPostnlAttrs = (a) => a.enroute !== undefined || a.delivered !== undefined;
 
+// DHL NL 2.0 (alpha) — normalised status enum → icon/color/text
+// Source: HA community forum post by ptnijssen, June 19 2026 (BETA 2.0.0 changelog)
+function dhlNlStatus(status) {
+  return ({
+    registered:        { icon: 'mdi:package-variant-closed', color: 'grey'   },
+    in_transit:        { icon: 'mdi:package-variant',        color: 'blue'   },
+    out_for_delivery:  { icon: 'mdi:truck-fast',              color: 'orange' },
+    at_pickup_point:   { icon: 'mdi:store-marker',            color: 'orange' },
+    delivered:         { icon: 'mdi:package-variant-closed-check', color: 'green' },
+    returning:         { icon: 'mdi:package-variant-closed-remove', color: 'red' },
+    problem:           { icon: 'mdi:alert-circle-outline',    color: 'red'    },
+  })[status] || { icon: 'mdi:package-variant', color: 'grey' };
+}
+
+function dhlNlStatusLine(status, tr) {
+  return ({
+    registered:       tr.lang === 'nl' ? 'Zending aangemeld.'         : 'Shipment registered.',
+    in_transit:       tr.lang === 'nl' ? 'Onderweg.'                  : 'In transit.',
+    out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : 'Out for delivery today.',
+    at_pickup_point:  tr.lang === 'nl' ? 'Klaar bij ServicePoint.'    : 'Ready at ServicePoint.',
+    delivered:        tr.lang === 'nl' ? 'Bezorgd.'                   : 'Delivered.',
+    returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : 'Returning to sender.',
+    problem:          tr.lang === 'nl' ? 'Probleem met bezorging.'    : 'Delivery problem.',
+  })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : 'Status unknown'));
+}
+
+// Shared mapper for both dhl_nl_incoming and dhl_nl_delivered — same normalised
+// parcel shape on both sensors (confirmed from sensor.py: both expose a
+// `parcels` attribute via the same coordinator data model).
+function mapDhlNlParcel(p, tr) {
+  const status     = p.status || 'unknown';
+  // `status` is the authoritative signal (the integration itself documents
+  // status as taking precedence over category). In a narrow race condition
+  // the raw `delivered` boolean (category-based) can lag behind a more
+  // specific status like "delivered" — so we don't trust `delivered` at all,
+  // and fall back to whichever date field is actually populated.
+  const delivered  = status === 'delivered';
+  const { icon, color } = dhlNlStatus(status);
+  let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
+
+  if (delivered) {
+    const dateStr = p.delivered_at || p.planned_from; // fallback covers the race condition above
+    if (dateStr) {
+      const d = new Date(dateStr);
+      if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
+    }
+  } else if (p.planned_from) {
+    const from = new Date(p.planned_from);
+    const to   = p.planned_to ? new Date(p.planned_to) : null;
+    if (!isNaN(from)) {
+      deliveryDate = from;
+      slotActive   = to ? isSlotActive(p.planned_from, p.planned_to) : false;
+      slotEnd      = to;
+      const pastSlot = to && !slotActive && new Date() > to;
+      line1 = dhlNlStatusLine(status, tr);
+      if (slotActive || pastSlot) {
+        line2 = formatTimeRemaining(to, tr, from);
+      } else if (to) {
+        line2 = tr.delivery_between(formatDay(from, tr), formatTime(from), formatTime(to));
+      } else {
+        line2 = tr.delivery_on(formatDay(from, tr));
+      }
+    }
+  }
+  if (!line1) line1 = dhlNlStatusLine(status, tr);
+
+  return mkItem({
+    name: (p.sender || '').trim(), line1, line2, icon, color,
+    deliveryDate, slotActive, delivered, slotEnd,
+    carrierCode: 'dhlnl', carrier: 'DHL Netherlands', brandIcon: getBrandIcon('dhlnl'),
+    tapUrl: p.url || null, direction: 'incoming',
+    integration: 'dhl_nl',
+    servicePoint: !!p.pickup,
+    pickupPoint: p.pickup_point || null,
+    trackingCode: p.barcode || null,
+  });
+}
+
 const INTEGRATIONS = {
 
   postnl_incoming: {
@@ -368,11 +461,17 @@ const INTEGRATIONS = {
         deliveryDate, slotActive, delivered: delivered || !!item.delivered,
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'incoming', slotEnd,
+        integration: 'postnl_incoming',
         letterbox: item.shipment_type === 'LetterboxParcel',
         rerouted:     item.delivery_address_type === 'Rerouted',
         servicePoint: item.delivery_address_type === 'ServicePoint',
         // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
-        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
+        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null,
+        events: (item.events || []).map(e => ({
+          date: e.date ? new Date(e.date) : null,
+          text: e.description || e.status || '',
+          location: e.location_code || null,
+        })).filter(e => e.text) });
     },
   },
 
@@ -401,7 +500,12 @@ const INTEGRATIONS = {
         carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
         tapUrl: item.url || null, direction: 'outgoing',
         // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
-        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null });
+        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null,
+        events: (item.events || []).map(e => ({
+          date: e.date ? new Date(e.date) : null,
+          text: e.description || e.status || '',
+          location: e.location_code || null,
+        })).filter(e => e.text) });
     },
   },
 
@@ -467,9 +571,47 @@ const INTEGRATIONS = {
         brandIcon: getBrandIcon(carrierCode),
         tapUrl:    buildParcelUrl(carrierCode, item.tracking_number),
         direction: 'incoming',
+        integration: 'parcel',
         slotEnd:   expectedEndStr ? new Date(expectedEndStr) : null,
-        trackingCode: item.tracking_number || null });
+        trackingCode: item.tracking_number || null,
+        events: (item.events || []).map(e => ({
+          date: e.date ? parseDate(String(e.date)) : null,
+          text: e.event || '',
+          location: e.location || null,
+        })).filter(e => e.text) });
     },
+  },
+
+  dhl_nl_incoming: {
+    group:       'dhl_nl',
+    groupLabel:  'DHL NL',
+    rowLabel:    'Incoming (active)',
+    rowLabelKey: 'dhl_nl_incoming_label',
+    entityHintText: 'entity_hint_dhl_nl_incoming',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-dhl-nl',
+    platforms:   ['dhl_nl'],
+    entityHints: ['incoming_parcels', 'dhl_incoming', 'dhl_ontvang', 'dhl_bezorg'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'outgoing_parcels', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true, // based on an unreleased beta — data shape may still change
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapDhlNlParcel(p, ctx.tr)); },
+  },
+
+  dhl_nl_delivered: {
+    group:       'dhl_nl',
+    groupLabel:  'DHL NL',
+    rowLabel:    'Delivered (history)',
+    rowLabelKey: 'dhl_nl_delivered_label',
+    entityHintText: 'entity_hint_dhl_nl_delivered',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-dhl-nl',
+    platforms:   ['dhl_nl'],
+    entityHints: ['delivered_parcels', 'dhl_delivered', 'dhl_bezorgd'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'outgoing_parcels', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true,
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapDhlNlParcel(p, ctx.tr)); },
   },
 
 };
@@ -485,6 +627,7 @@ function candidatesForType(type, hass) {
   const results = [];
   for (const [entityId, info] of Object.entries(hass.entities || {})) {
     if (!def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) continue;
+    if ((def.excludeHints || []).some(h => entityId.toLowerCase().includes(h))) continue;
     const attrs = hass.states[entityId]?.attributes;
     if (!attrs || !def.hasAttrs(attrs)) continue;
     results.push(entityId);
@@ -536,20 +679,25 @@ function bestTypeByHints(entityId, types) {
 function detectTypeFromHass(entityId, hass) {
   if (!entityId) return null;
   const platform = (hass?.entities?.[entityId]?.platform || '').toLowerCase();
+  const isExcluded = (def) => (def.excludeHints || []).some(h => entityId.toLowerCase().includes(h));
 
   // Narrow to types whose platform matches
-  const platformTypes = Object.entries(INTEGRATIONS)
+  const rawPlatformTypes = Object.entries(INTEGRATIONS)
     .filter(([, def]) => def.platforms?.some(p => platform.includes(p)))
     .map(([type]) => type);
 
-  if (platformTypes.length === 1) return platformTypes[0];
-  if (platformTypes.length > 1) {
-    // Multiple types share this platform — use hints to disambiguate
-    return bestTypeByHints(entityId, platformTypes) || platformTypes[0];
+  if (rawPlatformTypes.length === 0) {
+    // No platform match — try hints across all (non-excluding) types (fallback for missing platform info)
+    return bestTypeByHints(entityId, Object.keys(INTEGRATIONS).filter(t => !isExcluded(INTEGRATIONS[t])));
   }
 
-  // No platform match — try hints across all types (fallback for missing platform info)
-  return bestTypeByHints(entityId, Object.keys(INTEGRATIONS));
+  // Drop types that explicitly exclude this entity (e.g. known subset sensors)
+  const platformTypes = rawPlatformTypes.filter(t => !isExcluded(INTEGRATIONS[t]));
+  if (platformTypes.length === 0) return null; // platform matched, but every candidate type excludes this entity
+  if (platformTypes.length === 1) return platformTypes[0];
+
+  // Multiple types share this platform — use hints to disambiguate
+  return bestTypeByHints(entityId, platformTypes) || platformTypes[0];
 }
 
 // ─── Filtering ────────────────────────────────────────────────────────────────
@@ -601,6 +749,7 @@ const CARD_DEFAULTS = {
     location:       false,
     brand_icon:     true,
     hide_when_empty: false,
+    details:        true,
   },
   filter: {
     state: 'all',
@@ -653,8 +802,35 @@ const CARD_CSS = `
   }
   .carrier ha-icon { flex-shrink: 0; position: relative; top: 0; }
   .carrier-sep { margin: 0 2px; opacity: .5; }
-  .single .row { border-bottom: 1px solid var(--divider-color, rgba(0,0,0,.08)); }
-  .single .row:last-child { border-bottom: none; }
+  .row-right { display: flex; align-items: flex-start; flex: 1; min-width: 0; }
+  .chevron-btn {
+    flex-shrink: 0; align-self: flex-start; background: none; border: none;
+    padding: 2px; margin-left: 4px; margin-top: 1px; cursor: pointer;
+    color: var(--secondary-text-color);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .chevron-btn:hover { background: var(--secondary-background-color); color: var(--primary-text-color); }
+  .row-wrapper { display: block; }
+  .detail {
+    display: none; padding: 0 16px 10px calc(16px + 40px + 14px);
+  }
+  .detail.open { display: block; }
+  .event-item { padding: 6px 0; }
+  .event-item + .event-item { border-top: 1px solid var(--divider-color, rgba(0,0,0,.06)); }
+  .event-meta {
+    font-size: var(--ha-font-size-xs, 11px); color: var(--secondary-text-color);
+    line-height: var(--ha-line-height-condensed, 1.3); margin-bottom: 2px;
+  }
+  .event-text {
+    font-size: var(--ha-font-size-s, 12px); color: var(--primary-text-color);
+    line-height: var(--ha-line-height-condensed, 1.3);
+  }
+  .tracking-code {
+    margin-top: 10px;
+    font-size: var(--ha-font-size-xs, 11px); color: var(--secondary-text-color);
+    cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
+  }
+  .tracking-code:hover { color: var(--primary-color); }
   .split-wrapper { display: flex; flex-direction: column; gap: 8px; }
   .empty {
     padding: 28px 16px; text-align: center; color: var(--secondary-text-color);
@@ -670,7 +846,7 @@ function mk(tag, cls, text) {
   return el;
 }
 
-function renderRow(item, show, tr) {
+function renderRow(item, show, tr, openItems) {
   const hex  = item.color || 'grey';
   const days = (!item.delivered && item.deliveryDate) ? daysUntil(item.deliveryDate) : null;
 
@@ -738,7 +914,11 @@ function renderRow(item, show, tr) {
       ico.setAttribute('icon', 'mdi:store-marker');
       ico.style.setProperty('--mdc-icon-size', '13px');
       carrier.appendChild(ico);
-      carrier.appendChild(document.createTextNode((tr && tr.service_point) || 'Delivery to a PostNL point.'));
+      const shortCarrier = ({ postnl: 'PostNL', dhlnl: 'DHL' })[item.carrierCode] || item.carrier;
+      const spText = (tr && typeof tr.service_point === 'function')
+        ? tr.service_point(shortCarrier)
+        : 'Delivery to a ' + (shortCarrier || 'pickup') + ' point.';
+      carrier.appendChild(document.createTextNode(spText + (item.pickupPoint ? ' (' + item.pickupPoint + ')' : '')));
     }
     content.appendChild(carrier);
   }
@@ -746,7 +926,91 @@ function renderRow(item, show, tr) {
   // Row
   const row = mk('div', 'row' + (item.delivered && show.dim_delivered !== false ? ' delivered' : ''));
   row.appendChild(iconContainer);
-  row.appendChild(content);
+
+  // Right side: content + optional chevron
+  const right = mk('div', 'row-right');
+  right.appendChild(content);
+
+  const hasEvents = item.events && item.events.length > 0 && show.details !== false;
+  let detail = null;
+
+  if (hasEvents) {
+    const chevron = mk('button', 'chevron-btn');
+    const chevIco = document.createElement('ha-icon');
+    chevIco.setAttribute('icon', 'mdi:chevron-down');
+    chevIco.style.setProperty('--mdc-icon-size', '16px');
+    chevron.appendChild(chevIco);
+    right.appendChild(chevron);
+
+    // Detail section
+    detail = mk('div', 'detail');
+    item.events.forEach(e => {
+      const ei = mk('div', 'event-item');
+      // Meta: date + location
+      const metaParts = [];
+      if (e.date && !isNaN(e.date)) {
+        const diff = daysUntil(e.date);
+        let dayLabel;
+        if      (diff ===  0) dayLabel = tr.today;
+        else if (diff === -1) dayLabel = tr.yesterday;
+        else {
+          const d = e.date;
+          dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
+        }
+        const cap = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+        metaParts.push(cap + ' ' + formatTime(e.date));
+      }
+      if (show.location !== false && e.location) metaParts.push(e.location);
+      if (metaParts.length) ei.appendChild(mk('div', 'event-meta', metaParts.join(' · ')));
+      ei.appendChild(mk('div', 'event-text', ensurePeriod(e.text)));
+      detail.appendChild(ei);
+    });
+
+    // Tracking code
+    if (item.trackingCode) {
+      const tc = mk('div', 'tracking-code');
+      const copyIco = document.createElement('ha-icon');
+      copyIco.setAttribute('icon', 'mdi:content-copy');
+      copyIco.style.setProperty('--mdc-icon-size', '13px');
+      const copyLabel = document.createTextNode(item.trackingCode);
+      tc.appendChild(copyIco);
+      tc.appendChild(copyLabel);
+      tc.addEventListener('click', e => {
+        e.stopPropagation();
+        const code = item.trackingCode;
+        const doConfirm = () => { copyIco.setAttribute('icon', 'mdi:check'); setTimeout(() => copyIco.setAttribute('icon', 'mdi:content-copy'), 1500); };
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(code).then(doConfirm).catch(() => {
+            copyFallback(code); doConfirm();
+          });
+        } else {
+          copyFallback(code); doConfirm();
+        }
+      });
+      detail.appendChild(tc);
+    }
+
+    chevron.addEventListener('click', () => {
+      const open = detail.classList.toggle('open');
+      chevIco.setAttribute('icon', open ? 'mdi:chevron-up' : 'mdi:chevron-down');
+    });
+
+    // Restore open state from previous render
+    if (item.trackingCode && openItems?.has(item.trackingCode)) {
+      detail.classList.add('open');
+      chevIco.setAttribute('icon', 'mdi:chevron-up');
+    }
+  }
+
+  row.appendChild(right);
+
+  // Wrap row + detail together so detail sits below the row as a sibling
+  if (hasEvents) {
+    const wrapper = mk('div', 'row-wrapper');
+    wrapper.appendChild(row);
+    wrapper.appendChild(detail);
+    return wrapper;
+  }
   return row;
 }
 
@@ -766,10 +1030,10 @@ class PackageTrackerCard extends HTMLElement {
     this._countdownTimer = null;
     this._built         = false;
     this._cachedItems   = [];
+    this._openItems     = new Set();
   }
 
   connectedCallback() {
-    fetchCarriers().then(c => { this._carriers = c; this._render(); });
     if (!isBrandIconsAvailable()) {
       waitForBrandIcons().then(ok => { if (ok) this._render(); });
     }
@@ -832,12 +1096,27 @@ class PackageTrackerCard extends HTMLElement {
       if (!attrs) continue;
       items.push(...def.collect(attrs, ctx));
     }
-    // Deduplicate by tracking code — first source wins
-    const seen = new Set();
+    // Deduplicate by tracking code — first source wins, but later source may contribute a better name
+    const seen = new Map();
     return items.filter(i => {
       if (!i.trackingCode) return true;
-      if (seen.has(i.trackingCode)) return false;
-      seen.add(i.trackingCode); return true;
+      if (seen.has(i.trackingCode)) {
+        const kept = seen.get(i.trackingCode);
+        if (i.integration === 'parcel' && kept.integration !== 'parcel') {
+          // kept = PostNL, i = Parcel — naam overnemen + events als PostNL die niet heeft
+          if (i.name) kept.name = i.name;
+          if (i.events?.length && !kept.events?.length) kept.events = i.events;
+        } else if (kept.integration === 'parcel' && i.integration !== 'parcel') {
+          // kept = Parcel, i = PostNL — PostNL data winnen, Parcel naam + events bewaren
+          const parcelName = kept.name;
+          const parcelEvents = kept.events;
+          Object.assign(kept, i);
+          if (parcelName) kept.name = parcelName;
+          if (parcelEvents?.length && !kept.events?.length) kept.events = parcelEvents;
+        }
+        return false;
+      }
+      seen.set(i.trackingCode, i); return true;
     });
   }
 
@@ -848,13 +1127,29 @@ class PackageTrackerCard extends HTMLElement {
     return [...items].sort((a, b) => {
       const pa = itemPriority(a, now, today), pb = itemPriority(b, now, today);
       if (pa !== pb) return pa - pb;
+      // Packages with a status/event always above those without
+      const hasA = a.line1 ? 1 : 0, hasB = b.line1 ? 1 : 0;
+      if (hasA !== hasB) return hasB - hasA;
+      const nameA = (a.name || '').toLowerCase(), nameB = (b.name || '').toLowerCase();
+      const nameDiff = nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
       // Within delivered: newest first
-      if (a.delivered) return (b.deliveryDate || 0) - (a.deliveryDate || 0);
+      if (a.delivered) {
+        const dateDiff = (b.deliveryDate || 0) - (a.deliveryDate || 0);
+        if (dateDiff !== 0) return dateDiff;
+        return nameDiff;
+      }
       // Within active/past slot: earliest slot end first
-      if (pa <= 1) return (a.slotEnd || a.deliveryDate || 0) - (b.slotEnd || b.deliveryDate || 0);
+      if (pa <= 1) {
+        const slotDiff = (a.slotEnd || a.deliveryDate || 0) - (b.slotEnd || b.deliveryDate || 0);
+        if (slotDiff !== 0) return slotDiff;
+        return nameDiff;
+      }
       // Within today/future: earliest first
-      if (a.deliveryDate && b.deliveryDate) return a.deliveryDate - b.deliveryDate;
-      return 0;
+      if (a.deliveryDate && b.deliveryDate) {
+        const dateDiff = a.deliveryDate - b.deliveryDate;
+        if (dateDiff !== 0) return dateDiff;
+      }
+      return nameDiff;
     });
   }
 
@@ -890,9 +1185,16 @@ class PackageTrackerCard extends HTMLElement {
     }
 
     const buildRow = (item) => {
-      const row = renderRow(item, show, tr);
+      const row = renderRow(item, show, tr, this._openItems);
       if (item.tapUrl) row.querySelector('.icon-wrap.clickable')
         ?.addEventListener('click', () => window.open(item.tapUrl, '_blank'));
+      // Persist open/close state across renders
+      if (item.trackingCode) {
+        row.querySelector('.chevron-btn')?.addEventListener('click', () => {
+          if (this._openItems.has(item.trackingCode)) this._openItems.delete(item.trackingCode);
+          else this._openItems.add(item.trackingCode);
+        });
+      }
       return row;
     };
 
@@ -955,9 +1257,6 @@ const EDITOR_CSS = `
   .srow-text { flex: 1; min-width: 0; }
   .srow-label { font-size: 14px; color: var(--primary-text-color); display: block; }
   .srow-desc  { font-size: 12px; color: var(--secondary-text-color); display: block; margin-top: 1px; }
-  .srow ha-textfield { width: 110px; --text-field-padding: 0 8px; }
-  .srow ha-textfield::part(root)  { height: 36px; }
-  .srow ha-textfield::part(input) { height: 36px; }
   ha-switch { flex-shrink: 0; }
   .advanced-toggle { background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary-text-color); cursor: pointer; padding: 0; display: flex; align-items: center; gap: 6px; margin-top: 20px; width: 100%; }
   .advanced-toggle ha-icon { --mdc-icon-size: 14px; transition: transform .15s; }
@@ -1074,8 +1373,9 @@ class PackageTrackerCardEditor extends HTMLElement {
     const groups = new Map();
     for (const [type, def] of Object.entries(INTEGRATIONS)) {
       const g = def.group || type;
-      if (!groups.has(g)) groups.set(g, { label: def.groupLabel || g, url: def.url, types: [] });
+      if (!groups.has(g)) groups.set(g, { label: def.groupLabel || g, url: def.url, types: [], alpha: !!def.alpha });
       groups.get(g).types.push(type);
+      if (def.alpha) groups.get(g).alpha = true;
     }
 
     const list = document.createElement('div'); list.className = 'item-list';
@@ -1094,6 +1394,29 @@ class PackageTrackerCardEditor extends HTMLElement {
         textContent: group.label,
         style: 'flex:1;font-size:14px;font-weight:500;color:' + (platformOk || groupActive ? 'var(--primary-text-color)' : 'var(--disabled-color,#9e9e9e)') + ';',
       }));
+
+      if (group.alpha) {
+        const badge = document.createElement('span');
+        badge.textContent = uiTr.alpha_badge;
+        badge.title = uiTr.alpha_badge_desc;
+        badge.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;' +
+          'padding:2px 6px;border-radius:8px;margin-right:8px;flex-shrink:0;' +
+          'background:var(--warning-color,#ff9800);color:#fff;opacity:.85;cursor:help;';
+        header.appendChild(badge);
+      }
+
+      if (group.url && (groupActive || platformOk)) {
+        const repoMatch = group.url.match(/github\.com\/([^/]+\/[^/]+)/);
+        const repoLink = document.createElement('a');
+        repoLink.href = group.url; repoLink.target = '_blank'; repoLink.rel = 'noopener';
+        repoLink.title = uiTr.source_repo_link_desc;
+        repoLink.style.cssText = 'font-size:11px;color:var(--secondary-text-color);white-space:nowrap;' +
+          'margin-right:8px;text-decoration:none;flex-shrink:0;';
+        repoLink.textContent = repoMatch ? repoMatch[1] : uiTr.source_repo_link;
+        repoLink.addEventListener('mouseenter', () => { repoLink.style.textDecoration = 'underline'; });
+        repoLink.addEventListener('mouseleave', () => { repoLink.style.textDecoration = 'none'; });
+        header.appendChild(repoLink);
+      }
 
       const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
 
@@ -1281,16 +1604,21 @@ class PackageTrackerCardEditor extends HTMLElement {
     // Carrier
     advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_carrier }));
     const carrierGroup = document.createElement('div'); carrierGroup.className = 'settings-group';
-    const carrierRow   = document.createElement('div'); carrierRow.className = 'srow';
+    const carrierRow = document.createElement('div'); carrierRow.className = 'srow';
     const ct = document.createElement('div'); ct.className = 'srow-text';
     ct.appendChild(Object.assign(document.createElement('span'), { className: 'srow-label', textContent: uiTr.carrier_code }));
     const cd = Object.assign(document.createElement('span'), { className: 'srow-desc' });
     cd.innerHTML = uiTr.carrier_code_desc + '<a href="https://parcel.app/supported-carriers" target="_blank" rel="noopener" style="color:var(--primary-color)">' + uiTr.all_codes + '</a>';
     ct.appendChild(cd); carrierRow.appendChild(ct);
-    const cf = document.createElement('ha-textfield');
-    cf.value = filter.carrier || ''; cf.setAttribute('placeholder', 'dpdgroup'); cf.style.width = '120px';
-    cf.addEventListener('change', () => upd('carrier', cf.value));
-    carrierRow.appendChild(cf); carrierGroup.appendChild(carrierRow);
+    const carrierForm = document.createElement('ha-form');
+    carrierForm.schema = [{ name: 'carrier', selector: { text: {} } }];
+    carrierForm.data = { carrier: filter.carrier || '' };
+    carrierForm.computeLabel = () => '';
+    carrierForm.style.cssText = 'flex-shrink:0;width:120px;';
+    if (this._hass) carrierForm.hass = this._hass;
+    carrierForm.addEventListener('value-changed', (e) => upd('carrier', e.detail.value?.carrier ?? ''));
+    carrierRow.appendChild(carrierForm);
+    carrierGroup.appendChild(carrierRow);
     advContent.appendChild(carrierGroup);
 
     root.appendChild(advBtn);
@@ -1345,6 +1673,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     }
     showGroup.appendChild(brandRow);
     showGroup.appendChild(mkShow(uiTr.badge,    'badge',    uiTr.badge_desc));
+    showGroup.appendChild(mkShow(uiTr.details,  'details',  uiTr.details_desc));
     showGroup.appendChild(this._mkToggleRow(uiTr.location, show.location === true, uiTr.location_desc,
       (val) => this._fireAndRender({ ...c, show: { ...show, location: val } })
     ));
@@ -1377,15 +1706,21 @@ class PackageTrackerCardEditor extends HTMLElement {
     const tw  = document.createElement('div'); tw.className  = 'srow-text';
     tw.appendChild(Object.assign(document.createElement('span'), { className: 'srow-label', textContent: label }));
     if (description) tw.appendChild(Object.assign(document.createElement('span'), { className: 'srow-desc', textContent: description }));
-    const field = document.createElement('ha-textfield');
-    field.type = 'number';
-    if (min !== null) field.setAttribute('min', min);
-    if (max !== null) field.setAttribute('max', max);
-    if (unit) field.setAttribute('suffix', unit);
-    field.setAttribute('no-spinner', '');
-    field.value = value ?? '';
-    field.addEventListener('change', () => onChange(field.value));
-    row.append(tw, field);
+    const form = document.createElement('ha-form');
+    form.schema = [{ name: 'v', selector: { number: {
+      min: min ?? 0, max: max ?? 9999, step: 1,
+      ...(unit ? { unit_of_measurement: unit } : {}),
+      mode: 'box',
+    } } }];
+    form.data = { v: value ?? 0 };
+    form.computeLabel = () => '';
+    form.style.cssText = 'flex-shrink:0;width:110px;';
+    if (this._hass) form.hass = this._hass;
+    form.addEventListener('value-changed', (e) => {
+      const val = e.detail.value?.v;
+      if (val !== undefined) onChange(val);
+    });
+    row.append(tw, form);
     return row;
   }
 }
@@ -1397,4 +1732,23 @@ window.customCards.push({
   type: 'package-tracker-card', name: 'Package Tracker Card',
   description: 'Track packages from PostNL and Parcel integrations.',
   preview: true,
+  getEntitySuggestion: (hass, entityId) => {
+    const attrs = hass.states[entityId]?.attributes;
+    if (!attrs) return null;
+    // PostNL sensor
+    if (attrs.enroute !== undefined || attrs.delivered !== undefined) {
+      const type = attrs.enroute !== undefined ? 'postnl_incoming' : 'postnl_outgoing';
+      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
+    }
+    // Parcel sensor
+    if (attrs.deliveries !== undefined) {
+      return { config: { type: 'custom:package-tracker-card', sources: [{ type: 'parcel', entity: entityId }] } };
+    }
+    // DHL NL (alpha — based on unreleased beta)
+    if (Array.isArray(attrs.parcels)) {
+      const type = entityId.toLowerCase().includes('delivered') ? 'dhl_nl_delivered' : 'dhl_nl_incoming';
+      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
+    }
+    return null;
+  },
 });
