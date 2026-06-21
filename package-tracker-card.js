@@ -51,7 +51,7 @@ const CARRIERS = [
   { id: "asendia", name: "Asendia USA", icon: null, codes: { parcel: ["asendia"] } },
   { id: "asendiag", name: "Asendia", icon: null, codes: { parcel: ["asendiag"] } },
   { id: "asl", name: "ASL", icon: null, codes: { parcel: ["asl"] } },
-  { id: "asmred", name: "GLS Spain", icon: null, codes: { parcel: ["asmred"] } },
+  { id: "asmred", name: "GLS Spain", icon: "phu:gls-group", codes: { parcel: ["asmred"] } },
   { id: "at", name: "Austrian Post", icon: null, codes: { parcel: ["at"] } },
   { id: "au", name: "Australia Post", icon: null, codes: { parcel: ["au"] } },
   { id: "azer", name: "Azerpost", icon: null, codes: { parcel: ["azer"] } },
@@ -107,20 +107,20 @@ const CARRIERS = [
   { id: "dhlpoland", name: "DHL Poland", icon: null, codes: { parcel: ["dhlpoland"] } },
   { id: "dhlsc", name: "DHL Supply Chain", icon: "phu:dhl", codes: { parcel: ["dhlsc"] } },
   { id: "dhluk", name: "DHL Parcel UK", icon: "phu:dhl", codes: { parcel: ["dhluk"] } },
-  { id: "dicom", name: "GLS Canada", icon: null, codes: { parcel: ["dicom"] } },
+  { id: "dicom", name: "GLS Canada", icon: "phu:gls-group", codes: { parcel: ["dicom"] } },
   { id: "dimex", name: "Dimex", icon: null, codes: { parcel: ["dimex"] } },
   { id: "direct", name: "Direct Link", icon: null, codes: { parcel: ["direct"] } },
   { id: "dk", name: "Post Danmark", icon: null, codes: { parcel: ["dk"] } },
   { id: "doordash", name: "DoorDash", icon: null, codes: { parcel: ["doordash"] } },
   { id: "dp", name: "Deutsche Post", icon: null, codes: { parcel: ["dp"] } },
-  { id: "dpdat", name: "DPD Austria", icon: null, codes: { parcel: ["dpdat"] } },
-  { id: "dpdfrpcode", name: "DPD France", icon: null, codes: { parcel: ["dpdfrpcode"] } },
-  { id: "dpdgpcode", name: "DPD Group", icon: null, codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"] } },
-  { id: "dpdie", name: "DPD Ireland", icon: null, codes: { parcel: ["dpdie"] } },
-  { id: "dpditpcode", name: "DPD Italy (BRT)", icon: null, codes: { parcel: ["dpditpcode"] } },
-  { id: "dpdpcode", name: "DPD Germany", icon: null, codes: { parcel: ["dpdpcode"] } },
-  { id: "dpdpoland", name: "DPD Poland", icon: null, codes: { parcel: ["dpdpoland"] } },
-  { id: "dpduk", name: "DPD UK", icon: null, codes: { parcel: ["dpduk"] } },
+  { id: "dpdat", name: "DPD Austria", icon: "phu:dpd", codes: { parcel: ["dpdat"] } },
+  { id: "dpdfrpcode", name: "DPD France", icon: "phu:dpd", codes: { parcel: ["dpdfrpcode"] } },
+  { id: "dpdgpcode", name: "DPD Group", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"] } },
+  { id: "dpdie", name: "DPD Ireland", icon: "phu:dpd", codes: { parcel: ["dpdie"] } },
+  { id: "dpditpcode", name: "DPD Italy (BRT)", icon: "phu:dpd", codes: { parcel: ["dpditpcode"] } },
+  { id: "dpdpcode", name: "DPD Germany", icon: "phu:dpd", codes: { parcel: ["dpdpcode"] } },
+  { id: "dpdpoland", name: "DPD Poland", icon: "phu:dpd", codes: { parcel: ["dpdpoland"] } },
+  { id: "dpduk", name: "DPD UK", icon: "phu:dpd", codes: { parcel: ["dpduk"] } },
   { id: "dpexw", name: "DPEX Worldwide", icon: null, codes: { parcel: ["dpexw"] } },
   { id: "dpr", name: "Deutsche Post Brief", icon: null, codes: { parcel: ["dpr"] } },
   { id: "dragonfly", name: "Dragonfly", icon: null, codes: { parcel: ["dragonfly"] } },
@@ -155,8 +155,8 @@ const CARRIERS = [
   { id: "geniki", name: "Geniki Taxydromiki", icon: null, codes: { parcel: ["geniki"] } },
   { id: "geodis", name: "Geodis", icon: null, codes: { parcel: ["geodis"] } },
   { id: "globalp", name: "GlobalPost", icon: null, codes: { parcel: ["globalp"] } },
-  { id: "gls", name: "GLS", icon: null, codes: { parcel: ["gls"] } },
-  { id: "glsit", name: "GLS Italy", icon: null, codes: { parcel: ["glsit"] } },
+  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"] } },
+  { id: "glsit", name: "GLS Italy", icon: "phu:gls-group", codes: { parcel: ["glsit"] } },
   { id: "gobolt", name: "GoBolt", icon: null, codes: { parcel: ["gobolt"] } },
   { id: "gofo", name: "GOFO Express", icon: null, codes: { parcel: ["gofo"] } },
   { id: "gofofr", name: "GOFO Express France", icon: null, codes: { parcel: ["gofofr"] } },
@@ -164,7 +164,7 @@ const CARRIERS = [
   { id: "gofonl", name: "GOFO Express Netherlands", icon: null, codes: { parcel: ["gofonl"] } },
   { id: "gofous", name: "GOFO Express US", icon: null, codes: { parcel: ["gofous"] } },
   { id: "gover", name: "General-Overnight", icon: null, codes: { parcel: ["gover"] } },
-  { id: "gso", name: "GLS US", icon: null, codes: { parcel: ["gso"] } },
+  { id: "gso", name: "GLS US", icon: "phu:gls-group", codes: { parcel: ["gso"] } },
   { id: "hawai", name: "Hawaiian Air Cargo", icon: null, codes: { parcel: ["hawai"] } },
   { id: "her2mann", name: "Hermes 2-Mann-Handling", icon: null, codes: { parcel: ["her2mann"] } },
   { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"] } },
@@ -1652,6 +1652,7 @@ const EDITOR_CSS = `
   .source-group { border: 1px solid var(--divider-color); border-radius: 8px; overflow: hidden; }
   .row-action { min-width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .add-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
+  .install-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
   .delete-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--secondary-text-color); }
   .delete-btn:hover { color: var(--error-color, #db4437); }
   .body-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary-text-color); margin: 14px 0 4px; }
@@ -1842,7 +1843,7 @@ class PackageTrackerCardEditor extends HTMLElement {
 
       header.appendChild(Object.assign(document.createElement('div'), { style: 'flex:1;min-width:8px;' }));
 
-      if (group.url && (groupActive || platformOk)) {
+      if (group.url) {
         const repoMatch = group.url.match(/github\.com\/([^/]+\/[^/]+)/);
         const repoLink = document.createElement('a');
         repoLink.href = group.url; repoLink.target = '_blank'; repoLink.rel = 'noopener';
@@ -1883,12 +1884,14 @@ class PackageTrackerCardEditor extends HTMLElement {
         });
         btnWrap.appendChild(addBtn);
       } else if (group.url) {
-        // Not installed — install link
-        const link = document.createElement('a');
-        link.href = group.url; link.target = '_blank'; link.rel = 'noopener';
-        link.style.cssText = 'font-size:12px;color:var(--primary-color);white-space:nowrap;margin-right:4px;';
-        link.textContent = uiTr.install_integration;
-        btnWrap.appendChild(link);
+        // Not installed — distinct icon (not the "+" used for adding a
+        // source) so the visual shape alone signals "install this first".
+        const installBtn = document.createElement('ha-icon-button'); installBtn.className = 'install-btn';
+        installBtn.title = uiTr.install_integration;
+        const installIco = document.createElement('ha-icon'); installIco.setAttribute('icon', 'mdi:download-outline');
+        installBtn.appendChild(installIco);
+        installBtn.addEventListener('click', () => window.open(group.url, '_blank', 'noopener'));
+        btnWrap.appendChild(installBtn);
       }
 
       header.appendChild(btnWrap);
