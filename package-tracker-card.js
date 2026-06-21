@@ -1,29 +1,355 @@
-const CARD_VERSION = '0.1.2';
+const CARD_VERSION = '0.1.5';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
-
-// Source: https://api.parcel.app/external/supported_carriers.json
-// Carrier names — source: https://api.parcel.app/external/supported_carriers.json
-// Custom additions not in API: dhlnlpcode (DHL Netherlands variant), postnl (direct alias for tntp)
-const CARRIERS_FALLBACK = {"abf":"ABF Freight","acs":"ACS Courier","adrexo":"Colis Privé","airroad":"AirRoad","aliex":"AliExpress Shipping (Cainiao)","allegro":"Allegro One","allied":"Allied Express","amshipfr":"Amazon Shipping France","amshipit":"Amazon Shipping Italy","amshipuk":"Amazon Shipping UK","amzlae":"Amazon UAE","amzlau":"Amazon Australia","amzlbe":"Amazon Belgium","amzlbr":"Amazon Brazil","amzlca":"Amazon Canada","amzlde":"Amazon Germany","amzleg":"Amazon Egypt","amzles":"Amazon Spain","amzlfr":"Amazon France","amzlie":"Amazon Ireland","amzlin":"Amazon India","amzlit":"Amazon Italy","amzljp":"Amazon Japan","amzlmx":"Amazon Mexico","amzlnl":"Amazon Netherlands","amzlpl":"Amazon Poland","amzlsa":"Amazon Saudi Arabia","amzlse":"Amazon Sweden","amzlsg":"Amazon Singapore","amzltr":"Amazon Turkey","amzluk":"Amazon UK","amzlus":"Amazon US","anc":"ANC Delivers","anpost":"An Post","apcpli":"APC-PLI","apge":"APG eCommerce","apple":"Apple Store Orders","appleexp":"Apple Express","aquiline":"Aquiline","aramex":"Aramex","arrowxl":"Arrow XL","asendia":"Asendia USA","asendiag":"Asendia","asl":"ASL","asmred":"GLS Spain","at":"Austrian Post","au":"Australia Post","azer":"Azerpost","bartol":"Bartolini","bettert":"Better Trucks","blp":"Belpost","bluecare":"Bluecare Express","bluedart":"Blue Dart","bolg":"Bulgarian Post","bonshaw":"Postmedia Parcel Services","bpost":"Bpost","bring":"Bring","buylogic":"Buylogic","canpar":"Canpar","cdl":"CDL Last Mile","celeritas":"Celeritas","cems":"China Post EMS","ceska":"Česká pošta","ceva":"Ceva Logistics","chilex":"Chilexpress","china":"China Post","chitchats":"Chit Chats","chrexp":"Correos Express","chrono":"Chronopost","chronop":"Chronopost Portugal","cirro":"Cirro","cjpacket":"CJPacket","colicoli":"Colicoli","colomb":"Colombia post (4-72)","colp":"Collect+","cope":"COPE","cor":"Correos","corbra":"Correios","corm":"Correos de Mexico","corurg":"Correo Uruguayo","coup":"CourierPost","couple":"Couriers Please","cp":"Canada Post","cse":"CSE","ctt":"CTT","cyclpcode":"Cycloon","cypr":"Cyprus Post","dachser":"Dachser","dao365":"DAO365","deliverit":"Deliver-it","dellin":"Delovie Linii","delmas":"Delmas","dhl":"DHL Express","dhlfreight":"DHL Freight","dhlgf":"DHL Global Forwarding","dhlgm":"DHL Global Mail","dhlnl":"DHL Netherlands","dhlnlpcode":"DHL Netherlands","dhlpoland":"DHL Poland","dhlsc":"DHL Supply Chain","dhluk":"DHL Parcel UK","dicom":"GLS Canada","dimex":"Dimex","direct":"Direct Link","dk":"Post Danmark","doordash":"DoorDash","dp":"Deutsche Post","dpdat":"DPD Austria","dpdfrpcode":"DPD France","dpdgpcode":"DPD Group","dpdie":"DPD Ireland","dpdpcode":"DPD Germany","dpdpoland":"DPD Poland","dpduk":"DPD UK","dpexw":"DPEX Worldwide","dpr":"Deutsche Post Brief","dragonfly":"Dragonfly","dragonnl":"Dragonfly Netherlands","dsv":"DSV","dtdc":"DTDC India","dynalogic":"Dynalogic","dynamex":"Dynamex","easyship":"Easyship","ecms":"ECMS","econt":"Econt Express","ecoscoot":"EcoScooting","edos":"CDEK","ee":"Eesti Post","elta":"Elta","emirates":"Emirates Post","emps":"Emps","ems":"EMS Russian Post","energia":"TK Energia","envia":"Ontime - Envialia","eshopw":"eShopWorld","estafe":"Estafeta","ets":"ETS Express","fastau":"Fastway AU","fastie":"Fastway Ireland","fastnz":"Fastway NZ","fedex":"FedEx","fedpl":"FedEx Poland","fivepost":"5post","fleetpcode":"FleetOptics","gelpcode":"GEL Express","geniki":"Geniki Taxydromiki","geodis":"Geodis","globalp":"GlobalPost","gls":"GLS","glsit":"GLS Italy","gobolt":"GoBolt","gofo":"GOFO Express","gofofr":"GOFO Express France","gofoit":"GOFO Express Italy","gofonl":"GOFO Express Netherlands","gofous":"GOFO Express US","gover":"General-Overnight","gso":"GLS US","hawai":"Hawaiian Air Cargo","her2mann":"Hermes 2-Mann-Handling","hermes":"Hermes","hk":"Hongkong Post","hr":"Hrvatska pošta","hrpar":"HR Parcel","hung":"Magyar Posta","ics":"ICS Courier","il":"Israel Post","iloxx":"iloxx","imile":"iMile","in":"India Post","indon":"Indonesia Post","inpespcode":"Inpost Spain","inpost":"InPost Paczkomaty","inpostit":"InPost Italy","inpostuk":"InPost UK","intelc":"Dragonfly - Intelcom","inter":"Interlink","ipar":"i-parcel","it":"Poste Italiane","jcex":"JCEX","jde":"JDE","jitsu":"Jitsu","joeyco":"JoeyCo","jordan":"Jordan Post","jp":"Japan Post","keavo":"Keavo","kerry":"Kerry Express","komon":"Komon Express","kor":"Korea Post","koreanair":"Korean Air Cargo","kz":"Kazpost","landmark":"Landmark Global","laser":"OnTrac - Lasership","litva":"Lietuvos paštas","loom":"Loomis Express","lp":"La poste (Colissimo)","lso":"Lone Star Overnight","lv":"Latvijas Pasts","major":"Major Express","malpos":"Malaysia Post","malta":"MaltaPost","matka":"Matkahuolto","meest":"Meest","mengtu":"Mengtu","moldov":"Moldova Post","mrw":"MRW","mscgva":"MSC","myher":"Evri","nacex":"Nacex","naqel":"Naqel Express","nationex":"Nationex","newp":"Nova Poshta","nor":"Norway Post","northline":"Northline","nzp":"New Zealand Post","oca":"OCA Argentina","ocs":"OCS Worldwide","ont":"OnTrac","optima":"Optima","p2g":"Parcel2Go","p4d":"P4D","paack":"Paack","packeta":"Packeta","paczka":"OrlenPaczka","pandion":"Pandion","paquet":"Paquetexpress","parcelpnt":"ParcelPoint","pbi":"PBI - Pitney Bowes","pbt":"PBT New Zealand","pec":"PEC","pfl":"Parcel Freight Logistics","phlpost":"Philpost","pilot":"Pilot Freight","pk":"Pakistan Post","planzer":"Planzer","poland":"Poczta Polska","posthas":"Post Haste","posti":"Posti Finland - Itella","postnord":"Postnord Logistics","postnl":"PostNL","ppl":"PPL","ppx":"PPX (RR Donnelley)","prfc":"Parcelforce","ptl":"P&T Luxembourg","puro":"Purolator","puropost":"PuroPost","px":"4PX","quickpac":"Quickpac","qxpress":"Qxpress","raven":"Raven Force Couriers","redjep":"Instabox Red je pakketje","redpack":"Redpack","relais":"Relais Colis","relay":"Mondial Relay","relaypcode":"Relay UK","rm":"Royal Mail","roadie":"Roadie","rp":"Russian Post","safmar":"Safmarine","safr":"South African Post Office","sagawa":"Sagawa Express","saudi":"Saudi Post","sch":"DB Schenker","se":"Swedish Post","seabour":"Seabourne Logistics","sendle":"Sendle","serbia":"Serbia Post","serpost":"Serpost","seur":"SEUR","sf":"SF Express","sfc":"SendFromChina","shipbob":"ShipBob","shiptor":"Shiptor","sing":"SingPost","skynetm":"Skynet Malaysia","skynetw":"SkyNet Worldwide Express","slovak":"Slovenská pošta","slv":"Pošta Slovenije","smsa":"SMSA Express","speedpak":"SpeedPAK","speedx":"SpeedX","sprintstar":"Sprintstar","star":"StarTrack Express","straight":"Straightship","swiship":"Swiship","swiss":"Swiss Post","syncreon":"Syncreon","sypost":"Sypost - SunYou Logistics","thai":"Thailand Post","tipsac":"Tipsa","tkkit":"TK KIT","tnt":"TNT","tntau":"TNT Australia","tntfr":"TNT France","tntit":"TNT Italy","tntp":"PostNL","tntpit":"PostNL (International)","tntuk":"TNT UK","toll":"Toll - Team Global Express","topyou":"TopYou Logistics","tourline":"CTT Express","transm":"TransMission","trnkrpcode":"Trunkrs","trpack":"TrakPak","turk":"PTT","tw":"Taiwan (Chunghwa) Post","ubi":"UBI Smart Parcel","udsa":"UDS - United Delivery Service","ukr":"Ukrpost","unex":"Unex","uniuni":"UniUni","ups":"UPS","upsmi":"UPS MI","usps":"USPS","vasp":"Vasp Expresso","veho":"Veho","venipak":"Venipak","vinted":"Vinted Go","walmart":"Walmart Shipping","wanb":"WANB Express","whistl":"Whistl","wish":"Wish Post","wnd":"wnDirect","xdp":"XDP","yamato":"Yamato","yanwen":"Yanwen","yodel":"Yodel","yun":"Yun Express","zel":"Zeleris","pholder":"Placeholder Deliveries"};
-
-function carrierName(code, carriers) {
-  if (!code) return null;
-  return (carriers && carriers[code]) || CARRIERS_FALLBACK[code] || code;
+// Canonical carrier list — one entry per real-world carrier, each with its
+// display name, brand icon, and the carrier codes used by every integration
+// that can report packages for it. Add a new integration's code under the
+// SAME carrier entry (e.g. codes.dhl_nl) rather than duplicating name/icon.
+// Source for the 'parcel' codes: https://api.parcel.app/external/supported_carriers.json
+const CARRIERS = [
+  { id: "abf", name: "ABF Freight", icon: null, codes: { parcel: ["abf"] } },
+  { id: "acs", name: "ACS Courier", icon: null, codes: { parcel: ["acs"] } },
+  { id: "adrexo", name: "Colis Privé", icon: null, codes: { parcel: ["adrexo"] } },
+  { id: "airroad", name: "AirRoad", icon: null, codes: { parcel: ["airroad"] } },
+  { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: null, codes: { parcel: ["aliex"] } },
+  { id: "allegro", name: "Allegro One", icon: null, codes: { parcel: ["allegro"] } },
+  { id: "allied", name: "Allied Express", icon: null, codes: { parcel: ["allied"] } },
+  { id: "amshipfr", name: "Amazon Shipping France", icon: null, codes: { parcel: ["amshipfr"] } },
+  { id: "amshipit", name: "Amazon Shipping Italy", icon: null, codes: { parcel: ["amshipit"] } },
+  { id: "amshipuk", name: "Amazon Shipping UK", icon: null, codes: { parcel: ["amshipuk"] } },
+  { id: "amzlae", name: "Amazon UAE", icon: null, codes: { parcel: ["amzlae"] } },
+  { id: "amzlau", name: "Amazon Australia", icon: null, codes: { parcel: ["amzlau"] } },
+  { id: "amzlbe", name: "Amazon Belgium", icon: null, codes: { parcel: ["amzlbe"] } },
+  { id: "amzlbr", name: "Amazon Brazil", icon: null, codes: { parcel: ["amzlbr"] } },
+  { id: "amzlca", name: "Amazon Canada", icon: null, codes: { parcel: ["amzlca"] } },
+  { id: "amzlde", name: "Amazon Germany", icon: null, codes: { parcel: ["amzlde"] } },
+  { id: "amzleg", name: "Amazon Egypt", icon: null, codes: { parcel: ["amzleg"] } },
+  { id: "amzles", name: "Amazon Spain", icon: null, codes: { parcel: ["amzles"] } },
+  { id: "amzlfr", name: "Amazon France", icon: null, codes: { parcel: ["amzlfr"] } },
+  { id: "amzlie", name: "Amazon Ireland", icon: null, codes: { parcel: ["amzlie"] } },
+  { id: "amzlin", name: "Amazon India", icon: null, codes: { parcel: ["amzlin"] } },
+  { id: "amzlit", name: "Amazon Italy", icon: null, codes: { parcel: ["amzlit"] } },
+  { id: "amzljp", name: "Amazon Japan", icon: null, codes: { parcel: ["amzljp"] } },
+  { id: "amzlmx", name: "Amazon Mexico", icon: null, codes: { parcel: ["amzlmx"] } },
+  { id: "amzlnl", name: "Amazon Netherlands", icon: "phu:amazon-logo", codes: { parcel: ["amzlnl"] } },
+  { id: "amzlpl", name: "Amazon Poland", icon: null, codes: { parcel: ["amzlpl"] } },
+  { id: "amzlsa", name: "Amazon Saudi Arabia", icon: null, codes: { parcel: ["amzlsa"] } },
+  { id: "amzlse", name: "Amazon Sweden", icon: null, codes: { parcel: ["amzlse"] } },
+  { id: "amzlsg", name: "Amazon Singapore", icon: null, codes: { parcel: ["amzlsg"] } },
+  { id: "amzltr", name: "Amazon Turkey", icon: null, codes: { parcel: ["amzltr"] } },
+  { id: "amzluk", name: "Amazon UK", icon: null, codes: { parcel: ["amzluk"] } },
+  { id: "amzlus", name: "Amazon US", icon: null, codes: { parcel: ["amzlus"] } },
+  { id: "anc", name: "ANC Delivers", icon: null, codes: { parcel: ["anc"] } },
+  { id: "anpost", name: "An Post", icon: null, codes: { parcel: ["anpost"] } },
+  { id: "apcpli", name: "APC-PLI", icon: null, codes: { parcel: ["apcpli"] } },
+  { id: "apge", name: "APG eCommerce", icon: null, codes: { parcel: ["apge"] } },
+  { id: "apple", name: "Apple Store Orders", icon: null, codes: { parcel: ["apple"] } },
+  { id: "appleexp", name: "Apple Express", icon: null, codes: { parcel: ["appleexp"] } },
+  { id: "aquiline", name: "Aquiline", icon: null, codes: { parcel: ["aquiline"] } },
+  { id: "aramex", name: "Aramex", icon: null, codes: { parcel: ["aramex"] } },
+  { id: "arrowxl", name: "Arrow XL", icon: null, codes: { parcel: ["arrowxl"] } },
+  { id: "asendia", name: "Asendia USA", icon: null, codes: { parcel: ["asendia"] } },
+  { id: "asendiag", name: "Asendia", icon: null, codes: { parcel: ["asendiag"] } },
+  { id: "asl", name: "ASL", icon: null, codes: { parcel: ["asl"] } },
+  { id: "asmred", name: "GLS Spain", icon: null, codes: { parcel: ["asmred"] } },
+  { id: "at", name: "Austrian Post", icon: null, codes: { parcel: ["at"] } },
+  { id: "au", name: "Australia Post", icon: null, codes: { parcel: ["au"] } },
+  { id: "azer", name: "Azerpost", icon: null, codes: { parcel: ["azer"] } },
+  { id: "bartol", name: "Bartolini", icon: null, codes: { parcel: ["bartol"] } },
+  { id: "bettert", name: "Better Trucks", icon: null, codes: { parcel: ["bettert"] } },
+  { id: "blp", name: "Belpost", icon: null, codes: { parcel: ["blp"] } },
+  { id: "bluecare", name: "Bluecare Express", icon: null, codes: { parcel: ["bluecare"] } },
+  { id: "bluedart", name: "Blue Dart", icon: null, codes: { parcel: ["bluedart"] } },
+  { id: "bolg", name: "Bulgarian Post", icon: null, codes: { parcel: ["bolg"] } },
+  { id: "bonshaw", name: "Postmedia Parcel Services", icon: null, codes: { parcel: ["bonshaw"] } },
+  { id: "bpost", name: "Bpost", icon: null, codes: { parcel: ["bpost"] } },
+  { id: "bring", name: "Bring", icon: null, codes: { parcel: ["bring"] } },
+  { id: "buylogic", name: "Buylogic", icon: null, codes: { parcel: ["buylogic"] } },
+  { id: "canpar", name: "Canpar", icon: null, codes: { parcel: ["canpar"] } },
+  { id: "cdl", name: "CDL Last Mile", icon: null, codes: { parcel: ["cdl"] } },
+  { id: "celeritas", name: "Celeritas", icon: null, codes: { parcel: ["celeritas"] } },
+  { id: "cems", name: "China Post EMS", icon: null, codes: { parcel: ["cems"] } },
+  { id: "ceska", name: "Česká pošta", icon: null, codes: { parcel: ["ceska"] } },
+  { id: "ceva", name: "Ceva Logistics", icon: null, codes: { parcel: ["ceva"] } },
+  { id: "chilex", name: "Chilexpress", icon: null, codes: { parcel: ["chilex"] } },
+  { id: "china", name: "China Post", icon: null, codes: { parcel: ["china"] } },
+  { id: "chitchats", name: "Chit Chats", icon: null, codes: { parcel: ["chitchats"] } },
+  { id: "chrexp", name: "Correos Express", icon: null, codes: { parcel: ["chrexp"] } },
+  { id: "chrono", name: "Chronopost", icon: null, codes: { parcel: ["chrono"] } },
+  { id: "chronop", name: "Chronopost Portugal", icon: null, codes: { parcel: ["chronop"] } },
+  { id: "cirro", name: "Cirro", icon: null, codes: { parcel: ["cirro"] } },
+  { id: "cjpacket", name: "CJPacket", icon: null, codes: { parcel: ["cjpacket"] } },
+  { id: "colicoli", name: "Colicoli", icon: null, codes: { parcel: ["colicoli"] } },
+  { id: "colomb", name: "Colombia post (4-72)", icon: null, codes: { parcel: ["colomb"] } },
+  { id: "colp", name: "Collect+", icon: null, codes: { parcel: ["colp"] } },
+  { id: "cope", name: "COPE", icon: null, codes: { parcel: ["cope"] } },
+  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"] } },
+  { id: "corbra", name: "Correios", icon: null, codes: { parcel: ["corbra"] } },
+  { id: "corm", name: "Correos de Mexico", icon: null, codes: { parcel: ["corm"] } },
+  { id: "corurg", name: "Correo Uruguayo", icon: null, codes: { parcel: ["corurg"] } },
+  { id: "coup", name: "CourierPost", icon: null, codes: { parcel: ["coup"] } },
+  { id: "couple", name: "Couriers Please", icon: null, codes: { parcel: ["couple"] } },
+  { id: "cp", name: "Canada Post", icon: null, codes: { parcel: ["cp"] } },
+  { id: "cse", name: "CSE", icon: null, codes: { parcel: ["cse"] } },
+  { id: "ctt", name: "CTT", icon: null, codes: { parcel: ["ctt"] } },
+  { id: "cyclpcode", name: "Cycloon", icon: null, codes: { parcel: ["cyclpcode"] } },
+  { id: "cypr", name: "Cyprus Post", icon: null, codes: { parcel: ["cypr"] } },
+  { id: "dachser", name: "Dachser", icon: null, codes: { parcel: ["dachser"] } },
+  { id: "dao365", name: "DAO365", icon: null, codes: { parcel: ["dao365"] } },
+  { id: "deliverit", name: "Deliver-it", icon: null, codes: { parcel: ["deliverit"] } },
+  { id: "dellin", name: "Delovie Linii", icon: null, codes: { parcel: ["dellin"] } },
+  { id: "delmas", name: "Delmas", icon: null, codes: { parcel: ["delmas"] } },
+  { id: "dhl", name: "DHL Express", icon: "phu:dhl", codes: { parcel: ["dhl"] } },
+  { id: "dhlfreight", name: "DHL Freight", icon: "phu:dhl", codes: { parcel: ["dhlfreight"] } },
+  { id: "dhlgf", name: "DHL Global Forwarding", icon: null, codes: { parcel: ["dhlgf"] } },
+  { id: "dhlgm", name: "DHL Global Mail", icon: "phu:dhl", codes: { parcel: ["dhlgm"] } },
+  { id: "dhlnl", name: "DHL Netherlands", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"] } },
+  { id: "dhlpoland", name: "DHL Poland", icon: null, codes: { parcel: ["dhlpoland"] } },
+  { id: "dhlsc", name: "DHL Supply Chain", icon: "phu:dhl", codes: { parcel: ["dhlsc"] } },
+  { id: "dhluk", name: "DHL Parcel UK", icon: "phu:dhl", codes: { parcel: ["dhluk"] } },
+  { id: "dicom", name: "GLS Canada", icon: null, codes: { parcel: ["dicom"] } },
+  { id: "dimex", name: "Dimex", icon: null, codes: { parcel: ["dimex"] } },
+  { id: "direct", name: "Direct Link", icon: null, codes: { parcel: ["direct"] } },
+  { id: "dk", name: "Post Danmark", icon: null, codes: { parcel: ["dk"] } },
+  { id: "doordash", name: "DoorDash", icon: null, codes: { parcel: ["doordash"] } },
+  { id: "dp", name: "Deutsche Post", icon: null, codes: { parcel: ["dp"] } },
+  { id: "dpdat", name: "DPD Austria", icon: null, codes: { parcel: ["dpdat"] } },
+  { id: "dpdfrpcode", name: "DPD France", icon: null, codes: { parcel: ["dpdfrpcode"] } },
+  { id: "dpdgpcode", name: "DPD Group", icon: null, codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"] } },
+  { id: "dpdie", name: "DPD Ireland", icon: null, codes: { parcel: ["dpdie"] } },
+  { id: "dpditpcode", name: "DPD Italy (BRT)", icon: null, codes: { parcel: ["dpditpcode"] } },
+  { id: "dpdpcode", name: "DPD Germany", icon: null, codes: { parcel: ["dpdpcode"] } },
+  { id: "dpdpoland", name: "DPD Poland", icon: null, codes: { parcel: ["dpdpoland"] } },
+  { id: "dpduk", name: "DPD UK", icon: null, codes: { parcel: ["dpduk"] } },
+  { id: "dpexw", name: "DPEX Worldwide", icon: null, codes: { parcel: ["dpexw"] } },
+  { id: "dpr", name: "Deutsche Post Brief", icon: null, codes: { parcel: ["dpr"] } },
+  { id: "dragonfly", name: "Dragonfly", icon: null, codes: { parcel: ["dragonfly"] } },
+  { id: "dragonnl", name: "Dragonfly Netherlands", icon: null, codes: { parcel: ["dragonnl"] } },
+  { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
+  { id: "dtdc", name: "DTDC India", icon: null, codes: { parcel: ["dtdc"] } },
+  { id: "dynalogic", name: "Dynalogic", icon: null, codes: { parcel: ["dynalogic"] } },
+  { id: "dynamex", name: "Dynamex", icon: null, codes: { parcel: ["dynamex"] } },
+  { id: "easyship", name: "Easyship", icon: null, codes: { parcel: ["easyship"] } },
+  { id: "ecms", name: "ECMS", icon: null, codes: { parcel: ["ecms"] } },
+  { id: "econt", name: "Econt Express", icon: null, codes: { parcel: ["econt"] } },
+  { id: "ecoscoot", name: "EcoScooting", icon: null, codes: { parcel: ["ecoscoot"] } },
+  { id: "edos", name: "CDEK", icon: null, codes: { parcel: ["edos"] } },
+  { id: "ee", name: "Eesti Post", icon: null, codes: { parcel: ["ee"] } },
+  { id: "elta", name: "Elta", icon: null, codes: { parcel: ["elta"] } },
+  { id: "emirates", name: "Emirates Post", icon: null, codes: { parcel: ["emirates"] } },
+  { id: "emps", name: "Emps", icon: null, codes: { parcel: ["emps"] } },
+  { id: "ems", name: "EMS Russian Post", icon: null, codes: { parcel: ["ems"] } },
+  { id: "energia", name: "TK Energia", icon: null, codes: { parcel: ["energia"] } },
+  { id: "envia", name: "Ontime - Envialia", icon: null, codes: { parcel: ["envia"] } },
+  { id: "eshopw", name: "eShopWorld", icon: null, codes: { parcel: ["eshopw"] } },
+  { id: "estafe", name: "Estafeta", icon: null, codes: { parcel: ["estafe"] } },
+  { id: "ets", name: "ETS Express", icon: null, codes: { parcel: ["ets"] } },
+  { id: "fastau", name: "Fastway AU", icon: null, codes: { parcel: ["fastau"] } },
+  { id: "fastie", name: "Fastway Ireland", icon: null, codes: { parcel: ["fastie"] } },
+  { id: "fastnz", name: "Fastway NZ", icon: null, codes: { parcel: ["fastnz"] } },
+  { id: "fedex", name: "FedEx", icon: "phu:fedex", codes: { parcel: ["fedex"] } },
+  { id: "fedpl", name: "FedEx Poland", icon: "phu:fedex", codes: { parcel: ["fedpl"] } },
+  { id: "fivepost", name: "5post", icon: null, codes: { parcel: ["fivepost"] } },
+  { id: "fleetpcode", name: "FleetOptics", icon: null, codes: { parcel: ["fleetpcode"] } },
+  { id: "gelpcode", name: "GEL Express", icon: null, codes: { parcel: ["gelpcode"] } },
+  { id: "geniki", name: "Geniki Taxydromiki", icon: null, codes: { parcel: ["geniki"] } },
+  { id: "geodis", name: "Geodis", icon: null, codes: { parcel: ["geodis"] } },
+  { id: "globalp", name: "GlobalPost", icon: null, codes: { parcel: ["globalp"] } },
+  { id: "gls", name: "GLS", icon: null, codes: { parcel: ["gls"] } },
+  { id: "glsit", name: "GLS Italy", icon: null, codes: { parcel: ["glsit"] } },
+  { id: "gobolt", name: "GoBolt", icon: null, codes: { parcel: ["gobolt"] } },
+  { id: "gofo", name: "GOFO Express", icon: null, codes: { parcel: ["gofo"] } },
+  { id: "gofofr", name: "GOFO Express France", icon: null, codes: { parcel: ["gofofr"] } },
+  { id: "gofoit", name: "GOFO Express Italy", icon: null, codes: { parcel: ["gofoit"] } },
+  { id: "gofonl", name: "GOFO Express Netherlands", icon: null, codes: { parcel: ["gofonl"] } },
+  { id: "gofous", name: "GOFO Express US", icon: null, codes: { parcel: ["gofous"] } },
+  { id: "gover", name: "General-Overnight", icon: null, codes: { parcel: ["gover"] } },
+  { id: "gso", name: "GLS US", icon: null, codes: { parcel: ["gso"] } },
+  { id: "hawai", name: "Hawaiian Air Cargo", icon: null, codes: { parcel: ["hawai"] } },
+  { id: "her2mann", name: "Hermes 2-Mann-Handling", icon: null, codes: { parcel: ["her2mann"] } },
+  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"] } },
+  { id: "hk", name: "Hongkong Post", icon: null, codes: { parcel: ["hk"] } },
+  { id: "hr", name: "Hrvatska pošta", icon: null, codes: { parcel: ["hr"] } },
+  { id: "hrpar", name: "HR Parcel", icon: null, codes: { parcel: ["hrpar"] } },
+  { id: "hung", name: "Magyar Posta", icon: null, codes: { parcel: ["hung"] } },
+  { id: "ics", name: "ICS Courier", icon: null, codes: { parcel: ["ics"] } },
+  { id: "il", name: "Israel Post", icon: null, codes: { parcel: ["il"] } },
+  { id: "iloxx", name: "iloxx", icon: null, codes: { parcel: ["iloxx"] } },
+  { id: "imile", name: "iMile", icon: null, codes: { parcel: ["imile"] } },
+  { id: "in", name: "India Post", icon: null, codes: { parcel: ["in"] } },
+  { id: "indon", name: "Indonesia Post", icon: null, codes: { parcel: ["indon"] } },
+  { id: "inpespcode", name: "Inpost Spain", icon: null, codes: { parcel: ["inpespcode"] } },
+  { id: "inpost", name: "InPost Paczkomaty", icon: null, codes: { parcel: ["inpost"] } },
+  { id: "inpostit", name: "InPost Italy", icon: null, codes: { parcel: ["inpostit"] } },
+  { id: "inpostuk", name: "InPost UK", icon: null, codes: { parcel: ["inpostuk"] } },
+  { id: "intelc", name: "Dragonfly - Intelcom", icon: null, codes: { parcel: ["intelc"] } },
+  { id: "inter", name: "Interlink", icon: null, codes: { parcel: ["inter"] } },
+  { id: "ipar", name: "i-parcel", icon: null, codes: { parcel: ["ipar"] } },
+  { id: "it", name: "Poste Italiane", icon: null, codes: { parcel: ["it"] } },
+  { id: "jcex", name: "JCEX", icon: null, codes: { parcel: ["jcex"] } },
+  { id: "jde", name: "JDE", icon: null, codes: { parcel: ["jde"] } },
+  { id: "jitsu", name: "Jitsu", icon: null, codes: { parcel: ["jitsu"] } },
+  { id: "joeyco", name: "JoeyCo", icon: null, codes: { parcel: ["joeyco"] } },
+  { id: "jordan", name: "Jordan Post", icon: null, codes: { parcel: ["jordan"] } },
+  { id: "jp", name: "Japan Post", icon: null, codes: { parcel: ["jp"] } },
+  { id: "keavo", name: "Keavo", icon: null, codes: { parcel: ["keavo"] } },
+  { id: "kerry", name: "Kerry Express", icon: null, codes: { parcel: ["kerry"] } },
+  { id: "komon", name: "Komon Express", icon: null, codes: { parcel: ["komon"] } },
+  { id: "kor", name: "Korea Post", icon: null, codes: { parcel: ["kor"] } },
+  { id: "koreanair", name: "Korean Air Cargo", icon: null, codes: { parcel: ["koreanair"] } },
+  { id: "kz", name: "Kazpost", icon: null, codes: { parcel: ["kz"] } },
+  { id: "landmark", name: "Landmark Global", icon: null, codes: { parcel: ["landmark"] } },
+  { id: "laser", name: "OnTrac - Lasership", icon: null, codes: { parcel: ["laser"] } },
+  { id: "litva", name: "Lietuvos paštas", icon: null, codes: { parcel: ["litva"] } },
+  { id: "loom", name: "Loomis Express", icon: null, codes: { parcel: ["loom"] } },
+  { id: "lp", name: "La poste (Colissimo)", icon: null, codes: { parcel: ["lp"] } },
+  { id: "lso", name: "Lone Star Overnight", icon: null, codes: { parcel: ["lso"] } },
+  { id: "lv", name: "Latvijas Pasts", icon: null, codes: { parcel: ["lv"] } },
+  { id: "major", name: "Major Express", icon: null, codes: { parcel: ["major"] } },
+  { id: "malpos", name: "Malaysia Post", icon: null, codes: { parcel: ["malpos"] } },
+  { id: "malta", name: "MaltaPost", icon: null, codes: { parcel: ["malta"] } },
+  { id: "matka", name: "Matkahuolto", icon: null, codes: { parcel: ["matka"] } },
+  { id: "meest", name: "Meest", icon: null, codes: { parcel: ["meest"] } },
+  { id: "mengtu", name: "Mengtu", icon: null, codes: { parcel: ["mengtu"] } },
+  { id: "moldov", name: "Moldova Post", icon: null, codes: { parcel: ["moldov"] } },
+  { id: "mrw", name: "MRW", icon: null, codes: { parcel: ["mrw"] } },
+  { id: "mscgva", name: "MSC", icon: null, codes: { parcel: ["mscgva"] } },
+  { id: "myher", name: "Evri", icon: null, codes: { parcel: ["myher"] } },
+  { id: "nacex", name: "Nacex", icon: null, codes: { parcel: ["nacex"] } },
+  { id: "naqel", name: "Naqel Express", icon: null, codes: { parcel: ["naqel"] } },
+  { id: "nationex", name: "Nationex", icon: null, codes: { parcel: ["nationex"] } },
+  { id: "newp", name: "Nova Poshta", icon: null, codes: { parcel: ["newp"] } },
+  { id: "nor", name: "Norway Post", icon: null, codes: { parcel: ["nor"] } },
+  { id: "northline", name: "Northline", icon: null, codes: { parcel: ["northline"] } },
+  { id: "nzp", name: "New Zealand Post", icon: null, codes: { parcel: ["nzp"] } },
+  { id: "oca", name: "OCA Argentina", icon: null, codes: { parcel: ["oca"] } },
+  { id: "ocs", name: "OCS Worldwide", icon: null, codes: { parcel: ["ocs"] } },
+  { id: "ont", name: "OnTrac", icon: null, codes: { parcel: ["ont"] } },
+  { id: "optima", name: "Optima", icon: null, codes: { parcel: ["optima"] } },
+  { id: "p2g", name: "Parcel2Go", icon: null, codes: { parcel: ["p2g"] } },
+  { id: "p4d", name: "P4D", icon: null, codes: { parcel: ["p4d"] } },
+  { id: "paack", name: "Paack", icon: null, codes: { parcel: ["paack"] } },
+  { id: "packeta", name: "Packeta", icon: null, codes: { parcel: ["packeta"] } },
+  { id: "paczka", name: "OrlenPaczka", icon: null, codes: { parcel: ["paczka"] } },
+  { id: "pandion", name: "Pandion", icon: null, codes: { parcel: ["pandion"] } },
+  { id: "paquet", name: "Paquetexpress", icon: null, codes: { parcel: ["paquet"] } },
+  { id: "parcelpnt", name: "ParcelPoint", icon: null, codes: { parcel: ["parcelpnt"] } },
+  { id: "pbi", name: "PBI - Pitney Bowes", icon: null, codes: { parcel: ["pbi"] } },
+  { id: "pbt", name: "PBT New Zealand", icon: null, codes: { parcel: ["pbt"] } },
+  { id: "pec", name: "PEC", icon: null, codes: { parcel: ["pec"] } },
+  { id: "pfl", name: "Parcel Freight Logistics", icon: null, codes: { parcel: ["pfl"] } },
+  { id: "phlpost", name: "Philpost", icon: null, codes: { parcel: ["phlpost"] } },
+  { id: "pilot", name: "Pilot Freight", icon: null, codes: { parcel: ["pilot"] } },
+  { id: "pk", name: "Pakistan Post", icon: null, codes: { parcel: ["pk"] } },
+  { id: "planzer", name: "Planzer", icon: null, codes: { parcel: ["planzer"] } },
+  { id: "poland", name: "Poczta Polska", icon: null, codes: { parcel: ["poland"] } },
+  { id: "posthas", name: "Post Haste", icon: null, codes: { parcel: ["posthas"] } },
+  { id: "posti", name: "Posti Finland - Itella", icon: null, codes: { parcel: ["posti"] } },
+  { id: "postnord", name: "Postnord Logistics", icon: null, codes: { parcel: ["postnord"] } },
+  { id: "ppl", name: "PPL", icon: null, codes: { parcel: ["ppl"] } },
+  { id: "ppx", name: "PPX (RR Donnelley)", icon: null, codes: { parcel: ["ppx"] } },
+  { id: "prfc", name: "Parcelforce", icon: null, codes: { parcel: ["prfc"] } },
+  { id: "ptl", name: "P&T Luxembourg", icon: null, codes: { parcel: ["ptl"] } },
+  { id: "puro", name: "Purolator", icon: null, codes: { parcel: ["puro"] } },
+  { id: "puropost", name: "PuroPost", icon: null, codes: { parcel: ["puropost"] } },
+  { id: "px", name: "4PX", icon: null, codes: { parcel: ["px"] } },
+  { id: "quickpac", name: "Quickpac", icon: null, codes: { parcel: ["quickpac"] } },
+  { id: "qxpress", name: "Qxpress", icon: null, codes: { parcel: ["qxpress"] } },
+  { id: "raven", name: "Raven Force Couriers", icon: null, codes: { parcel: ["raven"] } },
+  { id: "redjep", name: "Instabox Red je pakketje", icon: null, codes: { parcel: ["redjep"] } },
+  { id: "redpack", name: "Redpack", icon: null, codes: { parcel: ["redpack"] } },
+  { id: "relais", name: "Relais Colis", icon: null, codes: { parcel: ["relais"] } },
+  { id: "relay", name: "Mondial Relay", icon: null, codes: { parcel: ["relay"] } },
+  { id: "relaypcode", name: "Relay UK", icon: null, codes: { parcel: ["relaypcode"] } },
+  { id: "rm", name: "Royal Mail", icon: "phu:royalmail", codes: { parcel: ["rm"] } },
+  { id: "roadie", name: "Roadie", icon: null, codes: { parcel: ["roadie"] } },
+  { id: "rp", name: "Russian Post", icon: null, codes: { parcel: ["rp"] } },
+  { id: "safmar", name: "Safmarine", icon: null, codes: { parcel: ["safmar"] } },
+  { id: "safr", name: "South African Post Office", icon: null, codes: { parcel: ["safr"] } },
+  { id: "sagawa", name: "Sagawa Express", icon: null, codes: { parcel: ["sagawa"] } },
+  { id: "saudi", name: "Saudi Post", icon: null, codes: { parcel: ["saudi"] } },
+  { id: "sch", name: "DB Schenker", icon: null, codes: { parcel: ["sch"] } },
+  { id: "se", name: "Swedish Post", icon: null, codes: { parcel: ["se"] } },
+  { id: "seabour", name: "Seabourne Logistics", icon: null, codes: { parcel: ["seabour"] } },
+  { id: "serbia", name: "Serbia Post", icon: null, codes: { parcel: ["serbia"] } },
+  { id: "serpost", name: "Serpost", icon: null, codes: { parcel: ["serpost"] } },
+  { id: "seur", name: "SEUR", icon: null, codes: { parcel: ["seur"] } },
+  { id: "sf", name: "SF Express", icon: null, codes: { parcel: ["sf"] } },
+  { id: "sfc", name: "SendFromChina", icon: null, codes: { parcel: ["sfc"] } },
+  { id: "shipbob", name: "ShipBob", icon: null, codes: { parcel: ["shipbob"] } },
+  { id: "shiptor", name: "Shiptor", icon: null, codes: { parcel: ["shiptor"] } },
+  { id: "sing", name: "SingPost", icon: null, codes: { parcel: ["sing"] } },
+  { id: "skynetm", name: "Skynet Malaysia", icon: null, codes: { parcel: ["skynetm"] } },
+  { id: "skynetw", name: "SkyNet Worldwide Express", icon: null, codes: { parcel: ["skynetw"] } },
+  { id: "slovak", name: "Slovenská pošta", icon: null, codes: { parcel: ["slovak"] } },
+  { id: "slv", name: "Pošta Slovenije", icon: null, codes: { parcel: ["slv"] } },
+  { id: "smsa", name: "SMSA Express", icon: null, codes: { parcel: ["smsa"] } },
+  { id: "speedpak", name: "SpeedPAK", icon: null, codes: { parcel: ["speedpak"] } },
+  { id: "speedx", name: "SpeedX", icon: null, codes: { parcel: ["speedx"] } },
+  { id: "sprintstar", name: "Sprintstar", icon: null, codes: { parcel: ["sprintstar"] } },
+  { id: "star", name: "StarTrack Express", icon: null, codes: { parcel: ["star"] } },
+  { id: "straight", name: "Straightship", icon: null, codes: { parcel: ["straight"] } },
+  { id: "swiship", name: "Swiship", icon: null, codes: { parcel: ["swiship"] } },
+  { id: "swiss", name: "Swiss Post", icon: null, codes: { parcel: ["swiss"] } },
+  { id: "syncreon", name: "Syncreon", icon: null, codes: { parcel: ["syncreon"] } },
+  { id: "sypost", name: "Sypost - SunYou Logistics", icon: null, codes: { parcel: ["sypost"] } },
+  { id: "thai", name: "Thailand Post", icon: null, codes: { parcel: ["thai"] } },
+  { id: "tipsac", name: "Tipsa", icon: null, codes: { parcel: ["tipsac"] } },
+  { id: "tkkit", name: "TK KIT", icon: null, codes: { parcel: ["tkkit"] } },
+  { id: "tnt", name: "TNT", icon: null, codes: { parcel: ["tnt"] } },
+  { id: "tntau", name: "TNT Australia", icon: null, codes: { parcel: ["tntau"] } },
+  { id: "tntfr", name: "TNT France", icon: null, codes: { parcel: ["tntfr"] } },
+  { id: "tntit", name: "TNT Italy", icon: null, codes: { parcel: ["tntit"] } },
+  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"] } },
+  { id: "tntpit", name: "PostNL (International)", icon: "phu:postnl", codes: { parcel: ["tntpit"] } },
+  { id: "tntuk", name: "TNT UK", icon: null, codes: { parcel: ["tntuk"] } },
+  { id: "toll", name: "Toll - Team Global Express", icon: null, codes: { parcel: ["toll"] } },
+  { id: "topyou", name: "TopYou Logistics", icon: null, codes: { parcel: ["topyou"] } },
+  { id: "tourline", name: "CTT Express", icon: null, codes: { parcel: ["tourline"] } },
+  { id: "transm", name: "TransMission", icon: null, codes: { parcel: ["transm"] } },
+  { id: "trnkrpcode", name: "Trunkrs", icon: null, codes: { parcel: ["trnkrpcode"] } },
+  { id: "trpack", name: "TrakPak", icon: null, codes: { parcel: ["trpack"] } },
+  { id: "turk", name: "PTT", icon: null, codes: { parcel: ["turk"] } },
+  { id: "tw", name: "Taiwan (Chunghwa) Post", icon: null, codes: { parcel: ["tw"] } },
+  { id: "ubi", name: "UBI Smart Parcel", icon: null, codes: { parcel: ["ubi"] } },
+  { id: "udsa", name: "UDS - United Delivery Service", icon: null, codes: { parcel: ["udsa"] } },
+  { id: "ukr", name: "Ukrpost", icon: null, codes: { parcel: ["ukr"] } },
+  { id: "unex", name: "Unex", icon: null, codes: { parcel: ["unex"] } },
+  { id: "uniuni", name: "UniUni", icon: null, codes: { parcel: ["uniuni"] } },
+  { id: "ups", name: "UPS", icon: "phu:ups-dlv", codes: { parcel: ["ups"] } },
+  { id: "upsmi", name: "UPS MI", icon: "phu:ups-dlv", codes: { parcel: ["upsmi"] } },
+  { id: "usps", name: "USPS", icon: "phu:usps", codes: { parcel: ["usps"] } },
+  { id: "vasp", name: "Vasp Expresso", icon: null, codes: { parcel: ["vasp"] } },
+  { id: "veho", name: "Veho", icon: null, codes: { parcel: ["veho"] } },
+  { id: "venipak", name: "Venipak", icon: null, codes: { parcel: ["venipak"] } },
+  { id: "vinted", name: "Vinted Go", icon: null, codes: { parcel: ["vinted"] } },
+  { id: "walmart", name: "Walmart Shipping", icon: null, codes: { parcel: ["walmart"] } },
+  { id: "wanb", name: "WANB Express", icon: null, codes: { parcel: ["wanb"] } },
+  { id: "whistl", name: "Whistl", icon: null, codes: { parcel: ["whistl"] } },
+  { id: "wish", name: "Wish Post", icon: null, codes: { parcel: ["wish"] } },
+  { id: "wnd", name: "wnDirect", icon: null, codes: { parcel: ["wnd"] } },
+  { id: "xdp", name: "XDP", icon: null, codes: { parcel: ["xdp"] } },
+  { id: "yamato", name: "Yamato", icon: null, codes: { parcel: ["yamato"] } },
+  { id: "yanwen", name: "Yanwen", icon: null, codes: { parcel: ["yanwen"] } },
+  { id: "yodel", name: "Yodel", icon: null, codes: { parcel: ["yodel"] } },
+  { id: "yun", name: "Yun Express", icon: null, codes: { parcel: ["yun"] } },
+  { id: "zel", name: "Zeleris", icon: null, codes: { parcel: ["zel"] } },
+  { id: "pholder", name: "Placeholder Deliveries", icon: null, codes: { parcel: ["pholder"] } },
+];
+const _carrierIndex = new Map();
+for (const c of CARRIERS) {
+  for (const [group, codes] of Object.entries(c.codes)) {
+    for (const code of codes) _carrierIndex.set(group + ':' + code.toLowerCase(), c);
+  }
 }
-
-// ─── Brand icons ──────────────────────────────────────────────────────────────
-
-const BRAND_ICONS = {
-  // Verified available in custom-brand-icons
-  postnl: 'phu:postnl', tntp: 'phu:postnl', tntpit: 'phu:postnl',
-  dhl: 'phu:dhl', dhlnl: 'phu:dhl', dhlnlpcode: 'phu:dhl', dhluk: 'phu:dhl', dhlgm: 'phu:dhl', dhlfreight: 'phu:dhl', dhlsc: 'phu:dhl',
-  rm: 'phu:royalmail',
-  usps: 'phu:usps',
-  ups: 'phu:ups-dlv', upsmi: 'phu:ups-dlv',
-  fedex: 'phu:fedex', fedpl: 'phu:fedex',
-  amzlnl: 'phu:amazon-logo',
-};
+function resolveCarrier(group, code) {
+  if (!code) return null;
+  return _carrierIndex.get(group + ':' + String(code).toLowerCase()) || null;
+}
+function carrierName(group, code) {
+  const c = resolveCarrier(group, code);
+  return (c && c.name) || code || null;
+}
 
 let _brandIconsAvailable = false;
 function isBrandIconsAvailable() {
@@ -43,16 +369,17 @@ function waitForBrandIcons(timeout = 5000) {
   });
 }
 
-function getBrandIcon(code) {
+function getBrandIcon(group, code) {
   if (!code || !isBrandIconsAvailable()) return null;
-  return BRAND_ICONS[code.toLowerCase()] || null;
+  const c = resolveCarrier(group, code);
+  return (c && c.icon) || null;
 }
 
 // ─── Translations ────────────────────────────────────────────────────────────
 
 const TRANSLATIONS = {
   en: {
-    _locale: 'en',
+    lang: 'en',
     days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     today: 'today', tomorrow: 'tomorrow', yesterday: 'yesterday',
@@ -90,8 +417,8 @@ const TRANSLATIONS = {
     filter_direction: 'Direction', incoming: 'Incoming', outgoing: 'Outgoing',
     filter_date_label: 'Specific day', filter_date: 'Date', filter_date_desc: '0 = today  ·  -1 = yesterday  ·  1 = tomorrow  ·  Empty = no filter',
     filter_slot: 'Time slot', filter_slot_active: 'Active delivery window only', filter_slot_desc: 'Show only packages whose delivery window is currently active', filter_slot_requires_enroute: 'Set Status filter to En route to enable this.',
-    filter_carrier: 'Carrier', carrier_code: 'Carrier code', carrier_code_desc: 'e.g. dpdgroup, fedex — ',
-    all_codes: 'all codes',
+    filter_carrier: 'Carrier', carrier_code: 'Carriers', carrier_code_desc: 'Only show packages from selected carriers',
+    carrier_code_empty: 'No carriers detected yet — add a source first',
     hide_when_empty: 'Hide when empty', hide_when_empty_desc: 'Hide the card when there are no packages to show',
     parcel_row_label: 'Raw data',
     letterbox: 'Fits in your letterbox',
@@ -102,14 +429,19 @@ const TRANSLATIONS = {
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels. This already includes parcels heading to a DHL ServicePoint.',
     entity_hint_dhl_nl_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
-    dhl_nl_incoming_label: 'Incoming (active)', dhl_nl_delivered_label: 'Delivered (history)',
+    entity_hint_dhl_nl_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    dhl_nl_incoming_label: 'Incoming (active)', dhl_nl_delivered_label: 'Delivered (history)', dhl_nl_outgoing_label: 'Outgoing',
+    entity_hint_dpd_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
+    entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    entity_hint_dpd_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    dpd_incoming_label: 'Incoming (active)', dpd_delivered_label: 'Delivered (history)', dpd_outgoing_label: 'Outgoing',
     alpha_badge: 'Alpha', alpha_badge_desc: 'Based on an unreleased beta of the DHL NL integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
   nl: {
-    _locale: 'nl',
+    lang: 'nl',
     days: ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],
     months: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],
     today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren',
@@ -147,8 +479,8 @@ const TRANSLATIONS = {
     filter_direction: 'Richting', incoming: 'Ontvangen', outgoing: 'Verstuurd',
     filter_date_label: 'Specifieke dag', filter_date: 'Datum', filter_date_desc: '0 = vandaag  ·  -1 = gisteren  ·  1 = morgen  ·  Leeg = geen filter',
     filter_slot: 'Tijdslot', filter_slot_active: 'Alleen actief leveringstijdslot', filter_slot_desc: 'Toont alleen pakketjes waarvan het leveringstijdslot op dit moment actief is', filter_slot_requires_enroute: 'Stel de Status filter in op Onderweg om dit in te schakelen.',
-    filter_carrier: 'Bezorgdienst', carrier_code: 'Code bezorgdienst', carrier_code_desc: 'bijv. dpdgroup, fedex — ',
-    all_codes: 'alle codes',
+    filter_carrier: 'Bezorgdienst', carrier_code: 'Bezorgdiensten', carrier_code_desc: 'Toon alleen pakketten van geselecteerde bezorgdiensten',
+    carrier_code_empty: 'Nog geen bezorgdiensten gedetecteerd — voeg eerst een bron toe',
     hide_when_empty: 'Verberg bij leeg', hide_when_empty_desc: 'Verberg de kaart als er geen pakketjes zijn om te tonen',
     parcel_row_label: 'Ruwe data',
     letterbox: 'Past door de brievenbus',
@@ -159,7 +491,12 @@ const TRANSLATIONS = {
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels. Dit bevat al pakketten die naar een DHL ServicePoint gaan.',
     entity_hint_dhl_nl_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
-    dhl_nl_incoming_label: 'Onderweg (actief)', dhl_nl_delivered_label: 'Bezorgd (geschiedenis)',
+    entity_hint_dhl_nl_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    dhl_nl_incoming_label: 'Onderweg (actief)', dhl_nl_delivered_label: 'Bezorgd (geschiedenis)', dhl_nl_outgoing_label: 'Verstuurd',
+    entity_hint_dpd_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
+    entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    entity_hint_dpd_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    dpd_incoming_label: 'Onderweg (actief)', dpd_delivered_label: 'Bezorgd (geschiedenis)', dpd_outgoing_label: 'Verstuurd',
     alpha_badge: 'Alpha', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta van de DHL NL integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
@@ -218,6 +555,23 @@ function formatTimeRemaining(toDate, tr, fromDate) {
   if (h > 0 && m > 0) return tr.slot_within(h, m);
   if (h > 0)          return tr.slot_within_hour(h);
   return tr.slot_within_minutes(m);
+}
+
+// Shared by postnl_incoming and dhl_nl — both have an identical
+// planned_from/planned_to delivery-window shape. Returns null when
+// fromStr doesn't parse to a valid date (caller falls back to its own
+// status-only line1).
+function computeDeliverySlot(fromStr, toStr, tr, statusLine) {
+  const from = new Date(fromStr);
+  if (isNaN(from)) return null;
+  const to = toStr ? new Date(toStr) : null;
+  const slotActive = to ? isSlotActive(fromStr, toStr) : false;
+  const pastSlot = to && !slotActive && new Date() > to;
+  let line2;
+  if (slotActive || pastSlot) line2 = formatTimeRemaining(to, tr, from);
+  else if (to)                line2 = tr.delivery_between(formatDay(from, tr), formatTime(from), formatTime(to));
+  else                        line2 = tr.delivery_on(formatDay(from, tr));
+  return { deliveryDate: from, slotActive, slotEnd: to, line1: statusLine, line2 };
 }
 
 // parseDate: normalizes various date formats to a JS Date.
@@ -329,7 +683,7 @@ function parcelStatus(code) {
 //   hasAttrs    — (attrs) => bool — confirms the right entity by attribute shape
 //   collect     — (attrs, ctx) => item[] — maps raw sensor data to normalised items
 //
-// ctx = { carriers, tr } — shared context passed to collect
+// ctx = { tr } — shared context passed to collect
 
 // Shared PostNL collect — both incoming and outgoing use the same sensor shape
 function collectPostnl(attrs, ctx, mapFn) {
@@ -340,9 +694,24 @@ function collectPostnl(attrs, ctx, mapFn) {
 }
 const hasPostnlAttrs = (a) => a.enroute !== undefined || a.delivered !== undefined;
 
+// Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
+function stripPostnlTrackingCode(key) {
+  return key ? key.replace(/-[A-Z]{2}-.*$/, '') : null;
+}
+
+function mapPostnlEvents(events) {
+  return (events || []).map(e => ({
+    date: e.date ? new Date(e.date) : null,
+    text: e.description || e.status || '',
+    location: e.location_code || null,
+  })).filter(e => e.text);
+}
+
 // DHL NL 2.0 (alpha) — normalised status enum → icon/color/text
 // Source: HA community forum post by ptnijssen, June 19 2026 (BETA 2.0.0 changelog)
-function dhlNlStatus(status) {
+// Carrier-agnostic ParcelStatus enum — shared across DHL NL, DPD, and (in the
+// future) PostNL 4.0.0, all from the same peternijssen integration family.
+function canonicalParcelStatus(status) {
   return ({
     registered:        { icon: 'mdi:package-variant-closed', color: 'grey'   },
     in_transit:        { icon: 'mdi:package-variant',        color: 'blue'   },
@@ -354,12 +723,12 @@ function dhlNlStatus(status) {
   })[status] || { icon: 'mdi:package-variant', color: 'grey' };
 }
 
-function dhlNlStatusLine(status, tr) {
+function canonicalParcelStatusLine(status, tr) {
   return ({
     registered:       tr.lang === 'nl' ? 'Zending aangemeld.'         : 'Shipment registered.',
     in_transit:       tr.lang === 'nl' ? 'Onderweg.'                  : 'In transit.',
     out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : 'Out for delivery today.',
-    at_pickup_point:  tr.lang === 'nl' ? 'Klaar bij ServicePoint.'    : 'Ready at ServicePoint.',
+    at_pickup_point:  tr.lang === 'nl' ? 'Klaar om af te halen.'      : 'Ready for pickup.',
     delivered:        tr.lang === 'nl' ? 'Bezorgd.'                   : 'Delivered.',
     returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : 'Returning to sender.',
     problem:          tr.lang === 'nl' ? 'Probleem met bezorging.'    : 'Delivery problem.',
@@ -369,7 +738,10 @@ function dhlNlStatusLine(status, tr) {
 // Shared mapper for both dhl_nl_incoming and dhl_nl_delivered — same normalised
 // parcel shape on both sensors (confirmed from sensor.py: both expose a
 // `parcels` attribute via the same coordinator data model).
-function mapDhlNlParcel(p, tr) {
+// Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
+// the future PostNL 4.0.0) — same normalised shape across all of them, only
+// the carrier identity and direction differ per source.
+function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
   const status     = p.status || 'unknown';
   // `status` is the authoritative signal (the integration itself documents
   // status as taking precedence over category). In a narrow race condition
@@ -377,7 +749,7 @@ function mapDhlNlParcel(p, tr) {
   // specific status like "delivered" — so we don't trust `delivered` at all,
   // and fall back to whichever date field is actually populated.
   const delivered  = status === 'delivered';
-  const { icon, color } = dhlNlStatus(status);
+  const { icon, color } = canonicalParcelStatus(status);
   let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
 
   if (delivered) {
@@ -387,31 +759,21 @@ function mapDhlNlParcel(p, tr) {
       if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
     }
   } else if (p.planned_from) {
-    const from = new Date(p.planned_from);
-    const to   = p.planned_to ? new Date(p.planned_to) : null;
-    if (!isNaN(from)) {
-      deliveryDate = from;
-      slotActive   = to ? isSlotActive(p.planned_from, p.planned_to) : false;
-      slotEnd      = to;
-      const pastSlot = to && !slotActive && new Date() > to;
-      line1 = dhlNlStatusLine(status, tr);
-      if (slotActive || pastSlot) {
-        line2 = formatTimeRemaining(to, tr, from);
-      } else if (to) {
-        line2 = tr.delivery_between(formatDay(from, tr), formatTime(from), formatTime(to));
-      } else {
-        line2 = tr.delivery_on(formatDay(from, tr));
-      }
-    }
+    const slot = computeDeliverySlot(p.planned_from, p.planned_to, tr, canonicalParcelStatusLine(status, tr));
+    if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
   }
-  if (!line1) line1 = dhlNlStatusLine(status, tr);
+  if (!line1) line1 = canonicalParcelStatusLine(status, tr);
 
   return mkItem({
+    // NOTE: 'sender' is the only name field the integration normalises today.
+    // For outgoing shipments this is unverified — it may represent the
+    // account holder rather than the recipient. Revisit once real outgoing
+    // sensor data confirms what this field actually contains.
     name: (p.sender || '').trim(), line1, line2, icon, color,
     deliveryDate, slotActive, delivered, slotEnd,
-    carrierCode: 'dhlnl', carrier: 'DHL Netherlands', brandIcon: getBrandIcon('dhlnl'),
-    tapUrl: p.url || null, direction: 'incoming',
-    integration: 'dhl_nl',
+    carrierCode, carrier: carrierName(carrierGroup, carrierCode), brandIcon: getBrandIcon(carrierGroup, carrierCode),
+    tapUrl: p.url || null, direction,
+    integration: carrierGroup,
     servicePoint: !!p.pickup,
     pickupPoint: p.pickup_point || null,
     trackingCode: p.barcode || null,
@@ -439,39 +801,20 @@ const INTEGRATIONS = {
         const d = new Date(item.delivery_date);
         if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
       } else if (!delivered && item.planned_from) {
-        const from = new Date(item.planned_from);
-        const to   = item.planned_to ? new Date(item.planned_to) : null;
-        if (!isNaN(from)) {
-          deliveryDate = from;
-          slotActive   = to ? isSlotActive(item.planned_from, item.planned_to) : false;
-          slotEnd      = to;
-          const pastSlot = to && !slotActive && new Date() > to;
-          line1 = ensurePeriod(item.status_message || '');
-          if (slotActive || pastSlot) {
-            line2 = formatTimeRemaining(to, tr, from);
-          } else if (to) {
-            line2 = tr.delivery_between(formatDay(from, tr), formatTime(from), formatTime(to));
-          } else {
-            line2 = tr.delivery_on(formatDay(from, tr));
-          }
-        }
+        const slot = computeDeliverySlot(item.planned_from, item.planned_to, tr, ensurePeriod(item.status_message || ''));
+        if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
       }
       if (!line1) line1 = ensurePeriod(item.status_message || '');
       return mkItem({ name: (item.name || '').trim(), line1, line2, icon, color,
         deliveryDate, slotActive, delivered: delivered || !!item.delivered,
-        carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
+        carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
         tapUrl: item.url || null, direction: 'incoming', slotEnd,
         integration: 'postnl_incoming',
         letterbox: item.shipment_type === 'LetterboxParcel',
         rerouted:     item.delivery_address_type === 'Rerouted',
         servicePoint: item.delivery_address_type === 'ServicePoint',
-        // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
-        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null,
-        events: (item.events || []).map(e => ({
-          date: e.date ? new Date(e.date) : null,
-          text: e.description || e.status || '',
-          location: e.location_code || null,
-        })).filter(e => e.text) });
+        trackingCode: stripPostnlTrackingCode(item.key),
+        events: mapPostnlEvents(item.events) });
     },
   },
 
@@ -497,15 +840,10 @@ const INTEGRATIONS = {
       if (!line1) line1 = ensurePeriod(item.status_message || '');
       return mkItem({ name: (item.name || '').trim(), line1, icon, color,
         deliveryDate, delivered: delivered || !!item.delivered,
-        carrierCode: 'postnl', carrier: 'PostNL', brandIcon: getBrandIcon('postnl'),
+        carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
         tapUrl: item.url || null, direction: 'outgoing',
-        // Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
-        trackingCode: item.key ? item.key.replace(/-[A-Z]{2}-.*$/, '') : null,
-        events: (item.events || []).map(e => ({
-          date: e.date ? new Date(e.date) : null,
-          text: e.description || e.status || '',
-          location: e.location_code || null,
-        })).filter(e => e.text) });
+        trackingCode: stripPostnlTrackingCode(item.key),
+        events: mapPostnlEvents(item.events) });
     },
   },
 
@@ -521,9 +859,9 @@ const INTEGRATIONS = {
     entityHints: ['parcel', 'pakket', 'pakje', 'zending', 'packag', 'shipment', 'tracking', 'raw', 'data'],
     hasAttrs:    (a) => a.deliveries !== undefined,
     collect(attrs, ctx) {
-      return (attrs.deliveries || []).map(i => this._map(i, ctx.carriers, ctx.tr));
+      return (attrs.deliveries || []).map(i => this._map(i, ctx.tr));
     },
-    _map(item, carriers, tr) {
+    _map(item, tr) {
       const statusCode  = item.status_code ?? 5; // 5 = unknown when missing
       const delivered   = statusCode === 0;
       const { icon, color } = parcelStatus(statusCode);
@@ -567,8 +905,8 @@ const INTEGRATIONS = {
       return mkItem({ name: (item.description || '').trim(), line1, line2,
         location: firstEvent?.location || null,
         icon, color, deliveryDate, slotActive, delivered, carrierCode,
-        carrier:   carrierName(carrierCode, carriers),
-        brandIcon: getBrandIcon(carrierCode),
+        carrier:   carrierName('parcel', carrierCode),
+        brandIcon: getBrandIcon('parcel', carrierCode),
         tapUrl:    buildParcelUrl(carrierCode, item.tracking_number),
         direction: 'incoming',
         integration: 'parcel',
@@ -592,10 +930,10 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dhl-nl',
     platforms:   ['dhl_nl'],
     entityHints: ['incoming_parcels', 'dhl_incoming', 'dhl_ontvang', 'dhl_bezorg'],
-    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'outgoing_parcels', 'next_delivery'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     alpha:       true, // based on an unreleased beta — data shape may still change
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapDhlNlParcel(p, ctx.tr)); },
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl' })); },
   },
 
   dhl_nl_delivered: {
@@ -608,10 +946,74 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dhl-nl',
     platforms:   ['dhl_nl'],
     entityHints: ['delivered_parcels', 'dhl_delivered', 'dhl_bezorgd'],
-    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'outgoing_parcels', 'next_delivery'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     alpha:       true,
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapDhlNlParcel(p, ctx.tr)); },
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl' })); },
+  },
+
+  dhl_nl_outgoing: {
+    group:       'dhl_nl',
+    groupLabel:  'DHL NL',
+    rowLabel:    'Outgoing',
+    rowLabelKey: 'dhl_nl_outgoing_label',
+    entityHintText: 'entity_hint_dhl_nl_outgoing',
+    direction:   'outgoing',
+    url:         'https://github.com/peternijssen/ha-dhl-nl',
+    platforms:   ['dhl_nl'],
+    entityHints: ['outgoing_parcels', 'dhl_outgoing', 'dhl_verstu', 'dhl_verzond'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true, // also unverified: whether 'sender' means recipient or account holder for outgoing — see note in mapCanonicalParcel
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
+  },
+
+  dpd_incoming: {
+    group:       'dpd',
+    groupLabel:  'DPD',
+    rowLabel:    'Incoming (active)',
+    rowLabelKey: 'dpd_incoming_label',
+    entityHintText: 'entity_hint_dpd_incoming',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-dpd',
+    platforms:   ['dpd'],
+    entityHints: ['incoming_parcels', 'dpd_incoming'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true, // based on an unreleased beta — data shape may still change
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
+  },
+
+  dpd_delivered: {
+    group:       'dpd',
+    groupLabel:  'DPD',
+    rowLabel:    'Delivered (history)',
+    rowLabelKey: 'dpd_delivered_label',
+    entityHintText: 'entity_hint_dpd_delivered',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-dpd',
+    platforms:   ['dpd'],
+    entityHints: ['delivered_parcels', 'dpd_delivered'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true,
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
+  },
+
+  dpd_outgoing: {
+    group:       'dpd',
+    groupLabel:  'DPD',
+    rowLabel:    'Outgoing',
+    rowLabelKey: 'dpd_outgoing_label',
+    entityHintText: 'entity_hint_dpd_outgoing',
+    direction:   'outgoing',
+    url:         'https://github.com/peternijssen/ha-dpd',
+    platforms:   ['dpd'],
+    entityHints: ['outgoing_parcels', 'dpd_outgoing'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true, // same outgoing-name caveat as DHL NL — see note in mapCanonicalParcel
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
   },
 
 };
@@ -708,9 +1110,11 @@ function applyFilter(items, filter) {
   const state = filter.state || 'all';
   if (state === 'enroute')   r = r.filter(i => !i.delivered);
   if (state === 'delivered') r = r.filter(i => i.delivered);
-  if (filter.carrier) {
-    const fc = filter.carrier.toLowerCase();
-    r = r.filter(i => i.carrierCode?.toLowerCase() === fc);
+  // 'carriers' (array, current) — falls back to legacy singular 'carrier' (string) for old configs
+  const carrierList = filter.carriers?.length ? filter.carriers : (filter.carrier ? [filter.carrier] : null);
+  if (carrierList?.length) {
+    const set = new Set(carrierList.map(c => c.toLowerCase()));
+    r = r.filter(i => i.carrierCode && set.has(i.carrierCode.toLowerCase()));
   }
   if (filter.date !== undefined && filter.date !== null) {
     const t = Number(filter.date);
@@ -914,7 +1318,7 @@ function renderRow(item, show, tr, openItems) {
       ico.setAttribute('icon', 'mdi:store-marker');
       ico.style.setProperty('--mdc-icon-size', '13px');
       carrier.appendChild(ico);
-      const shortCarrier = ({ postnl: 'PostNL', dhlnl: 'DHL' })[item.carrierCode] || item.carrier;
+      const shortCarrier = ({ postnl: 'PostNL', dhlnl: 'DHL', dpdgpcode: 'DPD' })[item.carrierCode] || item.carrier;
       const spText = (tr && typeof tr.service_point === 'function')
         ? tr.service_point(shortCarrier)
         : 'Delivery to a ' + (shortCarrier || 'pickup') + ' point.';
@@ -1024,7 +1428,6 @@ class PackageTrackerCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = '<style>' + CARD_CSS + '</style><div id="root"></div>';
     this._root       = this.shadowRoot.getElementById('root');
-    this._carriers   = CARRIERS_FALLBACK;
     this._lastHashes    = {};
     this._lastLang     = null;
     this._countdownTimer = null;
@@ -1078,8 +1481,10 @@ class PackageTrackerCard extends HTMLElement {
     if (hass.language !== this._lastLang) { this._lastLang = hass.language; changed = true; }
     for (const { entity } of this._config.sources) {
       if (!entity) continue;
-      // Compare last_changed instead of serializing attributes — much cheaper
-      const ts = hass.states[entity]?.last_changed ?? null;
+      // Compare last_updated (not last_changed — that only fires on state-value
+      // changes, missing attribute-only updates like a package status changing
+      // while the sensor's count stays the same) instead of serializing attributes.
+      const ts = hass.states[entity]?.last_updated ?? null;
       if (ts !== this._lastHashes[entity]) { this._lastHashes[entity] = ts; changed = true; }
     }
     if (changed) this._render();
@@ -1087,7 +1492,7 @@ class PackageTrackerCard extends HTMLElement {
 
   _collectItems() {
     const lang = this._hass.language || 'en';
-    const ctx   = { carriers: this._carriers, tr: TRANSLATIONS[lang] || TRANSLATIONS['en'] };
+    const ctx   = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'] };
     const items = [];
     for (const source of this._config.sources) {
       const def = INTEGRATIONS[source.type];
@@ -1156,6 +1561,10 @@ class PackageTrackerCard extends HTMLElement {
   _render() {
     if (!this._hass || !this._config) return;
     this._cachedItems = this._collectItems();
+    if (this._openItems.size) {
+      const live = new Set(this._cachedItems.map(i => i.trackingCode).filter(Boolean));
+      for (const code of this._openItems) if (!live.has(code)) this._openItems.delete(code);
+    }
     let items = applyFilter(this._sortItems(this._cachedItems), this._config.filter);
     if (this._config.max > 0) items = items.slice(0, this._config.max);
     const show   = this._config.show;
@@ -1241,7 +1650,7 @@ const EDITOR_CSS = `
   .tab-content { padding: 16px; }
   .item-list { display: flex; flex-direction: column; gap: 16px; }
   .source-group { border: 1px solid var(--divider-color); border-radius: 8px; overflow: hidden; }
-  .row-action { width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .row-action { min-width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .add-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
   .delete-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--secondary-text-color); }
   .delete-btn:hover { color: var(--error-color, #db4437); }
@@ -1276,6 +1685,32 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._ownFire  = false;
     this._tab           = 'sources';
     this._filterAdvOpen = false;
+  }
+
+  // Distinct {value, label} carrier options currently present across configured
+  // sources — used to populate the carrier filter dropdown with carriers the
+  // person actually has, instead of the full ~330-carrier static list.
+  _availableCarriers() {
+    if (!this._hass || !this._config) return [];
+    const lang = this._hass.language || 'en';
+    const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'] };
+    const seen = new Map();
+    for (const source of this._config.sources || []) {
+      const def = INTEGRATIONS[source.type];
+      if (!def || !source.entity) continue;
+      const attrs = this._hass.states[source.entity]?.attributes;
+      if (!attrs) continue;
+      let items;
+      try { items = def.collect(attrs, ctx); } catch { continue; }
+      for (const item of items) {
+        if (item.carrierCode && !seen.has(item.carrierCode)) {
+          seen.set(item.carrierCode, item.carrier || item.carrierCode);
+        }
+      }
+    }
+    return [...seen.entries()]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }
 
   set hass(hass) {
@@ -1392,7 +1827,7 @@ class PackageTrackerCardEditor extends HTMLElement {
 
       header.appendChild(Object.assign(document.createElement('div'), {
         textContent: group.label,
-        style: 'flex:1;font-size:14px;font-weight:500;color:' + (platformOk || groupActive ? 'var(--primary-text-color)' : 'var(--disabled-color,#9e9e9e)') + ';',
+        style: 'flex-shrink:0;font-size:14px;font-weight:500;color:' + (platformOk || groupActive ? 'var(--primary-text-color)' : 'var(--disabled-color,#9e9e9e)') + ';',
       }));
 
       if (group.alpha) {
@@ -1400,10 +1835,12 @@ class PackageTrackerCardEditor extends HTMLElement {
         badge.textContent = uiTr.alpha_badge;
         badge.title = uiTr.alpha_badge_desc;
         badge.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;' +
-          'padding:2px 6px;border-radius:8px;margin-right:8px;flex-shrink:0;' +
+          'padding:2px 6px;border-radius:8px;margin-left:8px;flex-shrink:0;' +
           'background:var(--warning-color,#ff9800);color:#fff;opacity:.85;cursor:help;';
         header.appendChild(badge);
       }
+
+      header.appendChild(Object.assign(document.createElement('div'), { style: 'flex:1;min-width:8px;' }));
 
       if (group.url && (groupActive || platformOk)) {
         const repoMatch = group.url.match(/github\.com\/([^/]+\/[^/]+)/);
@@ -1533,6 +1970,11 @@ class PackageTrackerCardEditor extends HTMLElement {
     const filter = this._config.filter || {};
     const save   = (f) => this._fireAndRender({ ...this._config, filter: f });
     const upd    = (key, val) => { const f = { ...filter }; if (val !== undefined && val !== null && val !== '') f[key] = val; else delete f[key]; save(f); };
+    // No-render variants — for fields that don't affect any other row's
+    // visibility/disabled state, so typing or arrow-keying doesn't tear down
+    // and recreate the input (which would steal focus after every keystroke).
+    const saveNoRender = (f) => this._fire({ ...this._config, filter: f });
+    const updNoRender  = (key, val) => { const f = { ...filter }; if (val !== undefined && val !== null && val !== '') f[key] = val; else delete f[key]; saveNoRender(f); };
     const uiTr   = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_status }));
@@ -1587,7 +2029,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     // Specific day
     advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', style: 'margin-top:0', textContent: uiTr.filter_date }));
     const dateGroup = document.createElement('div'); dateGroup.className = 'settings-group';
-    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label, filter.date, null, null, '', uiTr.filter_date_desc, (val) => upd('date', val !== '' ? Number(val) : undefined)));
+    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label, filter.date, null, null, '', uiTr.filter_date_desc, (val) => updNoRender('date', val !== '' ? Number(val) : undefined)));
     advContent.appendChild(dateGroup);
 
     // Time slot
@@ -1608,15 +2050,24 @@ class PackageTrackerCardEditor extends HTMLElement {
     const ct = document.createElement('div'); ct.className = 'srow-text';
     ct.appendChild(Object.assign(document.createElement('span'), { className: 'srow-label', textContent: uiTr.carrier_code }));
     const cd = Object.assign(document.createElement('span'), { className: 'srow-desc' });
-    cd.innerHTML = uiTr.carrier_code_desc + '<a href="https://parcel.app/supported-carriers" target="_blank" rel="noopener" style="color:var(--primary-color)">' + uiTr.all_codes + '</a>';
+    const carrierOptions = this._availableCarriers();
+    cd.textContent = carrierOptions.length ? uiTr.carrier_code_desc : uiTr.carrier_code_empty;
     ct.appendChild(cd); carrierRow.appendChild(ct);
     const carrierForm = document.createElement('ha-form');
-    carrierForm.schema = [{ name: 'carrier', selector: { text: {} } }];
-    carrierForm.data = { carrier: filter.carrier || '' };
+    carrierForm.schema = [{ name: 'carriers', selector: { select: { multiple: true, mode: 'dropdown', options: carrierOptions } } }];
+    const initialCarriers = filter.carriers?.length ? filter.carriers : (filter.carrier ? [filter.carrier] : []);
+    carrierForm.data = { carriers: initialCarriers };
     carrierForm.computeLabel = () => '';
-    carrierForm.style.cssText = 'flex-shrink:0;width:120px;';
+    carrierForm.style.cssText = 'flex-shrink:0;width:220px;';
+    carrierForm.disabled = !carrierOptions.length;
     if (this._hass) carrierForm.hass = this._hass;
-    carrierForm.addEventListener('value-changed', (e) => upd('carrier', e.detail.value?.carrier ?? ''));
+    carrierForm.addEventListener('value-changed', (e) => {
+      const val = e.detail.value?.carriers ?? [];
+      const f = { ...filter };
+      if (val.length) f.carriers = val; else delete f.carriers;
+      delete f.carrier; // drop legacy singular key once the new UI is used
+      save(f);
+    });
     carrierRow.appendChild(carrierForm);
     carrierGroup.appendChild(carrierRow);
     advContent.appendChild(carrierGroup);
@@ -1644,7 +2095,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     layoutForm.computeLabel = () => '';
     layoutForm.addEventListener('value-changed', (e) => { if (e.detail.value.layout) this._fireAndRender({ ...c, layout: e.detail.value.layout }); });
     layoutGroup.appendChild(layoutForm);
-    layoutGroup.appendChild(this._mkNumberRow(uiTr.max_packages, c.max ?? 5, 1, 50, '', null, (val) => this._fireAndRender({ ...c, max: val !== '' ? Number(val) : 5 })));
+    layoutGroup.appendChild(this._mkNumberRow(uiTr.max_packages, c.max ?? 5, 1, 50, '', null, (val) => this._fire({ ...c, max: val !== '' ? Number(val) : 5 })));
     root.appendChild(layoutGroup);
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.show }));
@@ -1730,25 +2181,17 @@ customElements.define('package-tracker-card-editor', PackageTrackerCardEditor);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'package-tracker-card', name: 'Package Tracker Card',
-  description: 'Track packages from PostNL and Parcel integrations.',
+  description: 'Track packages from PostNL, Parcel, and DHL NL integrations.',
   preview: true,
   getEntitySuggestion: (hass, entityId) => {
     const attrs = hass.states[entityId]?.attributes;
     if (!attrs) return null;
-    // PostNL sensor
-    if (attrs.enroute !== undefined || attrs.delivered !== undefined) {
-      const type = attrs.enroute !== undefined ? 'postnl_incoming' : 'postnl_outgoing';
-      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
-    }
-    // Parcel sensor
-    if (attrs.deliveries !== undefined) {
-      return { config: { type: 'custom:package-tracker-card', sources: [{ type: 'parcel', entity: entityId }] } };
-    }
-    // DHL NL (alpha — based on unreleased beta)
-    if (Array.isArray(attrs.parcels)) {
-      const type = entityId.toLowerCase().includes('delivered') ? 'dhl_nl_delivered' : 'dhl_nl_incoming';
-      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
-    }
-    return null;
+    // Delegate to the same detection used by the Sources tab, so subset
+    // sensors like awaiting_pickup/en_route_to_servicepoint are correctly
+    // excluded here too, instead of duplicating ad-hoc detection logic.
+    const type = detectTypeFromHass(entityId, hass);
+    const def  = type && INTEGRATIONS[type];
+    if (!def || !def.hasAttrs(attrs)) return null;
+    return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
   },
 });
