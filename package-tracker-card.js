@@ -735,6 +735,47 @@ function canonicalParcelStatusLine(status, tr) {
   })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : 'Status unknown'));
 }
 
+// `raw_status` is always English (it's the carrier's own API vocabulary, no
+// translation table is realistic across every carrier) but is consistently
+// at least as specific as the canonical `status`, sometimes much more so
+// (e.g. "delivered" -> "DELIVERED_AT_NEIGHBOURS"). Shown as a secondary line,
+// never replacing the translated primary status line.
+function humanizeRawStatus(rawStatus) {
+  if (!rawStatus) return null;
+  const words = String(rawStatus).toLowerCase().replace(/_/g, ' ').trim();
+  if (!words) return null;
+  return ensurePeriod(words.charAt(0).toUpperCase() + words.slice(1));
+}
+
+// DHL's `receiver.address.street` sometimes bundles the house number into the
+// street field (e.g. "Gors 15") while `destination.address.street` keeps it
+// separate ("Gors" + houseNumber "14") — strip a trailing number before
+// comparing so we can tell whether a neighbour is on the same street.
+function normalizeStreetForCompare(street) {
+  if (!street) return '';
+  return String(street).replace(/\s+\d+\w*$/, '').trim().toLowerCase();
+}
+
+function formatNeighbourAddress(raw) {
+  const destAddr = raw?.destination?.address;
+  if (!destAddr?.houseNumber) return null;
+  const houseNum = destAddr.houseNumber + (destAddr.houseNumberSuffix || '');
+  const destStreet = normalizeStreetForCompare(destAddr.street);
+  const recvStreet = normalizeStreetForCompare(raw?.receiver?.address?.street);
+  if (destStreet && destStreet === recvStreet) return 'nr. ' + houseNum;
+  return (destAddr.street ? destAddr.street + ' ' : '') + houseNum;
+}
+
+function rawStatusLine(p) {
+  let text = humanizeRawStatus(p.raw_status);
+  if (!text) return null;
+  if (p.raw?.destination?.locationType === 'NEIGHBOUR') {
+    const addr = formatNeighbourAddress(p.raw);
+    if (addr) text = text.slice(0, -1) + ' (' + addr + ').'; // insert before the trailing period
+  }
+  return text;
+}
+
 // Shared mapper for both dhl_nl_incoming and dhl_nl_delivered — same normalised
 // parcel shape on both sensors (confirmed from sensor.py: both expose a
 // `parcels` attribute via the same coordinator data model).
@@ -759,10 +800,21 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
       if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
     }
   } else if (p.planned_from) {
-    const slot = computeDeliverySlot(p.planned_from, p.planned_to, tr, canonicalParcelStatusLine(status, tr));
+    // DPD's own normalization currently falls back to a whole calendar day
+    // (00:00–23:59) for planned_from/planned_to even when it already knows a
+    // much tighter window in raw.deliveryTimeFrom/deliveryTimeTo — prefer
+    // that more specific window when present. Harmless no-op for carriers
+    // (like DHL NL) that don't have these raw fields.
+    let fromStr = p.planned_from, toStr = p.planned_to;
+    if (p.raw?.deliveryDate && p.raw?.deliveryTimeFrom && p.raw?.deliveryTimeTo) {
+      fromStr = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeFrom;
+      toStr   = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeTo;
+    }
+    const slot = computeDeliverySlot(fromStr, toStr, tr, canonicalParcelStatusLine(status, tr));
     if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
   }
   if (!line1) line1 = canonicalParcelStatusLine(status, tr);
+  if (!line2) line2 = rawStatusLine(p);
 
   return mkItem({
     // NOTE: 'sender' is the only name field the integration normalises today.
@@ -1335,10 +1387,11 @@ function renderRow(item, show, tr, openItems) {
   const right = mk('div', 'row-right');
   right.appendChild(content);
 
-  const hasEvents = item.events && item.events.length > 0 && show.details !== false;
+  const hasEvents  = item.events && item.events.length > 0;
+  const hasDetails = (hasEvents || item.trackingCode) && show.details !== false;
   let detail = null;
 
-  if (hasEvents) {
+  if (hasDetails) {
     const chevron = mk('button', 'chevron-btn');
     const chevIco = document.createElement('ha-icon');
     chevIco.setAttribute('icon', 'mdi:chevron-down');
@@ -1348,7 +1401,7 @@ function renderRow(item, show, tr, openItems) {
 
     // Detail section
     detail = mk('div', 'detail');
-    item.events.forEach(e => {
+    if (hasEvents) item.events.forEach(e => {
       const ei = mk('div', 'event-item');
       // Meta: date + location
       const metaParts = [];
@@ -1409,7 +1462,7 @@ function renderRow(item, show, tr, openItems) {
   row.appendChild(right);
 
   // Wrap row + detail together so detail sits below the row as a sibling
-  if (hasEvents) {
+  if (hasDetails) {
     const wrapper = mk('div', 'row-wrapper');
     wrapper.appendChild(row);
     wrapper.appendChild(detail);
@@ -1501,23 +1554,37 @@ class PackageTrackerCard extends HTMLElement {
       if (!attrs) continue;
       items.push(...def.collect(attrs, ctx));
     }
-    // Deduplicate by tracking code — first source wins, but later source may contribute a better name
+    // Deduplicate by tracking code — first source wins, but later source may contribute a better name.
+    // EXCEPTION: for carriers in PARCEL_WINS_FOR, Parcel's own data is currently
+    // richer than that carrier's dedicated integration (e.g. DPD's alpha
+    // integration has no delivery slot yet) — so Parcel wins wholesale instead
+    // of just contributing name/events. Revisit per carrier as those mature.
+    const PARCEL_WINS_FOR = new Set(['dpd']);
     const seen = new Map();
     return items.filter(i => {
       if (!i.trackingCode) return true;
       if (seen.has(i.trackingCode)) {
         const kept = seen.get(i.trackingCode);
         if (i.integration === 'parcel' && kept.integration !== 'parcel') {
-          // kept = PostNL, i = Parcel — naam overnemen + events als PostNL die niet heeft
-          if (i.name) kept.name = i.name;
-          if (i.events?.length && !kept.events?.length) kept.events = i.events;
+          if (PARCEL_WINS_FOR.has(kept.integration)) {
+            // Parcel is currently the richer source for this carrier — take it wholesale
+            Object.assign(kept, i);
+          } else {
+            // kept = PostNL/DHL NL, i = Parcel — naam overnemen + events als kept die niet heeft
+            if (i.name) kept.name = i.name;
+            if (i.events?.length && !kept.events?.length) kept.events = i.events;
+          }
         } else if (kept.integration === 'parcel' && i.integration !== 'parcel') {
-          // kept = Parcel, i = PostNL — PostNL data winnen, Parcel naam + events bewaren
-          const parcelName = kept.name;
-          const parcelEvents = kept.events;
-          Object.assign(kept, i);
-          if (parcelName) kept.name = parcelName;
-          if (parcelEvents?.length && !kept.events?.length) kept.events = parcelEvents;
+          if (PARCEL_WINS_FOR.has(i.integration)) {
+            // kept (Parcel) already wins — nothing to do
+          } else {
+            // kept = Parcel, i = PostNL/DHL NL — i's data wint, Parcel naam + events bewaren
+            const parcelName = kept.name;
+            const parcelEvents = kept.events;
+            Object.assign(kept, i);
+            if (parcelName) kept.name = parcelName;
+            if (parcelEvents?.length && !kept.events?.length) kept.events = parcelEvents;
+          }
         }
         return false;
       }
