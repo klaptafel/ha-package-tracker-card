@@ -1,4 +1,4 @@
-const CARD_VERSION = '0.1.5';
+const CARD_VERSION = '0.1.6';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list — one entry per real-world carrier, each with its
@@ -645,33 +645,52 @@ function mkItem(overrides) {
 // ─── Status mappings ──────────────────────────────────────────────────────────
 // Defined before INTEGRATIONS so they can be referenced directly in _map methods.
 
+// Single shared icon+color palette, keyed by conceptual meaning rather than
+// by any one integration's own status vocabulary. PostNL, Parcel, and the
+// canonical DHL NL/DPD/PostNL-4.0 enum all delegate to this same palette, so
+// the same underlying situation always looks identical regardless of which
+// integration reported it.
+const STATUS_STYLE = {
+  expected:            { icon: 'mdi:clock-outline',                color: 'var(--amber-color, #FFC107)' },
+  registered:          { icon: 'mdi:package-variant-closed',       color: 'grey'   },
+  in_transit:          { icon: 'mdi:package-variant',              color: 'blue'   },
+  out_for_delivery:    { icon: 'mdi:truck-fast',                   color: 'orange' },
+  at_pickup_point:     { icon: 'mdi:store-marker',                 color: 'purple' },
+  delivered:           { icon: 'mdi:package-variant-closed-check', color: 'green'  },
+  delivered_neighbour: { icon: 'mdi:home-account',                 color: 'green'  },
+  missed:              { icon: 'mdi:account-alert',                color: 'red'    },
+  returning:           { icon: 'mdi:package-variant-closed-remove', color: 'red'   },
+  problem:             { icon: 'mdi:alert-circle-outline',         color: 'red'    },
+  unknown:             { icon: 'mdi:package-variant',              color: 'grey'   },
+};
+
 function postnlStatus(status) {
   const s = (status || '').toLowerCase();
-  if (s.includes('nog niet'))             return { icon: 'mdi:clock-outline',   color: 'grey'   };
-  if (s.includes('verwacht'))             return { icon: 'mdi:clock-alert',    color: 'var(--amber-color, #FFC107)' };
-  if (s.includes('bij postnl'))           return { icon: 'mdi:package-down',   color: 'blue'   };
-  if (s.includes('gesorteerd'))           return { icon: 'mdi:sort-variant',   color: 'purple' };
-  if (s.includes('onderweg'))             return { icon: 'mdi:truck-delivery', color: 'orange' };
-  if (s.includes('gemist'))              return { icon: 'mdi:account-alert',  color: 'red'    };
-  if (s.includes('bezorgd bij de buren')) return { icon: 'mdi:home-account',   color: 'green'  };
-  if (s.includes('bezorgd'))             return { icon: 'mdi:check-circle',   color: 'green'  };
-  if (s.includes('af te halen'))          return { icon: 'mdi:storefront',     color: 'purple' };
-  if (s.includes('vertraagd'))           return { icon: 'mdi:alert-circle',   color: 'red'    };
-  return { icon: 'mdi:package-variant', color: 'grey' };
+  if (s.includes('nog niet'))             return STATUS_STYLE.expected;
+  if (s.includes('verwacht'))             return STATUS_STYLE.expected;
+  if (s.includes('bij postnl'))           return STATUS_STYLE.in_transit;
+  if (s.includes('gesorteerd'))           return STATUS_STYLE.in_transit;
+  if (s.includes('onderweg'))             return STATUS_STYLE.out_for_delivery;
+  if (s.includes('gemist'))               return STATUS_STYLE.missed;
+  if (s.includes('bezorgd bij de buren')) return STATUS_STYLE.delivered_neighbour;
+  if (s.includes('bezorgd'))              return STATUS_STYLE.delivered;
+  if (s.includes('af te halen'))          return STATUS_STYLE.at_pickup_point;
+  if (s.includes('vertraagd'))            return STATUS_STYLE.problem;
+  return STATUS_STYLE.unknown;
 }
 
 function parcelStatus(code) {
   return ({
-    0: { icon: 'mdi:check-circle',   color: 'green'  },
-    1: { icon: 'mdi:sort-variant',   color: 'purple' },
-    2: { icon: 'mdi:package-down',   color: 'blue'   },
-    3: { icon: 'mdi:storefront',     color: 'purple' },
-    4: { icon: 'mdi:truck-delivery', color: 'orange' },
-    5: { icon: 'mdi:help-circle',    color: 'grey'   },
-    6: { icon: 'mdi:account-alert',  color: 'red'    },
-    7: { icon: 'mdi:alert-circle',   color: 'red'    },
-    8: { icon: 'mdi:clock-start',    color: 'var(--amber-color, #FFC107)' },
-  })[code] || { icon: 'mdi:package-variant', color: 'grey' };
+    0: STATUS_STYLE.delivered,
+    1: STATUS_STYLE.in_transit,
+    2: STATUS_STYLE.in_transit,
+    3: STATUS_STYLE.at_pickup_point,
+    4: STATUS_STYLE.out_for_delivery,
+    5: STATUS_STYLE.unknown,
+    6: STATUS_STYLE.missed,
+    7: STATUS_STYLE.problem,
+    8: STATUS_STYLE.expected,
+  })[code] || STATUS_STYLE.unknown;
 }
 
 // ─── Integration registry ─────────────────────────────────────────────────────
@@ -713,14 +732,14 @@ function mapPostnlEvents(events) {
 // future) PostNL 4.0.0, all from the same peternijssen integration family.
 function canonicalParcelStatus(status) {
   return ({
-    registered:        { icon: 'mdi:package-variant-closed', color: 'grey'   },
-    in_transit:        { icon: 'mdi:package-variant',        color: 'blue'   },
-    out_for_delivery:  { icon: 'mdi:truck-fast',              color: 'orange' },
-    at_pickup_point:   { icon: 'mdi:store-marker',            color: 'orange' },
-    delivered:         { icon: 'mdi:package-variant-closed-check', color: 'green' },
-    returning:         { icon: 'mdi:package-variant-closed-remove', color: 'red' },
-    problem:           { icon: 'mdi:alert-circle-outline',    color: 'red'    },
-  })[status] || { icon: 'mdi:package-variant', color: 'grey' };
+    registered:        STATUS_STYLE.registered,
+    in_transit:        STATUS_STYLE.in_transit,
+    out_for_delivery:  STATUS_STYLE.out_for_delivery,
+    at_pickup_point:   STATUS_STYLE.at_pickup_point,
+    delivered:         STATUS_STYLE.delivered,
+    returning:         STATUS_STYLE.returning,
+    problem:           STATUS_STYLE.problem,
+  })[status] || STATUS_STYLE.unknown;
 }
 
 function canonicalParcelStatusLine(status, tr) {
@@ -769,6 +788,12 @@ function formatNeighbourAddress(raw) {
 function rawStatusLine(p) {
   let text = humanizeRawStatus(p.raw_status);
   if (!text) return null;
+  // Skip when raw_status is just the canonical status in a different format
+  // (e.g. raw "DELIVERED" for canonical "delivered" would just repeat
+  // "Delivered." right under "Delivered yesterday.") — only show it when it
+  // actually adds something, like "DELIVERED_AT_NEIGHBOURS".
+  const normalize = (s) => String(s || '').toLowerCase().replace(/[_\s]/g, '');
+  if (normalize(p.raw_status) === normalize(p.status)) return null;
   if (p.raw?.destination?.locationType === 'NEIGHBOUR') {
     const addr = formatNeighbourAddress(p.raw);
     if (addr) text = text.slice(0, -1) + ' (' + addr + ').'; // insert before the trailing period
