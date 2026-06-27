@@ -1,4 +1,4 @@
-const CARD_VERSION = '0.1.7';
+const CARD_VERSION = '1.0.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list — one entry per real-world carrier, each with its
@@ -382,10 +382,10 @@ const TRANSLATIONS = {
     lang: 'en',
     days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-    today: 'today', tomorrow: 'tomorrow', yesterday: 'yesterday',
+    today: 'today', tomorrow: 'tomorrow', yesterday: 'yesterday', at_time: 'at',
     days_ago: (n) => n + ' days ago',
     delivered_today: 'Delivered today.',
-    letter_name_prefix: 'Mail: ',
+    letter_name_prefix: 'Mail item from ',
     delivered_yesterday: 'Delivered yesterday.',
     delivered_on: (day) => 'Delivered ' + day + '.',
     slot_any_moment: 'Delivery expected any moment.',
@@ -407,7 +407,7 @@ const TRANSLATIONS = {
     carrier_logo: 'Carrier logo', carrier_logo_desc: 'Carrier logo next to the name.', carrier_logo_link: 'Requires custom-brand-icons',
     carrier_logo_requires_carrier: 'Enable Carrier to use this setting.',
     badge: 'Badge', badge_desc: 'Days until delivery, shown on the icon',
-    details: 'Event history', details_desc: 'Show expandable event timeline per package',
+    details: 'Expandable details', details_desc: 'Show the chevron with extra info per package: event timeline, tracking code, package size, or letter scan',
     dim_delivered: 'Dim delivered packages', dim_delivered_desc: 'Show delivered packages at reduced opacity',
     location: 'Location', location_desc: 'Last known location, if available',
     layout: 'Card', single_card: 'Single card', split_cards: 'Separate cards',
@@ -441,7 +441,7 @@ const TRANSLATIONS = {
     entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     entity_hint_dpd_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
     dpd_incoming_label: 'Incoming (active)', dpd_delivered_label: 'Delivered (history)', dpd_outgoing_label: 'Outgoing',
-    alpha_badge: 'Alpha', alpha_badge_desc: 'Based on an unreleased beta of the DHL NL integration. The data shape may still change.',
+    alpha_badge: 'Beta', alpha_badge_desc: 'Based on an unreleased beta version of the underlying integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
@@ -450,10 +450,10 @@ const TRANSLATIONS = {
     lang: 'nl',
     days: ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],
     months: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],
-    today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren',
+    today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren', at_time: 'om',
     days_ago: (n) => n + ' dagen geleden',
     delivered_today: 'Vandaag bezorgd.',
-    letter_name_prefix: 'Post: ',
+    letter_name_prefix: 'Poststuk van ',
     delivered_yesterday: 'Gisteren bezorgd.',
     delivered_on: (day) => day.charAt(0).toUpperCase() + day.slice(1) + ' bezorgd.',
     slot_any_moment: 'Levering verwacht elk moment.',
@@ -475,7 +475,7 @@ const TRANSLATIONS = {
     carrier_logo: 'Bezorgdienst logo', carrier_logo_desc: 'Logo van de bezorgdienst naast de naam.', carrier_logo_link: 'Vereist custom-brand-icons',
     carrier_logo_requires_carrier: 'Zet Bezorgdienst aan om deze instelling te gebruiken.',
     badge: 'Badge', badge_desc: 'Dagen tot levering, weergegeven op het icoon',
-    details: 'Eventgeschiedenis', details_desc: 'Toon uitklapbare tijdlijn per pakket',
+    details: 'Uitklapbare details', details_desc: 'Toon de chevron met extra info per pakket: tijdlijn, tracking code, pakketformaat, of brief-scan',
     dim_delivered: 'Dim bezorgde pakketten', dim_delivered_desc: 'Bezorgde pakketten met verminderde helderheid weergeven',
     location: 'Locatie', location_desc: 'Laatste bekende locatie, indien beschikbaar',
     layout: 'Kaart', single_card: 'Enkele kaart', split_cards: 'Losse kaarten',
@@ -509,7 +509,7 @@ const TRANSLATIONS = {
     entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     entity_hint_dpd_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
     dpd_incoming_label: 'Onderweg (actief)', dpd_delivered_label: 'Bezorgd (geschiedenis)', dpd_outgoing_label: 'Verstuurd',
-    alpha_badge: 'Alpha', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta van de DHL NL integratie. De datastructuur kan nog wijzigen.',
+    alpha_badge: 'Bèta', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta-versie van de onderliggende integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
@@ -537,11 +537,39 @@ function formatDay(date, tr) {
   return tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
 }
 
+// Always a fixed calendar date ("17 juni"), never "today"/"X days ago" —
+// for places that already show a relative day phrase elsewhere on the same
+// row (e.g. a letter's delivered-state line), so the two don't repeat.
+function formatAbsoluteDate(date, tr) {
+  const d = new Date(date);
+  return d.getDate() + ' ' + tr.months[d.getMonth()];
+}
+
 function formatTime(d) {
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
 function ensurePeriod(s) { const t = (s || '').trimEnd(); return t && !t.endsWith('.') ? t + '.' : t; }
+
+// Some carrier APIs log the same status update multiple times within a
+// short window (e.g. three identical "Pakketgegevens verwerkt" events a
+// minute apart) — collapse runs of consecutive events with identical text
+// into just the most recent one, regardless of which integration the
+// events came from.
+function dedupEvents(events) {
+  if (!events?.length) return events;
+  const DEDUP_WINDOW_MS = 5 * 60 * 1000;
+  const result = [];
+  for (const e of events) {
+    const prev = result[result.length - 1];
+    if (prev && prev.text === e.text && prev.date && e.date && !isNaN(prev.date) && !isNaN(e.date)
+        && Math.abs(prev.date - e.date) <= DEDUP_WINDOW_MS) {
+      continue;
+    }
+    result.push(e);
+  }
+  return result;
+}
 
 function formatDeliveredText(date, tr) {
   const day = formatDay(date, tr);
@@ -644,14 +672,22 @@ function parseExpected(ts, fallback) {
 // ─── Normalised item model ────────────────────────────────────────────────────
 
 function mkItem(overrides) {
-  return {
+  const item = {
     name: '', line1: null, line2: null, location: null,
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, packageSize: null, packageSizeIcon: null,
+    dedupKey: undefined,
     ...overrides,
   };
+  // Separate from trackingCode (which is also shown to the user with a
+  // copy button) — items without a meaningful tracking code, like letters,
+  // can still have a real, stable unique identifier worth deduplicating on
+  // (e.g. PostNL's mailitem id), without showing that internal id as if it
+  // were a copyable tracking code.
+  if (item.dedupKey === undefined) item.dedupKey = item.trackingCode;
+  return item;
 }
 
 // ─── Status mappings ──────────────────────────────────────────────────────────
@@ -694,14 +730,25 @@ function postnlStatus(status) {
 function parcelStatus(code) {
   return ({
     0: STATUS_STYLE.delivered,
-    1: STATUS_STYLE.in_transit,
+    // Per the official docs (parcelapp.net/help/api-view-deliveries.html):
+    // "no updates for a long time... believes it will never be updated" —
+    // a stalled/stuck delivery, not healthy progress like a normal in-transit.
+    1: STATUS_STYLE.problem,
     2: STATUS_STYLE.in_transit,
     3: STATUS_STYLE.at_pickup_point,
     4: STATUS_STYLE.out_for_delivery,
-    5: STATUS_STYLE.unknown,
+    // "Delivery not found" — Parcel couldn't locate this tracking number at
+    // all, which is worth flagging, not a neutral "we don't know" state.
+    5: STATUS_STYLE.problem,
     6: STATUS_STYLE.missed,
     7: STATUS_STYLE.problem,
-    8: STATUS_STYLE.expected,
+    // Confirmed via real data: a DPD parcel with canonical status
+    // "registered" (raw ORDER_CREATED) showed up via Parcel with
+    // status_code 8 for the exact same barcode — not "expected" as
+    // originally (unverified) assumed. Also matches the official docs:
+    // "carrier has received information... but has not physically received
+    // it yet".
+    8: STATUS_STYLE.registered,
   })[code] || STATUS_STYLE.unknown;
 }
 
@@ -738,7 +785,7 @@ function mapPostnlEvents(events) {
   })).filter(e => e.text);
 }
 
-// DHL NL 2.0 (alpha) — normalised status enum → icon/color/text
+// Canonical ParcelStatus — normalised status enum → icon/color/text
 // Source: HA community forum post by ptnijssen, June 19 2026 (BETA 2.0.0 changelog)
 // Carrier-agnostic ParcelStatus enum — shared across DHL NL, DPD, and (in the
 // future) PostNL 4.0.0, all from the same peternijssen integration family.
@@ -865,7 +912,14 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   // canonical `sender` field (which for PostNL is the household member who
   // placed the order, not the webshop — less useful for identifying the
   // parcel, but still the best we have when raw isn't available).
-  const name = (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || '').trim();
+  // For outgoing parcels, `sender`/raw sender fields are not useful (that's
+  // just the account holder, i.e. yourself) — DHL NL 2.1.0+ exposes a
+  // top-level `receiver` field with the actual addressee, which is what you
+  // actually want to see on something you sent. Falls back to the sender
+  // chain for carriers/versions that don't have `receiver` yet (e.g. DPD).
+  const name = (direction === 'outgoing' && p.receiver)
+    ? p.receiver.trim()
+    : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || '').trim();
 
   // Same principle for the letterbox/rerouted/pickup-point chips: read from
   // raw when the carrier exposes that detail (confirmed for PostNL's
@@ -873,6 +927,22 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   // (DHL NL, DPD) that don't have an equivalent raw field.
   const shipmentType = p.raw?.shipment_type;
   const addressType  = p.raw?.delivery_address_type;
+
+  // Confirmed via real DPD data — both canonical (top-level, not just raw)
+  // fields, so other carriers in this family may expose them too. Weight is
+  // only shown when above 0 — every null/0 example we've seen so far was for
+  // an obviously non-weightless parcel, so 0 reads as "not yet known" rather
+  // than a real measurement. Assumes kg (near-certain for a European
+  // carrier, but unconfirmed) — flag if a real value turns out to use a
+  // different unit.
+  const sizeText   = p.dimensions?.text || null;
+  const weightText = (typeof p.weight === 'number' && p.weight > 0) ? p.weight + ' kg' : null;
+  const packageSize = [sizeText, weightText].filter(Boolean).join(' · ') || null;
+  // A ruler only makes sense when we actually have dimensions — weight-only
+  // info reads oddly next to a ruler icon, so use a scale instead.
+  let packageSizeIcon = null;
+  if      (sizeText)   packageSizeIcon = 'mdi:ruler-square';
+  else if (weightText) packageSizeIcon = 'mdi:scale';
 
   return mkItem({
     name, line1, line2, icon, color,
@@ -885,6 +955,8 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     servicePoint: addressType === 'ServicePoint' || !!p.pickup,
     pickupPoint: p.pickup_point || null,
     trackingCode: p.barcode || null,
+    packageSize,
+    packageSizeIcon,
   });
 }
 
@@ -894,24 +966,67 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
 // mapCanonicalParcel. The envelope scan (image_url) takes over the icon slot
 // and is shown larger in the detail view — there's no event history or
 // tracking code to show there instead.
-function mapPostnlLetter(letter, tr) {
+// The summary sensor's `image_url` per letter points directly at PostNL's
+// own authenticated API and can't be loaded from the browser. Each letter
+// also gets its own `image.*` entity (confirmed via real data: its `id`
+// attribute matches the letter's `id`) whose `entity_picture` is an
+// HA-proxied, already-authenticated path the browser *can* load — that's
+// what Peter's own example dashboard uses too. Falls back to the raw
+// image_url (won't load, but at least the data is there) if no matching
+// image entity is found, e.g. while hass.states isn't available yet.
+function findPostnlLetterImage(letter, hass) {
+  if (!hass?.states) return null;
+  for (const [entityId, state] of Object.entries(hass.states)) {
+    if (entityId.startsWith('image.') && state.attributes?.id === letter.id) {
+      return state.attributes.entity_picture || null;
+    }
+  }
+  return null;
+}
+
+function mapPostnlLetter(letter, tr, hass) {
   const d = letter.date ? new Date(letter.date) : null;
   const validDate = d && !isNaN(d);
   // Stay in the active/enroute bucket on the scan date itself (today's mail
   // is still "new"), only move to delivered/history starting the next day.
   const delivered = validDate ? daysUntil(d) < 0 : true;
+  // The letter's "delivery window" was simply that one scan day (there's no
+  // time component) — once that day has passed, describe it the same way a
+  // delivered parcel is ("Delivered yesterday."); while still today, use the
+  // same all-day-window phrasing a midnight-only parcel slot gets.
+  let line1 = null;
+  if (validDate) line1 = delivered ? formatDeliveredText(d, tr) : tr.delivery_on(formatDay(d, tr));
+  // Always resolve the actual scan, even once delivered — it's still useful
+  // to look back at what a piece of mail actually was. Only the small row
+  // icon switches to a checkmark once delivered (handled in renderRow); the
+  // detail view and click-to-expand keep working off this imageUrl either way.
+  const imageUrl = findPostnlLetterImage(letter, hass) || letter.image_url || null;
+  // `title` is a free-form string (in every example we've seen it happens
+  // to read like a date, e.g. "17 juni", but nothing guarantees that stays
+  // true — it's not the same field as `date`). Build the displayed date
+  // phrase ourselves from the actual parsed `date` instead, so the sentence
+  // ("Mail item from ___") always stays grammatically correct regardless of
+  // what title contains. Uses a fixed calendar date, not the relative
+  // "X days ago" phrasing line1 already uses, so the two don't repeat each
+  // other. Only falls back to the raw title when date itself doesn't parse.
+  const dateLabel = validDate ? formatAbsoluteDate(d, tr) : (letter.title || '').trim();
   return mkItem({
-    name: tr.letter_name_prefix + (letter.title || '').trim(),
-    line1: null,
-    icon: 'mdi:email-outline', color: 'blue',
+    name: tr.letter_name_prefix + dateLabel,
+    line1,
+    icon: delivered ? 'mdi:email-check-outline' : 'mdi:email-outline', color: delivered ? 'green' : 'blue',
     deliveryDate: validDate ? d : null,
     delivered,
     carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
-    tapUrl: letter.image_url || null,
+    tapUrl: imageUrl,
     direction: 'incoming',
-    integration: 'postnl_canonical',
+    integration: 'postnl',
     letterbox: true, // mail always fits through the mailbox by definition
-    imageUrl: letter.image_url || null,
+    imageUrl,
+    // No tracking code worth showing, but `id` is a real, stable unique
+    // identifier (also used to match the per-letter image entity) — use it
+    // to dedupe instead, e.g. if the same physical mail item were ever
+    // visible through two configured accounts.
+    dedupKey: letter.id || null,
   });
 }
 
@@ -994,8 +1109,7 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'postnl_incoming'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true, // based on an unreleased beta (4.0.0b1–b3) — data shape may still change
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl_canonical', carrierCode: 'postnl' })); },
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl' })); },
   },
 
   postnl_canonical_delivered: {
@@ -1010,8 +1124,7 @@ const INTEGRATIONS = {
     entityHints: ['delivered_parcels', 'postnl_delivered'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true,
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl_canonical', carrierCode: 'postnl' })); },
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl' })); },
   },
 
   postnl_canonical_outgoing: {
@@ -1026,8 +1139,11 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'postnl_outgoing'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true, // same outgoing-name caveat as DHL NL/DPD — see note in mapCanonicalParcel
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl_canonical', carrierCode: 'postnl', direction: 'outgoing' })); },
+    // PostNL 4.0 (peternijssen fork) is now stable (4.0.0), so no badge.
+    // Outgoing still has the same unresolved naming caveat as DPD (no
+    // equivalent of DHL NL's 2.1.0+ receiver field confirmed) — see note in
+    // mapCanonicalParcel; stays a code-level caveat, not a user-facing badge.
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl', direction: 'outgoing' })); },
   },
 
   postnl_canonical_letters: {
@@ -1041,8 +1157,7 @@ const INTEGRATIONS = {
     platforms:   ['postnl'],
     entityHints: ['postnl_letters', 'letters'],
     hasAttrs:    (a) => Array.isArray(a.letters),
-    alpha:       true,
-    collect(attrs, ctx) { return (attrs.letters || []).map(l => mapPostnlLetter(l, ctx.tr)); },
+    collect(attrs, ctx) { return (attrs.letters || []).map(l => mapPostnlLetter(l, ctx.tr, ctx.hass)); },
   },
 
   parcel: {
@@ -1160,7 +1275,6 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'dhl_outgoing', 'dhl_verstu', 'dhl_verzond'],
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true, // also unverified: whether 'sender' means recipient or account holder for outgoing — see note in mapCanonicalParcel
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
   },
 
@@ -1176,7 +1290,6 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'dpd_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true, // based on an unreleased beta — data shape may still change
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
   },
 
@@ -1192,7 +1305,6 @@ const INTEGRATIONS = {
     entityHints: ['delivered_parcels', 'dpd_delivered'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true,
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
   },
 
@@ -1208,13 +1320,30 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'dpd_outgoing'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    alpha:       true, // same outgoing-name caveat as DHL NL — see note in mapCanonicalParcel
+    // DPD itself is stable (2.0.0). The sender-vs-recipient question for
+    // outgoing parcels is unresolved (no confirmed `receiver` field like
+    // DHL NL 2.1.0+ — see note in mapCanonicalParcel), but badges are
+    // integration-level, not per source-type, so this stays a code-level
+    // caveat rather than a user-facing alpha/beta badge.
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
   },
 
 };
 
 // ─── Integration helpers ──────────────────────────────────────────────────────
+
+// Looks up the human-readable device name for an entity, if device-registry
+// info happens to be available on this hass object. Unlike hass.entities/
+// hass.states (which this card already relies on elsewhere), hass.devices
+// isn't confirmed to be populated in every Lovelace-card-editor context —
+// callers must treat a null result as "ungroupable", not an error.
+function deviceNameForEntity(entityId, hass) {
+  const deviceId = hass?.entities?.[entityId]?.device_id;
+  if (!deviceId) return null;
+  const device = hass?.devices?.[deviceId];
+  if (!device) return null;
+  return device.name_by_user || device.name || null;
+}
 
 // Returns all entities that are candidates for a given integration type.
 // Candidate = matching platform (or entityHint) AND hasAttrs passes.
@@ -1231,6 +1360,36 @@ function candidatesForType(type, hass) {
     results.push(entityId);
   }
   return results;
+}
+
+// For a source group (e.g. "PostNL"), finds distinct devices — typically one
+// per configured account — that offer candidate entities for any of the
+// group's types, mapping each to which type->entity pairs it provides.
+// Returns null when device-registry info isn't available, or there's only
+// one distinguishable device — callers should fall back to the simpler
+// single add/remove-everything behavior in that case, since per-device
+// rows only add value once there's genuinely more than one to tell apart.
+function deviceCandidatesForGroup(group, hass, sources) {
+  if (!hass) return null;
+  const byDevice = new Map(); // deviceName -> Map(type -> entityId)
+  const usedEntities = sources.map(s => s.entity).filter(Boolean);
+  let anyDeviceInfo = false;
+  for (const type of group.types) {
+    for (const entityId of candidatesForType(type, hass)) {
+      if (detectTypeFromHass(entityId, hass) !== type) continue;
+      const deviceName = deviceNameForEntity(entityId, hass);
+      if (!deviceName) continue;
+      anyDeviceInfo = true;
+      if (!byDevice.has(deviceName)) byDevice.set(deviceName, new Map());
+      const forDevice = byDevice.get(deviceName);
+      // Prefer an entity already in use (so an existing config keeps
+      // matching its device row); otherwise the first candidate found,
+      // matching how the simple add-button already picks available[0].
+      if (!forDevice.has(type) || usedEntities.includes(entityId)) forDevice.set(type, entityId);
+    }
+  }
+  if (!anyDeviceInfo || byDevice.size < 2) return null;
+  return byDevice;
 }
 
 // Returns true if the platform group for this type has any entities at all
@@ -1322,6 +1481,15 @@ function detectTypeFromHass(entityId, hass) {
 
 // ─── Filtering ────────────────────────────────────────────────────────────────
 
+// Reads the carrier filter as an array, falling back to the legacy singular
+// `filter.carrier` string for older saved configs. Always returns an array
+// (never null), so callers can just check its length.
+function filterCarriers(filter) {
+  if (filter.carriers?.length) return filter.carriers;
+  if (filter.carrier) return [filter.carrier];
+  return [];
+}
+
 function applyFilter(items, filter) {
   if (!filter) return items;
   let r = items;
@@ -1329,8 +1497,8 @@ function applyFilter(items, filter) {
   if (state === 'enroute')   r = r.filter(i => !i.delivered);
   if (state === 'delivered') r = r.filter(i => i.delivered);
   // 'carriers' (array, current) — falls back to legacy singular 'carrier' (string) for old configs
-  const carrierList = filter.carriers?.length ? filter.carriers : (filter.carrier ? [filter.carrier] : null);
-  if (carrierList?.length) {
+  const carrierList = filterCarriers(filter);
+  if (carrierList.length) {
     const set = new Set(carrierList.map(c => c.toLowerCase()));
     r = r.filter(i => i.carrierCode && set.has(i.carrierCode.toLowerCase()));
   }
@@ -1434,9 +1602,13 @@ const CARD_CSS = `
   .chevron-btn:hover { background: var(--secondary-background-color); color: var(--primary-text-color); }
   .row-wrapper { display: block; }
   .detail {
-    display: none; padding: 0 16px 10px calc(16px + 40px + 14px);
+    display: none; padding: 0 16px 10px calc(16px + 38px + 14px);
   }
   .detail.open { display: block; }
+  /* Subtle separator from whatever comes next when expanded — naturally
+     never applies in split layout, since each item there sits alone in its
+     own ha-card (always the "last" and only child). */
+  .row-wrapper:not(:last-child) .detail.open { border-bottom: 1px solid var(--divider-color, rgba(0,0,0,.06)); }
   .event-item { padding: 6px 0; }
   .event-item + .event-item { border-top: 1px solid var(--divider-color, rgba(0,0,0,.06)); }
   .event-meta {
@@ -1453,6 +1625,11 @@ const CARD_CSS = `
     cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
   }
   .tracking-code:hover { color: var(--primary-color); }
+  .package-size {
+    margin-top: 10px;
+    font-size: var(--ha-font-size-xs, 11px); color: var(--secondary-text-color);
+    display: flex; align-items: center; gap: 4px;
+  }
   .split-wrapper { display: flex; flex-direction: column; gap: 8px; }
   .empty {
     padding: 28px 16px; text-align: center; color: var(--secondary-text-color);
@@ -1466,6 +1643,14 @@ function mk(tag, cls, text) {
   if (cls)  el.className   = cls;
   if (text) el.textContent = text;
   return el;
+}
+
+function mkIcon(name, { size, color } = {}) {
+  const ico = document.createElement('ha-icon');
+  ico.setAttribute('icon', name);
+  if (size)  ico.style.setProperty('--mdc-icon-size', size);
+  if (color) ico.style.color = color;
+  return ico;
 }
 
 function renderRow(item, show, tr, openItems) {
@@ -1495,7 +1680,10 @@ function renderRow(item, show, tr, openItems) {
     bg.style.cssText = 'background:' + hex + ';opacity:.15;position:absolute;inset:0;border-radius:50%;pointer-events:none;';
     iconWrap.appendChild(bg);
   }
-  if (item.imageUrl) {
+  // Once delivered, always show the icon (a checkmark for letters) rather
+  // than the scan thumbnail — even though imageUrl itself stays resolved so
+  // the detail view below can still show/open the actual scan on request.
+  if (item.imageUrl && !item.delivered) {
     const img = document.createElement('img');
     img.src = item.imageUrl;
     img.alt = '';
@@ -1504,18 +1692,12 @@ function renderRow(item, show, tr, openItems) {
     // swap in the same icon used when there's no image_url at all.
     img.addEventListener('error', () => {
       img.remove();
-      const haIcon = document.createElement('ha-icon');
-      haIcon.setAttribute('icon', item.icon);
-      haIcon.style.color = hex;
-      iconWrap.appendChild(haIcon);
+      iconWrap.appendChild(mkIcon(item.icon, { color: hex }));
       hideChevronIfImageWasTheOnlyReason();
     });
     iconWrap.appendChild(img);
   } else {
-    const haIcon = document.createElement('ha-icon');
-    haIcon.setAttribute('icon', item.icon);
-    haIcon.style.color = hex;
-    iconWrap.appendChild(haIcon);
+    iconWrap.appendChild(mkIcon(item.icon, { color: hex }));
   }
 
   // Badge
@@ -1534,44 +1716,33 @@ function renderRow(item, show, tr, openItems) {
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
   if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
-  // Letterbox is hidden once a trackable shipment is delivered (the "you
-  // don't need to wait home" framing no longer applies) — but mail (no
-  // trackingCode at all) always fits the letterbox by definition, so it
-  // stays visible regardless of the delivered flag.
-  const showLetterbox = item.letterbox && (!item.delivered || !item.trackingCode);
+  // Letterbox is hidden once delivered — "this fits through your letterbox"
+  // is only useful before you've received it (you don't need to wait home),
+  // whether that's a package or mail.
+  const showLetterbox = item.letterbox && !item.delivered;
   if ((show.carrier && item.carrier) || showLetterbox || item.rerouted || item.servicePoint) {
     const carrier = mk('div', 'carrier');
+    let chipShown = false;
+    const addSeparator = () => { if (chipShown) carrier.appendChild(mk('span', 'carrier-sep', '·')); chipShown = true; };
+
     if (show.carrier && item.carrier) {
-      if (show.brand_icon !== false && item.brandIcon) {
-        const ico = document.createElement('ha-icon');
-        ico.setAttribute('icon', item.brandIcon);
-        ico.style.setProperty('--mdc-icon-size', '14px');
-        carrier.appendChild(ico);
-      }
+      if (show.brand_icon !== false && item.brandIcon) carrier.appendChild(mkIcon(item.brandIcon, { size: '14px' }));
       carrier.appendChild(document.createTextNode(item.carrier));
+      chipShown = true;
     }
     if (showLetterbox) {
-      if (show.carrier && item.carrier) carrier.appendChild(mk('span', 'carrier-sep', '·'));
-      const ico = document.createElement('ha-icon');
-      ico.setAttribute('icon', 'mdi:mailbox');
-      ico.style.setProperty('--mdc-icon-size', '13px');
-      carrier.appendChild(ico);
+      addSeparator();
+      carrier.appendChild(mkIcon('mdi:mailbox', { size: '13px' }));
       carrier.appendChild(document.createTextNode((tr && tr.letterbox) || 'Fits in your letterbox'));
     }
     if (item.rerouted) {
-      if ((show.carrier && item.carrier) || showLetterbox) carrier.appendChild(mk('span', 'carrier-sep', '·'));
-      const ico = document.createElement('ha-icon');
-      ico.setAttribute('icon', 'mdi:store-marker');
-      ico.style.setProperty('--mdc-icon-size', '13px');
-      carrier.appendChild(ico);
+      addSeparator();
+      carrier.appendChild(mkIcon('mdi:store-marker', { size: '13px' }));
       carrier.appendChild(document.createTextNode((tr && tr.rerouted) || 'Delivery to a pickup point.'));
     }
     if (item.servicePoint) {
-      if ((show.carrier && item.carrier) || showLetterbox || item.rerouted) carrier.appendChild(mk('span', 'carrier-sep', '·'));
-      const ico = document.createElement('ha-icon');
-      ico.setAttribute('icon', 'mdi:store-marker');
-      ico.style.setProperty('--mdc-icon-size', '13px');
-      carrier.appendChild(ico);
+      addSeparator();
+      carrier.appendChild(mkIcon('mdi:store-marker', { size: '13px' }));
       const shortCarrier = ({ postnl: 'PostNL', dhlnl: 'DHL', dpdgpcode: 'DPD' })[item.carrierCode] || item.carrier;
       const spText = (tr && typeof tr.service_point === 'function')
         ? tr.service_point(shortCarrier)
@@ -1594,9 +1765,7 @@ function renderRow(item, show, tr, openItems) {
 
   if (hasDetails) {
     chevron = mk('button', 'chevron-btn');
-    chevIco = document.createElement('ha-icon');
-    chevIco.setAttribute('icon', 'mdi:chevron-down');
-    chevIco.style.setProperty('--mdc-icon-size', '16px');
+    chevIco = mkIcon('mdi:chevron-down', { size: '16px' });
     chevron.appendChild(chevIco);
     right.appendChild(chevron);
 
@@ -1612,7 +1781,7 @@ function renderRow(item, show, tr, openItems) {
       bigImg.addEventListener('error', () => { bigImg.remove(); hideChevronIfImageWasTheOnlyReason(); });
       detail.appendChild(bigImg);
     }
-    if (hasEvents) item.events.forEach(e => {
+    if (hasEvents) dedupEvents(item.events).forEach(e => {
       const ei = mk('div', 'event-item');
       // Meta: date + location
       const metaParts = [];
@@ -1621,12 +1790,13 @@ function renderRow(item, show, tr, openItems) {
         let dayLabel;
         if      (diff ===  0) dayLabel = tr.today;
         else if (diff === -1) dayLabel = tr.yesterday;
+        else if (diff  >  -7) dayLabel = tr.days[e.date.getDay()]; // within the past week: day name only
         else {
           const d = e.date;
           dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
         }
         const cap = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
-        metaParts.push(cap + ' ' + formatTime(e.date));
+        metaParts.push(cap + ' ' + tr.at_time + ' ' + formatTime(e.date));
       }
       if (show.location !== false && e.location) metaParts.push(e.location);
       if (metaParts.length) ei.appendChild(mk('div', 'event-meta', metaParts.join(' · ')));
@@ -1634,12 +1804,19 @@ function renderRow(item, show, tr, openItems) {
       detail.appendChild(ei);
     });
 
+    // Package size
+    if (item.packageSize) {
+      const ps = mk('div', 'package-size');
+      const sizeIco = mkIcon(item.packageSizeIcon || 'mdi:ruler-square', { size: '13px' });
+      ps.appendChild(sizeIco);
+      ps.appendChild(document.createTextNode(item.packageSize));
+      detail.appendChild(ps);
+    }
+
     // Tracking code
     if (item.trackingCode) {
       const tc = mk('div', 'tracking-code');
-      const copyIco = document.createElement('ha-icon');
-      copyIco.setAttribute('icon', 'mdi:content-copy');
-      copyIco.style.setProperty('--mdc-icon-size', '13px');
+      const copyIco = mkIcon('mdi:content-copy', { size: '13px' });
       const copyLabel = document.createTextNode(item.trackingCode);
       tc.appendChild(copyIco);
       tc.appendChild(copyLabel);
@@ -1691,13 +1868,13 @@ class PackageTrackerCard extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = '<style>' + CARD_CSS + '</style><div id="root"></div>';
-    this._root       = this.shadowRoot.getElementById('root');
-    this._lastHashes    = {};
-    this._lastLang     = null;
+    this._root           = this.shadowRoot.getElementById('root');
+    this._lastHashes     = {};
+    this._lastLang       = null;
     this._countdownTimer = null;
-    this._built         = false;
-    this._cachedItems   = [];
-    this._openItems     = new Set();
+    this._built          = false;
+    this._cachedItems    = [];
+    this._openItems      = new Set();
   }
 
   connectedCallback() {
@@ -1756,7 +1933,7 @@ class PackageTrackerCard extends HTMLElement {
 
   _collectItems() {
     const lang = this._hass.language || 'en';
-    const ctx   = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'] };
+    const ctx   = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
     const items = [];
     for (const source of this._config.sources) {
       const def = INTEGRATIONS[source.type];
@@ -1771,35 +1948,51 @@ class PackageTrackerCard extends HTMLElement {
     // integration has no delivery slot yet) — so Parcel wins wholesale instead
     // of just contributing name/events. Revisit per carrier as those mature.
     const PARCEL_WINS_FOR = new Set(['dpd']);
+    // Supplementary fields that may exist on one source but not the other,
+    // independent of which source wins the main structural fields (status/
+    // dates): Parcel has full event history, the dedicated carrier
+    // integrations have package size/weight and pickup-point detail that
+    // Parcel doesn't expose. Always backfilled from whichever side has them,
+    // never overwriting a value the winning side already has.
+    const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint'];
+    const backfill = (target, fallback) => {
+      for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
+    };
     const seen = new Map();
     return items.filter(i => {
-      if (!i.trackingCode) return true;
-      if (seen.has(i.trackingCode)) {
-        const kept = seen.get(i.trackingCode);
-        if (i.integration === 'parcel' && kept.integration !== 'parcel') {
-          if (PARCEL_WINS_FOR.has(kept.integration)) {
+      if (!i.dedupKey) return true;
+      if (seen.has(i.dedupKey)) {
+        const kept = seen.get(i.dedupKey);
+        const keptBackup = { ...kept };
+        // Identify which of the two (if either) is the Parcel-sourced item,
+        // regardless of arrival order — `kept` might be either one.
+        let parcelItem = null, otherItem = null;
+        if (i.integration === 'parcel' && kept.integration !== 'parcel') { parcelItem = i; otherItem = kept; }
+        else if (kept.integration === 'parcel' && i.integration !== 'parcel') { parcelItem = kept; otherItem = i; }
+        if (parcelItem && otherItem) {
+          if (PARCEL_WINS_FOR.has(otherItem.integration)) {
             // Parcel is currently the richer source for this carrier — take it wholesale
-            Object.assign(kept, i);
+            if (kept !== parcelItem) Object.assign(kept, parcelItem);
           } else {
-            // kept = PostNL/DHL NL, i = Parcel — naam overnemen + events als kept die niet heeft
-            if (i.name) kept.name = i.name;
-            if (i.events?.length && !kept.events?.length) kept.events = i.events;
-          }
-        } else if (kept.integration === 'parcel' && i.integration !== 'parcel') {
-          if (PARCEL_WINS_FOR.has(i.integration)) {
-            // kept (Parcel) already wins — nothing to do
-          } else {
-            // kept = Parcel, i = PostNL/DHL NL — i's data wint, Parcel naam + events bewaren
-            const parcelName = kept.name;
-            const parcelEvents = kept.events;
-            Object.assign(kept, i);
+            // The dedicated carrier integration wins structurally; capture
+            // Parcel's name/events *before* any assign below, since if
+            // parcelItem is `kept` itself, assigning into `kept` would
+            // otherwise clobber them first.
+            const parcelName = parcelItem.name, parcelEvents = parcelItem.events;
+            if (kept !== otherItem) Object.assign(kept, otherItem);
             if (parcelName) kept.name = parcelName;
             if (parcelEvents?.length && !kept.events?.length) kept.events = parcelEvents;
           }
         }
+        // Whichever branch ran (or didn't), backfill any enrichment field
+        // the winning side ended up without — first from kept's own
+        // pre-merge state (in case a wholesale overwrite cleared it), then
+        // from the other source.
+        backfill(kept, keptBackup);
+        backfill(kept, i);
         return false;
       }
-      seen.set(i.trackingCode, i); return true;
+      seen.set(i.dedupKey, i); return true;
     });
   }
 
@@ -1814,7 +2007,9 @@ class PackageTrackerCard extends HTMLElement {
       const hasA = a.line1 ? 1 : 0, hasB = b.line1 ? 1 : 0;
       if (hasA !== hasB) return hasB - hasA;
       const nameA = (a.name || '').toLowerCase(), nameB = (b.name || '').toLowerCase();
-      const nameDiff = nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+      let nameDiff = 0;
+      if      (nameA < nameB) nameDiff = -1;
+      else if (nameA > nameB) nameDiff = 1;
       // Within delivered: newest first
       if (a.delivered) {
         const dateDiff = (b.deliveryDate || 0) - (a.deliveryDate || 0);
@@ -1861,9 +2056,8 @@ class PackageTrackerCard extends HTMLElement {
     if (!items.length) {
       const card  = document.createElement('ha-card');
       const empty = mk('div', 'empty');
-      const ico   = document.createElement('ha-icon');
-      ico.setAttribute('icon', 'mdi:package-variant');
-      ico.style.cssText = '--mdc-icon-size:32px;opacity:.3;';
+      const ico = mkIcon('mdi:package-variant', { size: '32px' });
+      ico.style.opacity = '.3';
       empty.appendChild(ico);
       empty.appendChild(mk('div', null, tr.no_packages));
       card.appendChild(empty);
@@ -1873,8 +2067,17 @@ class PackageTrackerCard extends HTMLElement {
 
     const buildRow = (item) => {
       const row = renderRow(item, show, tr, this._openItems);
-      if (item.tapUrl) row.querySelector('.icon-wrap.clickable')
-        ?.addEventListener('click', () => window.open(item.tapUrl, '_blank'));
+      const clickableIcon = row.querySelector('.icon-wrap.clickable');
+      if (clickableIcon) {
+        const chevronBtn = row.querySelector('.chevron-btn');
+        if (item.imageUrl && chevronBtn) {
+          // A scan thumbnail with an expandable preview available — open
+          // that inline instead of navigating to an external page.
+          clickableIcon.addEventListener('click', () => chevronBtn.click());
+        } else if (item.tapUrl) {
+          clickableIcon.addEventListener('click', () => window.open(item.tapUrl, '_blank'));
+        }
+      }
       // Persist open/close state across renders
       if (item.trackingCode) {
         row.querySelector('.chevron-btn')?.addEventListener('click', () => {
@@ -1920,6 +2123,8 @@ customElements.define('package-tracker-card', PackageTrackerCard);
 const EDITOR_CSS = `
   :host { display: block; }
   ha-form { display: block; }
+  .repo-link { font-size: 11px; color: var(--secondary-text-color); white-space: nowrap; margin-right: 8px; text-decoration: none; flex-shrink: 0; }
+  .repo-link:hover { text-decoration: underline; }
   .editor-card { border: 1px solid var(--divider-color); border-radius: var(--ha-card-border-radius, 12px); overflow: hidden; background: var(--ha-card-background, var(--card-background-color, #fff)); }
   .tab-bar { display: flex; border-bottom: 1px solid var(--divider-color); }
   .tab-btn { flex: 1; padding: 12px 4px; border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--secondary-text-color); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
@@ -1958,11 +2163,11 @@ class PackageTrackerCardEditor extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this._config   = null;
-    this._hass     = null;
-    this._built    = false;
-    this._ownFire  = false;
-    this._tab           = 'sources';
+    this._config         = null;
+    this._hass           = null;
+    this._built          = false;
+    this._ownFire        = false;
+    this._tab            = 'sources';
     this._filterAdvOpen = false;
   }
 
@@ -1972,7 +2177,7 @@ class PackageTrackerCardEditor extends HTMLElement {
   _availableCarriers() {
     if (!this._hass || !this._config) return [];
     const lang = this._hass.language || 'en';
-    const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'] };
+    const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
     const seen = new Map();
     for (const source of this._config.sources || []) {
       const def = INTEGRATIONS[source.type];
@@ -2136,30 +2341,108 @@ class PackageTrackerCardEditor extends HTMLElement {
       if (group.url) {
         const repoMatch = group.url.match(/github\.com\/([^/]+\/[^/]+)/);
         const repoLink = document.createElement('a');
+        repoLink.className = 'repo-link';
         repoLink.href = group.url; repoLink.target = '_blank'; repoLink.rel = 'noopener';
         repoLink.title = uiTr.source_repo_link_desc;
-        repoLink.style.cssText = 'font-size:11px;color:var(--secondary-text-color);white-space:nowrap;' +
-          'margin-right:8px;text-decoration:none;flex-shrink:0;';
         repoLink.textContent = repoMatch ? repoMatch[1] : uiTr.source_repo_link;
-        repoLink.addEventListener('mouseenter', () => { repoLink.style.textDecoration = 'underline'; });
-        repoLink.addEventListener('mouseleave', () => { repoLink.style.textDecoration = 'none'; });
         header.appendChild(repoLink);
       }
 
-      const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
+      const deviceMap = this._hass ? deviceCandidatesForGroup(group, this._hass, sources) : null;
 
+      if (deviceMap) {
+        // Multiple recognized devices/accounts for this group (e.g. two
+        // PostNL accounts) — show one section per device, each with its own
+        // add/remove and per-type entity display, so it's both visible and
+        // editable per account, the same granularity YAML already shows.
+        // No group-level button here (each device manages its own below),
+        // so the header ends right after the repo link with no empty gap.
+        groupEl.appendChild(header);
+        for (const [deviceName, entityMap] of deviceMap) {
+          const entityIds     = [...entityMap.values()];
+          const deviceActive  = entityIds.some(e => sources.some(s => s.entity === e));
+
+          // One shared left edge (matching the group header's own 14px) for
+          // everything belonging to this device — name row and per-type
+          // rows below line up with each other and with the title above;
+          // the divider line is what separates one device from the next.
+          const deviceBlock = document.createElement('div'); deviceBlock.className = 'device-block';
+          deviceBlock.style.cssText = 'border-top:1px solid var(--divider-color);';
+
+          const nameRow = document.createElement('div');
+          nameRow.style.cssText = 'display:flex;align-items:center;padding:8px 8px 8px 14px;min-height:40px;';
+          nameRow.appendChild(Object.assign(document.createElement('div'), {
+            textContent: deviceName, style: 'flex:1;font-size:13px;color:var(--secondary-text-color);',
+          }));
+          const deviceBtnWrap = document.createElement('div'); deviceBtnWrap.className = 'row-action';
+          if (deviceActive) {
+            const delBtn = document.createElement('ha-icon-button'); delBtn.className = 'delete-btn';
+            delBtn.appendChild(mkIcon('mdi:delete-outline'));
+            delBtn.addEventListener('click', () => {
+              this._fireAndRender({ ...this._config, sources: sources.filter(s => !entityIds.includes(s.entity)) });
+            });
+            deviceBtnWrap.appendChild(delBtn);
+          } else {
+            const addBtn = document.createElement('ha-icon-button'); addBtn.className = 'add-btn';
+            addBtn.appendChild(mkIcon('mdi:plus'));
+            addBtn.addEventListener('click', () => {
+              const newSources = [...sources];
+              for (const [type, entityId] of entityMap) newSources.push({ type, entity: entityId });
+              this._fireAndRender({ ...this._config, sources: newSources });
+            });
+            deviceBtnWrap.appendChild(addBtn);
+          }
+          nameRow.appendChild(deviceBtnWrap);
+          deviceBlock.appendChild(nameRow);
+
+          // Body — only once this device is active, mirroring exactly what
+          // the single-device case shows below its own header: one entity
+          // display per type, read-only-in-practice (locked to this
+          // device's own entity) but visible the same way. Same 14px left
+          // edge as the name row above and the group title.
+          if (deviceActive) {
+            group.types.forEach((type) => {
+              const deviceEntity = entityMap.get(type);
+              if (!deviceEntity) return; // this device doesn't offer this type (e.g. no letters sensor)
+              const def      = INTEGRATIONS[type];
+              const stored   = sources.some(s => s.type === type && s.entity === deviceEntity) ? deviceEntity : null;
+              const rowLabel = (def.rowLabelKey && uiTr[def.rowLabelKey]) || def.rowLabel;
+
+              const section = document.createElement('div');
+              section.style.cssText = 'padding:0 12px 10px 14px;';
+              section.appendChild(Object.assign(document.createElement('div'), {
+                className: 'body-label', textContent: rowLabel, style: 'margin-top:0;',
+              }));
+
+              const entityForm = document.createElement('ha-form');
+              entityForm.schema = [{ name: 'entity', selector: { entity: { include_entities: [deviceEntity] } } }];
+              entityForm.data         = { entity: stored };
+              entityForm.computeLabel = () => '';
+              if (this._hass) entityForm.hass = this._hass;
+              entityForm.addEventListener('value-changed', (e) => {
+                const entity = e.detail.value.entity ?? null;
+                const without = sources.filter(s => !(s.type === type && s.entity === deviceEntity));
+                this._fireAndRender({ ...this._config, sources: entity ? [...without, { type, entity }] : without });
+              });
+              section.appendChild(entityForm);
+              deviceBlock.appendChild(section);
+            });
+          }
+
+          groupEl.appendChild(deviceBlock);
+        }
+      } else {
+      const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
       if (groupActive) {
         // Trash button — removes all sources for this group
         const delBtn = document.createElement('ha-icon-button'); delBtn.className = 'delete-btn';
-        const delIco = document.createElement('ha-icon'); delIco.setAttribute('icon', 'mdi:delete-outline');
-        delBtn.appendChild(delIco);
+        delBtn.appendChild(mkIcon('mdi:delete-outline'));
         delBtn.addEventListener('click', () => saveGroup(group.types, []));
         btnWrap.appendChild(delBtn);
       } else if (platformOk) {
         // Add button — ha-icon-button, blue
         const addBtn = document.createElement('ha-icon-button'); addBtn.className = 'add-btn';
-        const addIco = document.createElement('ha-icon'); addIco.setAttribute('icon', 'mdi:plus');
-        addBtn.appendChild(addIco);
+        addBtn.appendChild(mkIcon('mdi:plus'));
         addBtn.addEventListener('click', () => {
           const toAdd = [];
           for (const type of group.types) {
@@ -2178,17 +2461,23 @@ class PackageTrackerCardEditor extends HTMLElement {
         // source) so the visual shape alone signals "install this first".
         const installBtn = document.createElement('ha-icon-button'); installBtn.className = 'install-btn';
         installBtn.title = uiTr.install_integration;
-        const installIco = document.createElement('ha-icon'); installIco.setAttribute('icon', 'mdi:download-outline');
-        installBtn.appendChild(installIco);
+        installBtn.appendChild(mkIcon('mdi:download-outline'));
         installBtn.addEventListener('click', () => window.open(group.url, '_blank', 'noopener'));
         btnWrap.appendChild(installBtn);
       }
 
       header.appendChild(btnWrap);
       groupEl.appendChild(header);
+      }
 
-      // Body — only shown when group is active
-      if (groupActive) {
+      // Body — only shown when group is active AND not in per-device mode.
+      // This section assumes at most one source per type (it picks/rebuilds
+      // via find()/findIndex(), which only ever sees the first match) — with
+      // multiple devices of the same type, touching it would silently
+      // collapse the group down to one source per type, discarding the
+      // others. The device rows above already handle add/remove correctly
+      // for that case, so this section simply doesn't apply there.
+      if (groupActive && !deviceMap) {
         const body = document.createElement('div');
         body.style.cssText = 'border-top:1px solid var(--divider-color);';
 
@@ -2226,8 +2515,9 @@ class PackageTrackerCardEditor extends HTMLElement {
           }
 
           const entityForm = document.createElement('ha-form');
+          const includeEntities = available.length ? [...available, ...(stored ? [stored] : [])] : null;
           entityForm.schema = [{ name: 'entity', selector: { entity: {
-            ...(available.length ? { include_entities: [...available, ...(stored ? [stored] : [])] } : {}),
+            ...(includeEntities ? { include_entities: includeEntities } : {}),
             exclude_entities: usedByOthers,
           } } }];
           entityForm.data         = { entity: currentEntity };
@@ -2262,12 +2552,18 @@ class PackageTrackerCardEditor extends HTMLElement {
     const root   = this._content;
     const filter = this._config.filter || {};
     const save   = (f) => this._fireAndRender({ ...this._config, filter: f });
-    const upd    = (key, val) => { const f = { ...filter }; if (val !== undefined && val !== null && val !== '') f[key] = val; else delete f[key]; save(f); };
-    // No-render variants — for fields that don't affect any other row's
+    const buildUpdatedFilter = (key, val) => {
+      const f = { ...filter };
+      if (val !== undefined && val !== null && val !== '') f[key] = val;
+      else delete f[key];
+      return f;
+    };
+    const upd = (key, val) => save(buildUpdatedFilter(key, val));
+    // No-render variant — for fields that don't affect any other row's
     // visibility/disabled state, so typing or arrow-keying doesn't tear down
     // and recreate the input (which would steal focus after every keystroke).
     const saveNoRender = (f) => this._fire({ ...this._config, filter: f });
-    const updNoRender  = (key, val) => { const f = { ...filter }; if (val !== undefined && val !== null && val !== '') f[key] = val; else delete f[key]; saveNoRender(f); };
+    const updNoRender  = (key, val) => saveNoRender(buildUpdatedFilter(key, val));
     const uiTr   = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_status }));
@@ -2307,8 +2603,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     // Advanced (collapsible)
     const advBtn = document.createElement('button');
     advBtn.className = 'advanced-toggle' + (this._filterAdvOpen ? ' open' : '');
-    const advIco = document.createElement('ha-icon'); advIco.setAttribute('icon', 'mdi:chevron-down');
-    advBtn.appendChild(advIco);
+    advBtn.appendChild(mkIcon('mdi:chevron-down'));
     advBtn.appendChild(document.createTextNode(' ' + uiTr.advanced));
     const advContent = document.createElement('div');
     advContent.className = 'advanced-content';
@@ -2319,25 +2614,8 @@ class PackageTrackerCardEditor extends HTMLElement {
       advContent.style.display = this._filterAdvOpen ? '' : 'none';
     });
 
-    // Specific day
-    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', style: 'margin-top:0', textContent: uiTr.filter_date }));
-    const dateGroup = document.createElement('div'); dateGroup.className = 'settings-group';
-    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label, filter.date, null, null, '', uiTr.filter_date_desc, (val) => updNoRender('date', val !== '' ? Number(val) : undefined)));
-    advContent.appendChild(dateGroup);
-
-    // Time slot
-    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_slot }));
-    const slotGroup = document.createElement('div'); slotGroup.className = 'settings-group';
-    const slotDisabled = (filter.state || 'all') !== 'enroute';
-    const slotRow = this._mkToggleRow(uiTr.filter_slot_active, !!filter.slot_active, slotDisabled ? null : uiTr.filter_slot_desc,
-      (val) => upd('slot_active', val || undefined),
-      { disabled: slotDisabled, disabledReason: uiTr.filter_slot_requires_enroute }
-    );
-    slotGroup.appendChild(slotRow);
-    advContent.appendChild(slotGroup);
-
     // Carrier
-    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_carrier }));
+    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', style: 'margin-top:0', textContent: uiTr.filter_carrier }));
     const carrierGroup = document.createElement('div'); carrierGroup.className = 'settings-group';
     const carrierRow = document.createElement('div'); carrierRow.className = 'srow';
     const ct = document.createElement('div'); ct.className = 'srow-text';
@@ -2348,7 +2626,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     ct.appendChild(cd); carrierRow.appendChild(ct);
     const carrierForm = document.createElement('ha-form');
     carrierForm.schema = [{ name: 'carriers', selector: { select: { multiple: true, mode: 'dropdown', options: carrierOptions } } }];
-    const initialCarriers = filter.carriers?.length ? filter.carriers : (filter.carrier ? [filter.carrier] : []);
+    const initialCarriers = filterCarriers(filter);
     carrierForm.data = { carriers: initialCarriers };
     carrierForm.computeLabel = () => '';
     carrierForm.style.cssText = 'flex-shrink:0;width:220px;';
@@ -2364,6 +2642,23 @@ class PackageTrackerCardEditor extends HTMLElement {
     carrierRow.appendChild(carrierForm);
     carrierGroup.appendChild(carrierRow);
     advContent.appendChild(carrierGroup);
+
+    // Time slot
+    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_slot }));
+    const slotGroup = document.createElement('div'); slotGroup.className = 'settings-group';
+    const slotDisabled = (filter.state || 'all') !== 'enroute';
+    const slotRow = this._mkToggleRow(uiTr.filter_slot_active, !!filter.slot_active, slotDisabled ? null : uiTr.filter_slot_desc,
+      (val) => upd('slot_active', val || undefined),
+      { disabled: slotDisabled, disabledReason: uiTr.filter_slot_requires_enroute }
+    );
+    slotGroup.appendChild(slotRow);
+    advContent.appendChild(slotGroup);
+
+    // Specific day
+    advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_date }));
+    const dateGroup = document.createElement('div'); dateGroup.className = 'settings-group';
+    dateGroup.appendChild(this._mkNumberRow(uiTr.filter_date_label, filter.date, null, null, '', uiTr.filter_date_desc, (val) => updNoRender('date', val !== '' ? Number(val) : undefined)));
+    advContent.appendChild(dateGroup);
 
     root.appendChild(advBtn);
     root.appendChild(advContent);
@@ -2416,8 +2711,8 @@ class PackageTrackerCardEditor extends HTMLElement {
       }
     }
     showGroup.appendChild(brandRow);
-    showGroup.appendChild(mkShow(uiTr.badge,    'badge',    uiTr.badge_desc));
     showGroup.appendChild(mkShow(uiTr.details,  'details',  uiTr.details_desc));
+    showGroup.appendChild(mkShow(uiTr.badge,    'badge',    uiTr.badge_desc));
     showGroup.appendChild(this._mkToggleRow(uiTr.location, show.location === true, uiTr.location_desc,
       (val) => this._fireAndRender({ ...c, show: { ...show, location: val } })
     ));
