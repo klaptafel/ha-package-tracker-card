@@ -2296,12 +2296,28 @@ class PackageTrackerCardEditor extends HTMLElement {
       groups.get(g).types.push(type);
       if (def.alpha) groups.get(g).alpha = true;
     }
+    // Compute each group's installed/active status once — used for both
+    // the sort order below and the row rendering further down.
+    for (const group of groups.values()) {
+      group.platformOk  = group.types.some(t => this._hass && isPlatformInstalled(t, this._hass));
+      group.groupActive = group.types.some(t => sources.some(s => s.type === t));
+    }
+
+    // Sort by installed status only (not active/configured) — that stays
+    // stable regardless of what the user does in this editor, so adding or
+    // removing a source doesn't make the list jump around under them.
+    // Alphabetical by label within each tier.
+    const tier = (g) => g.platformOk ? 0 : 1;
+    const sortedGroups = [...groups.entries()].sort(([, a], [, b]) => {
+      const tierDiff = tier(a) - tier(b);
+      return tierDiff !== 0 ? tierDiff : a.label.localeCompare(b.label);
+    });
 
     const list = document.createElement('div'); list.className = 'item-list';
 
-    for (const [groupKey, group] of groups) {
-      const platformOk  = group.types.some(t => this._hass && isPlatformInstalled(t, this._hass));
-      const groupActive = group.types.some(t => sources.some(s => s.type === t));
+    for (const [groupKey, group] of sortedGroups) {
+      const platformOk  = group.platformOk;
+      const groupActive = group.groupActive;
 
       // arjenbos/ha-postnl and peternijssen/ha-postnl share the same HA
       // domain and can therefore never both be installed at once. Default
@@ -2311,8 +2327,7 @@ class PackageTrackerCardEditor extends HTMLElement {
       // configured source, so an existing setup stays manageable.
       if (groupKey === 'postnl' && !groupActive) {
         const peterGroup = groups.get('postnl_canonical');
-        const peterInstalled = peterGroup ? peterGroup.types.some(t => this._hass && isPlatformInstalled(t, this._hass)) : false;
-        if (!platformOk || peterInstalled) continue;
+        if (!platformOk || peterGroup?.platformOk) continue;
       }
 
       const groupEl = document.createElement('div'); groupEl.className = 'source-group';
