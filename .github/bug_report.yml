@@ -1,0 +1,73 @@
+name: Bug report
+description: Something doesn't look right
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! Please scrub any personal info (real names, addresses, tracking numbers) from anything you paste below.
+
+  - type: checkboxes
+    id: integrations
+    attributes:
+      label: Which integration(s) does this involve?
+      description: Select all that apply
+      options:
+        - label: PostNL (arjenbos/ha-postnl)
+        - label: PostNL (peternijssen/ha-postnl fork)
+        - label: DHL NL (peternijssen/ha-dhl-nl)
+        - label: DPD (peternijssen/ha-dpd)
+        - label: Parcel (parcelapp.net)
+
+  - type: input
+    id: integration-version
+    attributes:
+      label: Integration version
+      description: Check HACS, or the integration's page under Settings → Devices & Services
+      placeholder: "e.g. 4.0.0, 2.1.0b1"
+    validations:
+      required: true
+
+  - type: input
+    id: card-version
+    attributes:
+      label: Package Tracker Card version
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong?
+      description: What did you expect to happen, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: entity-attributes
+    attributes:
+      label: Entity attributes
+      description: >
+        Developer Tools → States → select the relevant sensor → copy the
+        attributes. This is usually the single most useful thing you can
+        share — please scrub personal info first.
+      render: yaml
+    validations:
+      required: true
+
+  - type: textarea
+    id: card-config
+    attributes:
+      label: Card configuration
+      description: Your card's YAML config (sources, filter, show settings)
+      render: yaml
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional)
+      description: Drag and drop images here if it helps explain the issue
