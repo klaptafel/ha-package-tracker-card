@@ -42,9 +42,9 @@ Auto-detected — open the editor's **Sources** tab and click **+** next to a de
 PostNL, DHL NL, and DPD each cover that one specific carrier. Parcel covers several carriers generically.
 
 - [arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl)
-- [peternijssen/ha-postnl](https://github.com/peternijssen/ha-postnl) — a fork of the above; shares the same Home Assistant domain, so only one of the two can be installed at a time, detected automatically. Also adds scanned mail (letters) as a bonus, shown alongside your packages.
-- [peternijssen/ha-dhl-nl](https://github.com/peternijssen/ha-dhl-nl)
-- [peternijssen/ha-dpd](https://github.com/peternijssen/ha-dpd)
+- [peternijssen/ha-postnl](https://github.com/peternijssen/ha-postnl) — a fork of the above; shares the same Home Assistant domain, so only one of the two can be installed at a time, detected automatically. Also adds scanned mail (letters) as a bonus, shown alongside your packages. **Requires 4.0.0 or newer** — older versions use a different data shape this card doesn't recognize.
+- [peternijssen/ha-dhl-nl](https://github.com/peternijssen/ha-dhl-nl) — 2.0.0 (stable) or newer recommended.
+- [peternijssen/ha-dpd](https://github.com/peternijssen/ha-dpd) — 2.0.0 (stable) or newer recommended.
 - [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha) — a third-party aggregator. Works well on its own, or alongside a carrier's own integration above — the card merges them rather than showing duplicates.
 
 | Option    | Default  | Description                                    |
