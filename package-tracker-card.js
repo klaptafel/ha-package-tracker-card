@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.0.0';
+const CARD_VERSION = '1.1.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list — one entry per real-world carrier, each with its
@@ -397,7 +397,6 @@ const TRANSLATIONS = {
     delivery_between: (day, from, to) => 'Delivery ' + day + ' between ' + from + ' - ' + to + '.',
     delivery_before: (day, to) => 'Delivery ' + day + ' before ' + to + '.',
     delivery_on: (day) => 'Delivery ' + day + '.',
-    delivery_around: (day, start) => 'Delivery ' + day + ' around ' + start + '.',
     no_packages: 'No packages',
     not_found: ' — not found',
     install_integration: 'Install integration',
@@ -465,7 +464,6 @@ const TRANSLATIONS = {
     delivery_between: (day, from, to) => 'Levering ' + day + ' tussen ' + from + ' - ' + to + '.',
     delivery_before: (day, to) => 'Levering ' + day + ' voor ' + to + '.',
     delivery_on: (day) => 'Levering ' + day + '.',
-    delivery_around: (day, start) => 'Levering ' + day + ' rond ' + start + '.',
     no_packages: 'Geen pakketjes',
     not_found: ' — niet gevonden',
     install_integration: 'Installeer integratie',
@@ -944,6 +942,40 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   if      (sizeText)   packageSizeIcon = 'mdi:ruler-square';
   else if (weightText) packageSizeIcon = 'mdi:scale';
 
+  // Optional, off-by-default `history` array — confirmed directly by
+  // peternijssen (shared across DHL NL/DPD/PostNL canonical 2.3.0/2.3.0/4.2.0)
+  // as {timestamp, status, raw_status}[], oldest first. Reversed to
+  // newest-first, since that's the order the rest of the card's event
+  // timeline expects.
+  //
+  // Confirmed against real history data from all three: DHL NL's raw_status
+  // is a SCREAMING_SNAKE_CASE machine code (PARCEL_SORTED_AT_HUB), but
+  // PostNL's and — surprisingly — DPD's are already full, human-readable
+  // sentences ("Bezorger is onderweg", "Hub or other premises - Sorted").
+  // That's a meaningfully different shape from DPD's top-level raw_status
+  // (which IS a machine code, e.g. "DELIVERED") — the per-entry history
+  // field doesn't follow the same convention. So: when raw_status looks
+  // like a machine code, treat it as enrichment alongside the canonical
+  // status (same approach the main status line already uses). When it's
+  // already a sentence, it's inherently more specific than the generic
+  // canonical text ("In transit.") and is used directly instead.
+  const isMachineCode = (s) => /^[A-Z][A-Z0-9_]*$/.test(String(s || ''));
+  const events = Array.isArray(p.history) ? [...p.history].reverse().map(h => {
+    const date = h.timestamp ? new Date(h.timestamp) : null;
+    let text;
+    if (h.raw_status && !isMachineCode(h.raw_status)) {
+      text = ensurePeriod(h.raw_status);
+    } else {
+      text = canonicalParcelStatusLine(h.status, tr);
+      const normalize = (s) => String(s || '').toLowerCase().replace(/[_\s]/g, '');
+      if (h.raw_status && normalize(h.raw_status) !== normalize(h.status)) {
+        const raw = humanizeRawStatus(h.raw_status);
+        if (raw) text = text.replace(/\.$/, '') + ' (' + raw.replace(/\.$/, '').toLowerCase() + ').';
+      }
+    }
+    return { date: date && !isNaN(date) ? date : null, text, location: null };
+  }) : [];
+
   return mkItem({
     name, line1, line2, icon, color,
     deliveryDate, slotActive, delivered, slotEnd,
@@ -957,6 +989,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     trackingCode: p.barcode || null,
     packageSize,
     packageSizeIcon,
+    events,
   });
 }
 
@@ -1139,10 +1172,11 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'postnl_outgoing'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    // PostNL 4.0 (peternijssen fork) is now stable (4.0.0), so no badge.
-    // Outgoing still has the same unresolved naming caveat as DPD (no
-    // equivalent of DHL NL's 2.1.0+ receiver field confirmed) — see note in
-    // mapCanonicalParcel; stays a code-level caveat, not a user-facing badge.
+    // PostNL 4.0 (peternijssen fork) is stable. 4.1.0 added a `receiver`
+    // field, confirmed via its own release notes ("matching the DHL and DPD
+    // integrations") — the outgoing-name ambiguity flagged here previously
+    // is resolved the same way DHL NL's was; mapCanonicalParcel already
+    // reads `receiver` generically for any carrier, no change needed there.
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl', direction: 'outgoing' })); },
   },
 
@@ -1206,7 +1240,17 @@ const INTEGRATIONS = {
             else if (start === '00:00' && end) line2 = tr.delivery_before(day, end);
             else if (start === '00:00')        line2 = tr.delivery_on(day);
             else if (end)                      line2 = tr.delivery_between(day, start, end);
-            else                               line2 = tr.delivery_around(day, start);
+            else {
+              // Single non-midnight timestamp, no end — confirmed against
+              // real FedEx data ("before 22:00") to mean a deadline, not a
+              // point estimate ("around 22:00"). The implicit window runs
+              // from the start of that day until the deadline.
+              const dayStart = new Date(d); dayStart.setHours(0, 0, 0, 0);
+              slotActive = isSlotActive(dayStart.toISOString(), expectedStr);
+              if      (slotActive)        line2 = tr.slot_all_day(day);
+              else if (new Date() > d)    line2 = tr.slot_late(day, start);
+              else                        line2 = tr.delivery_before(day, start);
+            }
           }
         }
       }
@@ -1320,11 +1364,12 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'dpd_outgoing'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
-    // DPD itself is stable (2.0.0). The sender-vs-recipient question for
-    // outgoing parcels is unresolved (no confirmed `receiver` field like
-    // DHL NL 2.1.0+ — see note in mapCanonicalParcel), but badges are
-    // integration-level, not per source-type, so this stays a code-level
-    // caveat rather than a user-facing alpha/beta badge.
+    // DPD itself is stable (2.0.0). The `receiver` field is now confirmed
+    // present on real DPD incoming/delivered data — but not yet specifically
+    // confirmed on the outgoing sensor itself, so the sender-vs-recipient
+    // question for THIS source type remains technically unresolved. Badges
+    // are integration-level, not per source-type, so this stays a
+    // code-level caveat rather than a user-facing alpha/beta badge.
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
   },
 
@@ -1499,7 +1544,11 @@ function applyFilter(items, filter) {
   // 'carriers' (array, current) — falls back to legacy singular 'carrier' (string) for old configs
   const carrierList = filterCarriers(filter);
   if (carrierList.length) {
-    const set = new Set(carrierList.map(c => c.toLowerCase()));
+    // Each entry may itself be a comma-joined list of codes (one dropdown
+    // option can represent multiple underlying carrier codes that share
+    // the same display name, e.g. PostNL's own 'postnl' and Parcel's
+    // 'tntp') — split before building the match set.
+    const set = new Set(carrierList.flatMap(c => c.toLowerCase().split(',')));
     r = r.filter(i => i.carrierCode && set.has(i.carrierCode.toLowerCase()));
   }
   if (filter.date !== undefined && filter.date !== null) {
@@ -1958,6 +2007,28 @@ class PackageTrackerCard extends HTMLElement {
     const backfill = (target, fallback) => {
       for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
     };
+    // Now that DPD/DHL NL/PostNL can optionally report their own `history`
+    // (in addition to Parcel's event log), the same real-world delivery can
+    // show up as events from both sources — same moments, different wording
+    // (e.g. DPD's own "Hub or other premises - Sorted" vs. Parcel's "Je
+    // pakket is klaar..." for the same timestamp). Picking one source
+    // wholesale would throw away real, non-overlapping information (each
+    // side occasionally has a moment the other doesn't), so instead: merge
+    // per-timestamp. The "primary" source's event wins when both have one
+    // for (roughly) the same moment; the other source's event is added only
+    // when primary has no event near that time at all.
+    const EVENT_MERGE_WINDOW_MS = 2 * 60 * 1000;
+    function mergeEventTimelines(primaryEvents, secondaryEvents) {
+      const primary = primaryEvents || [], secondary = secondaryEvents || [];
+      if (!secondary.length) return primary;
+      if (!primary.length) return secondary;
+      const extra = secondary.filter(se =>
+        !se.date || isNaN(se.date) ||
+        !primary.some(pe => pe.date && !isNaN(pe.date) && Math.abs(pe.date - se.date) <= EVENT_MERGE_WINDOW_MS)
+      );
+      if (!extra.length) return primary;
+      return [...primary, ...extra].sort((a, b) => (b.date || 0) - (a.date || 0));
+    }
     const seen = new Map();
     return items.filter(i => {
       if (!i.dedupKey) return true;
@@ -1971,17 +2042,23 @@ class PackageTrackerCard extends HTMLElement {
         else if (kept.integration === 'parcel' && i.integration !== 'parcel') { parcelItem = kept; otherItem = i; }
         if (parcelItem && otherItem) {
           if (PARCEL_WINS_FOR.has(otherItem.integration)) {
-            // Parcel is currently the richer source for this carrier — take it wholesale
+            // Parcel wins the main fields (status/dates/etc.) wholesale for
+            // this carrier, but its own event log might still be missing
+            // moments the carrier's own (currently less mature) integration
+            // happens to have — merge rather than fully discarding those.
+            const mergedEvents = mergeEventTimelines(parcelItem.events, otherItem.events);
             if (kept !== parcelItem) Object.assign(kept, parcelItem);
+            kept.events = mergedEvents;
           } else {
             // The dedicated carrier integration wins structurally; capture
-            // Parcel's name/events *before* any assign below, since if
-            // parcelItem is `kept` itself, assigning into `kept` would
-            // otherwise clobber them first.
-            const parcelName = parcelItem.name, parcelEvents = parcelItem.events;
+            // Parcel's name *before* any assign below, since if parcelItem
+            // is `kept` itself, assigning into `kept` would otherwise
+            // clobber it first.
+            const parcelName = parcelItem.name;
+            const mergedEvents = mergeEventTimelines(otherItem.events, parcelItem.events);
             if (kept !== otherItem) Object.assign(kept, otherItem);
             if (parcelName) kept.name = parcelName;
-            if (parcelEvents?.length && !kept.events?.length) kept.events = parcelEvents;
+            kept.events = mergedEvents;
           }
         }
         // Whichever branch ran (or didn't), backfill any enrichment field
@@ -2178,7 +2255,14 @@ class PackageTrackerCardEditor extends HTMLElement {
     if (!this._hass || !this._config) return [];
     const lang = this._hass.language || 'en';
     const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
-    const seen = new Map();
+    // Group by display label, not by code — the same real-world carrier can
+    // be reported under different codes depending on the source (e.g.
+    // PostNL's own integrations use 'postnl', but Parcel reports PostNL
+    // shipments under its own 'tntp' code) and would otherwise show up as
+    // separate, identically-labeled dropdown entries. Each option's value
+    // is a comma-joined list of every code that maps to that label, so
+    // selecting it matches all of them.
+    const byLabel = new Map(); // label -> Set of codes
     for (const source of this._config.sources || []) {
       const def = INTEGRATIONS[source.type];
       if (!def || !source.entity) continue;
@@ -2187,13 +2271,14 @@ class PackageTrackerCardEditor extends HTMLElement {
       let items;
       try { items = def.collect(attrs, ctx); } catch { continue; }
       for (const item of items) {
-        if (item.carrierCode && !seen.has(item.carrierCode)) {
-          seen.set(item.carrierCode, item.carrier || item.carrierCode);
-        }
+        if (!item.carrierCode) continue;
+        const label = item.carrier || item.carrierCode;
+        if (!byLabel.has(label)) byLabel.set(label, new Set());
+        byLabel.get(label).add(item.carrierCode.toLowerCase());
       }
     }
-    return [...seen.entries()]
-      .map(([value, label]) => ({ value, label }))
+    return [...byLabel.entries()]
+      .map(([label, codes]) => ({ value: [...codes].join(','), label }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }
 
