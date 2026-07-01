@@ -14,10 +14,10 @@ A Home Assistant Lovelace card that shows your packages from multiple carrier in
 
 ## Features
 
-- **One card, multiple sources** — PostNL, DHL NL, DPD, and Parcel side by side, deduplicated automatically when the same parcel shows up through more than one source.
-- **Expandable detail per package** — tracking code (tap to copy), full event timeline, and package size/weight when the carrier provides it.
-- **Auto-detecting editor** — open the editor, click **+** next to a detected integration, done. Multiple accounts of the same integration (e.g. two PostNL accounts) are detected and managed separately. No YAML required for normal use.
-- **Filter & layout options** — by carrier, status, direction, or delivery window; single combined card or split incoming/outgoing cards.
+- **One card, multiple sources**: combine integrations from multiple carriers side by side, deduplicated automatically when the same parcel shows up through more than one source.
+- **Expandable detail per package**: tracking code (tap to copy), full event timeline, and package size/weight when the carrier provides it.
+- **Auto-detecting editor**: open the editor, click **+** next to a detected integration, done. Multiple accounts of the same integration are detected and managed separately. No YAML required for normal use.
+- **Filter & layout options**: filter by carrier, status, direction, or delivery window; single combined card or split incoming/outgoing cards.
 
 ---
 
@@ -37,15 +37,15 @@ The visual editor covers everything, organized the same way as the editor itself
 
 ### Sources
 
-Auto-detected — open the editor's **Sources** tab and click **+** next to a detected integration to add it. Integrations you don't have installed show a download icon instead, linking straight to the repository. If you have multiple accounts of the same integration (e.g. two PostNL accounts), each shows up as its own entry, addable/removable independently.
+Auto-detected: open the editor's **Sources** tab and click **+** next to a detected integration to add it. Integrations you don't have installed show a download icon instead, linking straight to the repository. If you have multiple accounts of the same integration, each shows up as its own entry, addable/removable independently.
 
 PostNL, DHL NL, and DPD each cover that one specific carrier. Parcel covers several carriers generically.
 
 - [arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl)
-- [peternijssen/ha-postnl](https://github.com/peternijssen/ha-postnl) — a fork of the above; shares the same Home Assistant domain, so only one of the two can be installed at a time, detected automatically. Also adds scanned mail (letters) as a bonus, shown alongside your packages. **Requires 4.0.0 or newer** — older versions use a different data shape this card doesn't recognize.
-- [peternijssen/ha-dhl-nl](https://github.com/peternijssen/ha-dhl-nl) — 2.0.0 (stable) or newer recommended.
-- [peternijssen/ha-dpd](https://github.com/peternijssen/ha-dpd) — 2.0.0 (stable) or newer recommended.
-- [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha) — a third-party aggregator. Works well on its own, or alongside a carrier's own integration above — the card merges them rather than showing duplicates.
+- [peternijssen/ha-postnl](https://github.com/peternijssen/ha-postnl), a fork of the above; shares the same Home Assistant domain, so only one of the two can be installed at a time, detected automatically. Also adds scanned mail (letters) as a bonus, shown alongside your packages. **Requires 4.0.0 or newer**: older versions use a different data shape this card doesn't recognize. 4.2.0+ adds an optional per-parcel event history (off by default, enable it in the integration's options).
+- [peternijssen/ha-dhl-nl](https://github.com/peternijssen/ha-dhl-nl): 2.0.0 (stable) or newer recommended. 2.3.0+ adds an optional per-parcel event history (off by default, enable it in the integration's options).
+- [peternijssen/ha-dpd](https://github.com/peternijssen/ha-dpd): 2.0.0 (stable) or newer recommended. 2.3.0+ adds an optional per-parcel event history (off by default, enable it in the integration's options).
+- [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha): a third-party aggregator. Works well on its own, or alongside a carrier's own integration above; the card merges event timelines per-moment rather than picking one source, so nothing is lost.
 
 | Option    | Default  | Description                                    |
 | --------- | -------- | ---------------------------------------------- |
@@ -56,10 +56,10 @@ PostNL, DHL NL, and DPD each cover that one specific carrier. Parcel covers seve
 | Option        | Default | Description                                                                                  |
 | ------------- | ------- | ---------------------------------------------------------------------------------------------- |
 | `state`       | `all`   | `all`, `enroute`, or `delivered`.                                                               |
-| `direction`   | —       | `incoming` or `outgoing`.                                                                      |
-| `carriers`    | —       | Filter by one or more carrier codes, e.g. `[dpdgpcode]`. The editor offers these as a dropdown populated from your own sources — easier than looking codes up. The older singular `carrier` (string) still works for existing configs. |
+| `direction`   | -       | `incoming` or `outgoing`.                                                                      |
+| `carriers`    | -       | Filter by one or more carrier codes, e.g. `[dpdgpcode]`. The editor offers these as a dropdown populated from your own sources; easier than looking codes up. The older singular `carrier` (string) still works for existing configs. |
 | `slot_active` | `false` | Active delivery window only.                                                                   |
-| `date`        | —       | Relative day. `0` = today, `1` = tomorrow, `-1` = yesterday.                                    |
+| `date`        | -       | Relative day. `0` = today, `1` = tomorrow, `-1` = yesterday.                                    |
 
 ### Appearance
 
