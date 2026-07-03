@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.1.0';
+const CARD_VERSION = '1.2.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list — one entry per real-world carrier, each with its
@@ -155,7 +155,7 @@ const CARRIERS = [
   { id: "geniki", name: "Geniki Taxydromiki", icon: null, codes: { parcel: ["geniki"] } },
   { id: "geodis", name: "Geodis", icon: null, codes: { parcel: ["geodis"] } },
   { id: "globalp", name: "GlobalPost", icon: null, codes: { parcel: ["globalp"] } },
-  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"] } },
+  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"], gls: ["gls"] } },
   { id: "glsit", name: "GLS Italy", icon: "phu:gls-group", codes: { parcel: ["glsit"] } },
   { id: "gobolt", name: "GoBolt", icon: null, codes: { parcel: ["gobolt"] } },
   { id: "gofo", name: "GOFO Express", icon: null, codes: { parcel: ["gofo"] } },
@@ -440,6 +440,9 @@ const TRANSLATIONS = {
     entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     entity_hint_dpd_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
     dpd_incoming_label: 'Incoming (active)', dpd_delivered_label: 'Delivered (history)', dpd_outgoing_label: 'Outgoing',
+    entity_hint_gls_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
+    entity_hint_gls_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    gls_incoming_label: 'Incoming (active)', gls_delivered_label: 'Delivered (history)',
     alpha_badge: 'Beta', alpha_badge_desc: 'Based on an unreleased beta version of the underlying integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
@@ -507,6 +510,9 @@ const TRANSLATIONS = {
     entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     entity_hint_dpd_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
     dpd_incoming_label: 'Onderweg (actief)', dpd_delivered_label: 'Bezorgd (geschiedenis)', dpd_outgoing_label: 'Verstuurd',
+    entity_hint_gls_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
+    entity_hint_gls_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    gls_incoming_label: 'Onderweg (actief)', gls_delivered_label: 'Bezorgd (geschiedenis)',
     alpha_badge: 'Bèta', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta-versie van de onderliggende integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
@@ -1084,7 +1090,13 @@ const INTEGRATIONS = {
         const d = new Date(item.delivery_date);
         if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
       } else if (!delivered && item.planned_from) {
-        const slot = computeDeliverySlot(item.planned_from, item.planned_to, tr, ensurePeriod(item.status_message || ''));
+        // v2.2.0 pre-release adds expected_from/expected_to: a tighter,
+        // real-time window that narrows as the courier approaches. Prefer
+        // it when present; fall back to planned_from/planned_to for stable
+        // installs that don't have it yet.
+        const fromStr = item.expected_from || item.planned_from;
+        const toStr   = item.expected_to   || item.planned_to;
+        const slot = computeDeliverySlot(fromStr, toStr, tr, ensurePeriod(item.status_message || ''));
         if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
       }
       if (!line1) line1 = ensurePeriod(item.status_message || '');
@@ -1371,6 +1383,42 @@ const INTEGRATIONS = {
     // are integration-level, not per source-type, so this stays a
     // code-level caveat rather than a user-facing alpha/beta badge.
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
+  },
+
+  gls_incoming: {
+    group:       'gls',
+    groupLabel:  'GLS',
+    rowLabel:    'Incoming (active)',
+    rowLabelKey: 'gls_incoming_label',
+    entityHintText: 'entity_hint_gls_incoming',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-gls',
+    platforms:   ['gls'],
+    entityHints: ['incoming_parcels', 'gls_incoming'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true,
+    // No account needed — tracking numbers + postal code are entered manually.
+    // Multiple hubs (one per postal code) each become their own HA device;
+    // the card treats them as independent sources. No multi-account
+    // device-grouping via device-registry.
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'gls', carrierCode: 'gls' })); },
+  },
+
+  gls_delivered: {
+    group:       'gls',
+    groupLabel:  'GLS',
+    rowLabel:    'Delivered (history)',
+    rowLabelKey: 'gls_delivered_label',
+    entityHintText: 'entity_hint_gls_delivered',
+    direction:   'incoming',
+    url:         'https://github.com/peternijssen/ha-gls',
+    platforms:   ['gls'],
+    entityHints: ['delivered_parcels', 'gls_delivered'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    alpha:       true,
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'gls', carrierCode: 'gls' })); },
   },
 
 };
