@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.2.0';
+const CARD_VERSION = '1.3.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list — one entry per real-world carrier, each with its
@@ -429,17 +429,23 @@ const TRANSLATIONS = {
     entity_hint_postnl_canonical_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels (peternijssen/ha-postnl only — not the standard arjenbos/ha-postnl integration).',
     entity_hint_postnl_canonical_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     entity_hint_postnl_canonical_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    entity_hint_postnl_canonical_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
     postnl_canonical_incoming_label: 'Incoming (active)', postnl_canonical_delivered_label: 'Delivered (history)', postnl_canonical_outgoing_label: 'Outgoing',
+    postnl_canonical_outgoing_delivered_label: 'Outgoing (delivered)',
     postnl_canonical_letters_label: 'Letters', entity_hint_postnl_canonical_letters: 'Look for the sensor with a letters attribute named postnl_letters.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels. This already includes parcels heading to a DHL ServicePoint.',
     entity_hint_dhl_nl_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     entity_hint_dhl_nl_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    entity_hint_dhl_nl_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
     dhl_nl_incoming_label: 'Incoming (active)', dhl_nl_delivered_label: 'Delivered (history)', dhl_nl_outgoing_label: 'Outgoing',
+    dhl_nl_outgoing_delivered_label: 'Outgoing (delivered)',
     entity_hint_dpd_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
     entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     entity_hint_dpd_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    entity_hint_dpd_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
     dpd_incoming_label: 'Incoming (active)', dpd_delivered_label: 'Delivered (history)', dpd_outgoing_label: 'Outgoing',
+    dpd_outgoing_delivered_label: 'Outgoing (delivered)',
     entity_hint_gls_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
     entity_hint_gls_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
     gls_incoming_label: 'Incoming (active)', gls_delivered_label: 'Delivered (history)',
@@ -499,17 +505,23 @@ const TRANSLATIONS = {
     entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels (alleen peternijssen/ha-postnl — niet de standaard arjenbos/ha-postnl integratie).',
     entity_hint_postnl_canonical_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     entity_hint_postnl_canonical_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    entity_hint_postnl_canonical_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
     postnl_canonical_incoming_label: 'Onderweg (actief)', postnl_canonical_delivered_label: 'Bezorgd (geschiedenis)', postnl_canonical_outgoing_label: 'Verstuurd',
+    postnl_canonical_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     postnl_canonical_letters_label: 'Brieven', entity_hint_postnl_canonical_letters: 'Zoek naar de sensor met een letters attribuut genaamd postnl_letters.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels. Dit bevat al pakketten die naar een DHL ServicePoint gaan.',
     entity_hint_dhl_nl_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     entity_hint_dhl_nl_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    entity_hint_dhl_nl_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
     dhl_nl_incoming_label: 'Onderweg (actief)', dhl_nl_delivered_label: 'Bezorgd (geschiedenis)', dhl_nl_outgoing_label: 'Verstuurd',
+    dhl_nl_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     entity_hint_dpd_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     entity_hint_dpd_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    entity_hint_dpd_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
     dpd_incoming_label: 'Onderweg (actief)', dpd_delivered_label: 'Bezorgd (geschiedenis)', dpd_outgoing_label: 'Verstuurd',
+    dpd_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     entity_hint_gls_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_gls_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
     gls_incoming_label: 'Onderweg (actief)', gls_delivered_label: 'Bezorgd (geschiedenis)',
@@ -817,6 +829,20 @@ function canonicalParcelStatusLine(status, tr) {
   })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : 'Status unknown'));
 }
 
+// Prefer raw_status as the primary line whenever it's actually human-readable
+// text (not DHL NL/DPD's machine-code SCREAMING_SNAKE shape, see rawStatusLine
+// below) — e.g. PostNL's raw_status is already a real sentence ("Bezorger is
+// onderweg") that's consistently more specific than the translated canonical
+// line ("Onderweg."), even when `status` itself is one of the seven known
+// values. Machine-code raw_status never reaches here (same regex used by
+// rawStatusLine), so this can't show a raw enum value as the primary line.
+function bestStatusLine(status, rawStatus, tr) {
+  if (rawStatus && !/^[A-Z][A-Z0-9_]*$/.test(String(rawStatus))) {
+    return ensurePeriod(rawStatus);
+  }
+  return canonicalParcelStatusLine(status, tr);
+}
+
 // `raw_status` is always English (it's the carrier's own API vocabulary, no
 // translation table is realistic across every carrier) but is consistently
 // at least as specific as the canonical `status`, sometimes much more so
@@ -904,10 +930,10 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
       fromStr = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeFrom;
       toStr   = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeTo;
     }
-    const slot = computeDeliverySlot(fromStr, toStr, tr, canonicalParcelStatusLine(status, tr));
+    const slot = computeDeliverySlot(fromStr, toStr, tr, bestStatusLine(status, p.raw_status, tr));
     if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
   }
-  if (!line1) line1 = canonicalParcelStatusLine(status, tr);
+  if (!line1) line1 = bestStatusLine(status, p.raw_status, tr);
   if (!line2) line2 = rawStatusLine(p);
 
   // Prefer the most specific name available in `raw` — its shape differs per
@@ -1063,8 +1089,15 @@ function mapPostnlLetter(letter, tr, hass) {
     imageUrl,
     // No tracking code worth showing, but `id` is a real, stable unique
     // identifier (also used to match the per-letter image entity) — use it
-    // to dedupe instead, e.g. if the same physical mail item were ever
-    // visible through two configured accounts.
+    // to dedupe instead. Confirmed against real PostNL data: a
+    // LetterboxParcel (a parcel that fits through the mailbox) gets
+    // announced through *both* MyMail (this letter, `id` = the tracking
+    // barcode) and incoming/delivered parcels (same barcode as
+    // trackingCode) — so this also dedupes those two representations of
+    // the same physical item into one row, not just the "same account
+    // configured twice" case this comment originally covered. See
+    // ENRICHMENT_FIELDS' `imageUrl` entry below for why the merge keeps
+    // the letter's scan photo either way.
     dedupKey: letter.id || null,
   });
 }
@@ -1167,9 +1200,33 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['delivered_parcels', 'postnl_delivered'],
-    excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
+    // outgoing_delivered: PostNL 4.3.0 added a separate outgoing_delivered_
+    // parcels sensor (see postnl_canonical_outgoing_delivered below) whose
+    // entity_id contains "delivered_parcels" as a substring — without this
+    // exclusion it would tie/outscore that dedicated type in bestTypeByHints
+    // and get misdetected as regular incoming delivery history.
+    excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl' })); },
+  },
+
+  postnl_canonical_outgoing_delivered: {
+    group:       'postnl_canonical',
+    groupLabel:  'PostNL',
+    rowLabel:    'Outgoing (delivered)',
+    rowLabelKey: 'postnl_canonical_outgoing_delivered_label',
+    entityHintText: 'entity_hint_postnl_canonical_outgoing_delivered',
+    direction:   'outgoing',
+    url:         'https://github.com/peternijssen/ha-postnl',
+    platforms:   ['postnl'],
+    entityHints: ['outgoing_delivered_parcels'],
+    excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    // New in PostNL 4.3.0 (confirmed via its own release notes): return
+    // shipments land here once delivered back to the sender, kept separate
+    // from postnl_canonical_delivered's regular incoming history so
+    // completed returns don't get shown as if they were freshly received.
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl', direction: 'outgoing' })); },
   },
 
   postnl_canonical_outgoing: {
@@ -1182,7 +1239,12 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-postnl',
     platforms:   ['postnl'],
     entityHints: ['outgoing_parcels', 'postnl_outgoing'],
-    excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
+    // outgoing_delivered: the dedicated sensor's entity_id (e.g.
+    // "postnl_outgoing_delivered_parcels") contains "postnl_outgoing" as a
+    // substring too, tying with postnl_canonical_outgoing_delivered's own
+    // hint in bestTypeByHints — same collision as the one already excluded
+    // on postnl_canonical_delivered above, mirrored here for its sibling.
+    excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     // PostNL 4.0 (peternijssen fork) is stable. 4.1.0 added a `receiver`
     // field, confirmed via its own release notes ("matching the DHL and DPD
@@ -1314,9 +1376,29 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dhl-nl',
     platforms:   ['dhl_nl'],
     entityHints: ['delivered_parcels', 'dhl_delivered', 'dhl_bezorgd'],
-    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
+    // outgoing_delivered: see the same exclusion on postnl_canonical_delivered.
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl' })); },
+  },
+
+  dhl_nl_outgoing_delivered: {
+    group:       'dhl_nl',
+    groupLabel:  'DHL NL',
+    rowLabel:    'Outgoing (delivered)',
+    rowLabelKey: 'dhl_nl_outgoing_delivered_label',
+    entityHintText: 'entity_hint_dhl_nl_outgoing_delivered',
+    direction:   'outgoing',
+    url:         'https://github.com/peternijssen/ha-dhl-nl',
+    platforms:   ['dhl_nl'],
+    entityHints: ['outgoing_delivered_parcels'],
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    // New in DHL NL 2.4.0: return shipments land here once delivered back
+    // to the shop, kept separate from dhl_nl_delivered's regular incoming
+    // history (see release notes: "Return shipments now show up as
+    // outgoing parcels").
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
   },
 
   dhl_nl_outgoing: {
@@ -1329,7 +1411,8 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dhl-nl',
     platforms:   ['dhl_nl'],
     entityHints: ['outgoing_parcels', 'dhl_outgoing', 'dhl_verstu', 'dhl_verzond'],
-    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
+    // outgoing_delivered: see the same exclusion on postnl_canonical_outgoing.
+    excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
   },
@@ -1359,9 +1442,27 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dpd',
     platforms:   ['dpd'],
     entityHints: ['delivered_parcels', 'dpd_delivered'],
-    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    // outgoing_delivered: see the same exclusion on postnl_canonical_delivered.
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
+  },
+
+  dpd_outgoing_delivered: {
+    group:       'dpd',
+    groupLabel:  'DPD',
+    rowLabel:    'Outgoing (delivered)',
+    rowLabelKey: 'dpd_outgoing_delivered_label',
+    entityHintText: 'entity_hint_dpd_outgoing_delivered',
+    direction:   'outgoing',
+    url:         'https://github.com/peternijssen/ha-dpd',
+    platforms:   ['dpd'],
+    entityHints: ['outgoing_delivered_parcels'],
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    // New in DPD 2.4.0: completed outgoing parcels land here, kept separate
+    // from dpd_delivered's regular incoming history.
+    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
   },
 
   dpd_outgoing: {
@@ -1374,7 +1475,8 @@ const INTEGRATIONS = {
     url:         'https://github.com/peternijssen/ha-dpd',
     platforms:   ['dpd'],
     entityHints: ['outgoing_parcels', 'dpd_outgoing'],
-    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
+    // outgoing_delivered: see the same exclusion on postnl_canonical_outgoing.
+    excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'outgoing_delivered'],
     hasAttrs:    (a) => Array.isArray(a.parcels),
     // DPD itself is stable (2.0.0). The `receiver` field is now confirmed
     // present on real DPD incoming/delivered data — but not yet specifically
@@ -1643,6 +1745,30 @@ const CARD_DEFAULTS = {
   },
 };
 
+function deepEqual(a, b) {
+  if (Array.isArray(a) || Array.isArray(b)) {
+    return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
+  }
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    return [...keys].every((k) => deepEqual(a[k], b[k]));
+  }
+  return a === b;
+}
+
+// Only keep keys that differ from CARD_DEFAULTS (or have no default at all,
+// e.g. `sources`) — _normalize merges every default into _config for
+// internal rendering, but firing that whole merged object back would
+// persist every untouched default into the saved YAML.
+function stripDefaults(config) {
+  const out = {};
+  for (const [key, value] of Object.entries(config)) {
+    if (key in CARD_DEFAULTS && deepEqual(value, CARD_DEFAULTS[key])) continue;
+    out[key] = value;
+  }
+  return out;
+}
+
 // ─── Card CSS ─────────────────────────────────────────────────────────────────
 
 const CARD_CSS = `
@@ -1652,39 +1778,99 @@ const CARD_CSS = `
     -webkit-font-smoothing: var(--ha-font-smoothing, auto);
   }
   :host(.hidden) { display: none !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
-  .row { display: flex; align-items: center; padding: 12px 16px; gap: 14px; }
+  /* ha-card doesn't clip its own children by default — needed so the
+     negative-margin edge-alignment trick below (ha-card > .row etc.) never
+     pokes 1px past ha-card's own rounded corners. Same rule already exists
+     in notify-dashboard-card.js. */
+  ha-card { overflow: hidden; }
+  /* flex-start (not center): icon/badge must stay pinned to the top and
+     never sink toward the middle once .content grows past one line (name +
+     location + line1/2 + carrier chips can easily stack to 4-5 lines).
+     Short content gets vertically centered instead via .content itself,
+     see below.
+     Padding/gap here deliberately match HA's own hui-tile-card as closely as
+     a variable-height row can: home-assistant/frontend's ha-tile-container
+     uses padding: 0 10px + min-height: 56px (relying on a FIXED height
+     to center a fixed two-line layout) and a 10px icon-to-content gap. Our
+     rows can grow well past two lines (see above), so a fixed min-height
+     would leave tall rows looking uneven -- 10px uniform padding keeps the
+     same horizontal rhythm and approximates Tile's effective vertical
+     spacing for the common short-row case, while still working for long
+     ones. */
+  .row { display: flex; align-items: flex-start; padding: 10px; gap: 10px; }
+
+  /* ha-card has a real 1px border by default (box-sizing: border-box), so
+     its content box starts 1px inside the card's outer edge. HA's own
+     hui-tile-card compensates for exactly this with the same negative
+     margin trick (see ha-tile-container.ts's .container), so its icon/text
+     sit flush with the card edge regardless of border width -- without
+     this our rows sit a visible ~1px further in than a real Tile row does.
+     Child combinator (>) matters here: only the direct child of ha-card
+     needs this (.single in the default layout, .row itself in split
+     layout where each row gets its own ha-card, or .empty) -- applying it
+     to every .row unconditionally would double up for rows nested inside
+     .single. Horizontal only, not vertical: stacked rows share top/bottom
+     borders with each other, so a vertical negative margin would make them
+     overlap; Tile never has this problem since it's always a single row. */
+  ha-card > .row, ha-card > .single, ha-card > .empty {
+    margin-left: calc(-1 * var(--ha-card-border-width, 1px));
+    margin-right: calc(-1 * var(--ha-card-border-width, 1px));
+  }
 
   .row.delivered { opacity: .45; }
   .icon-container { position: relative; flex-shrink: 0; }
+  /* 36px + 24px glyph match ha-tile-icon's --tile-icon-size/--mdc-icon-size exactly. */
   .icon-wrap {
-    width: 38px; height: 38px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
   }
   .icon-wrap.clickable {
     cursor: pointer; position: relative; overflow: hidden;
     -webkit-tap-highlight-color: transparent;
   }
-  ha-icon   { --mdc-icon-size: 20px; pointer-events: none; display: flex; }
+  ha-icon   { --mdc-icon-size: 24px; pointer-events: none; display: flex; }
   ha-ripple { position: absolute; inset: 0; }
   .badge {
     position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%;
     color: var(--card-background-color, #fff);
-    font-size: var(--ha-font-size-2xs, 10px); font-weight: var(--ha-font-weight-bold, 600); line-height: 16px;
+    font-size: var(--ha-font-size-xs, 10px); font-weight: var(--ha-font-weight-bold, 700); line-height: 16px;
     display: flex; align-items: center; justify-content: center; pointer-events: none; overflow: hidden;
   }
-  .content { flex: 1; min-width: 0; }
+  /* min-height matching .icon-wrap (36px): for short content (just a name,
+     no location/line1/line2/carrier) this clamps the box to the icon's
+     height and justify-content centers the name within it, matching the
+     icon. For longer content this has no effect -- the box just grows
+     along with it and everything stacks from the top, same as the icon. */
+  .content {
+    flex: 1; min-width: 0; min-height: 36px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  /* font-size/weight/color already matched ha-tile-info's --tile-info-primary-*
+     tokens; letter-spacing added to match too. line-height deliberately
+     stays condensed rather than Tile's 1.6 -- that value only makes sense
+     paired with Tile's fixed 56px row height, and would just add odd
+     whitespace around our own single-line, ellipsis-truncated name. */
   .name {
     font-size: var(--ha-font-size-m, 14px); font-weight: var(--ha-font-weight-medium, 500);
-    color: var(--primary-text-color); line-height: var(--ha-line-height-condensed, 1.3);
+    color: var(--primary-text-color); line-height: var(--ha-line-height-condensed, 1.2);
+    letter-spacing: 0.1px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  /* Matches ha-tile-info's --tile-info-secondary-* tokens (size/weight/color/
+     letter-spacing) -- Tile uses primary-text-color for its secondary line
+     too, not a dimmed color. */
   .line1, .line2, .location {
-    font-size: var(--ha-font-size-s, 12px); color: var(--primary-text-color);
-    line-height: var(--ha-line-height-condensed, 1.3); margin-top: 3px;
+    font-size: var(--ha-font-size-s, 12px); font-weight: var(--ha-font-weight-normal, 400);
+    color: var(--primary-text-color); letter-spacing: 0.4px;
+    line-height: var(--ha-line-height-condensed, 1.2); margin-top: 3px;
   }
+  /* Tile's model only has two text tiers (primary/secondary) -- our rows
+     carry more info than Tile ever does, so carrier/letterbox/rerouted
+     chips deliberately stay a third, visually-dimmer tier instead of
+     forcing everything onto Tile's two-tier palette. */
   .carrier {
     font-size: var(--ha-font-size-xs, 11px); color: var(--secondary-text-color);
-    line-height: var(--ha-line-height-condensed, 1.3);
+    line-height: var(--ha-line-height-condensed, 1.2);
     margin-top: 6px; display: flex; align-items: center; gap: 3px;
   }
   .carrier ha-icon { flex-shrink: 0; position: relative; top: 0; }
@@ -1699,7 +1885,9 @@ const CARD_CSS = `
   .chevron-btn:hover { background: var(--secondary-background-color); color: var(--primary-text-color); }
   .row-wrapper { display: block; }
   .detail {
-    display: none; padding: 0 16px 10px calc(16px + 38px + 14px);
+    /* Left indent = row's own left padding + icon-wrap width + row gap,
+       so detail content lines up under .content, not under the icon. */
+    display: none; padding: 0 10px 10px calc(10px + 36px + 10px);
   }
   .detail.open { display: block; }
   /* Subtle separator from whatever comes next when expanded — naturally
@@ -1710,11 +1898,11 @@ const CARD_CSS = `
   .event-item + .event-item { border-top: 1px solid var(--divider-color, rgba(0,0,0,.06)); }
   .event-meta {
     font-size: var(--ha-font-size-xs, 11px); color: var(--secondary-text-color);
-    line-height: var(--ha-line-height-condensed, 1.3); margin-bottom: 2px;
+    line-height: var(--ha-line-height-condensed, 1.2); margin-bottom: 2px;
   }
   .event-text {
     font-size: var(--ha-font-size-s, 12px); color: var(--primary-text-color);
-    line-height: var(--ha-line-height-condensed, 1.3);
+    line-height: var(--ha-line-height-condensed, 1.2);
   }
   .tracking-code {
     margin-top: 10px;
@@ -1733,6 +1921,7 @@ const CARD_CSS = `
     font-size: var(--ha-font-size-s, 12px);
     display: flex; flex-direction: column; align-items: center; gap: 8px;
   }
+  .empty-sub { opacity: .7; font-size: var(--ha-font-size-xs, 11px); }
 `;
 
 function mk(tag, cls, text) {
@@ -1872,7 +2061,11 @@ function renderRow(item, show, tr, openItems) {
       const bigImg = document.createElement('img');
       bigImg.src = item.imageUrl;
       bigImg.alt = '';
-      bigImg.style.cssText = 'max-width:100%;max-height:320px;display:block;border-radius:8px;object-fit:contain;';
+      // margin-bottom matches the spacing .tracking-code/.package-size
+      // already use above themselves -- without it, whatever follows (event
+      // timeline, tracking code, package size) sits right against the image
+      // with only its own small top padding/margin, reading as cramped.
+      bigImg.style.cssText = 'max-width:100%;max-height:320px;display:block;border-radius:8px;object-fit:contain;margin-bottom:10px;';
       // If the scan fails to load here too, just drop it — any other detail
       // content (tracking code, events) below it is still useful on its own.
       bigImg.addEventListener('error', () => { bigImg.remove(); hideChevronIfImageWasTheOnlyReason(); });
@@ -2051,7 +2244,14 @@ class PackageTrackerCard extends HTMLElement {
     // integrations have package size/weight and pickup-point detail that
     // Parcel doesn't expose. Always backfilled from whichever side has them,
     // never overwriting a value the winning side already has.
-    const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint'];
+    // imageUrl: PostNL LetterboxParcel shipments get announced twice — once
+    // via postnl_canonical_letters (MyMail scan, has the actual envelope
+    // photo) and once via postnl_canonical_incoming/delivered (tracking
+    // data, no photo) — both share the same barcode as dedupKey. Without
+    // this, whichever side wins the dedup (normally the parcel, since
+    // sources are processed in config order and packages typically come
+    // first) silently drops the letter's scan photo entirely.
+    const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl'];
     const backfill = (target, fallback) => {
       for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
     };
@@ -2185,6 +2385,13 @@ class PackageTrackerCard extends HTMLElement {
       ico.style.opacity = '.3';
       empty.appendChild(ico);
       empty.appendChild(mk('div', null, tr.no_packages));
+      // Surface misconfigured sources instead of silently rendering the same
+      // generic empty state whether packages are simply absent right now or
+      // a source entity doesn't exist at all.
+      const missingSources = this._config.sources.filter(s => s.entity && !this._hass.states[s.entity]);
+      if (missingSources.length) {
+        empty.appendChild(mk('div', 'empty-sub', missingSources.map(s => s.entity).join(', ') + tr.not_found));
+      }
       card.appendChild(empty);
       this._root.appendChild(card);
       return;
@@ -2235,11 +2442,27 @@ class PackageTrackerCard extends HTMLElement {
     return 3;
   }
 
+  getGridOptions() {
+    // Package lists vary a lot in height depending on how many are in
+    // transit, so rows is 'auto' rather than a fixed count — full-width by
+    // default since a cramped narrow column reads poorly for a list card.
+    return { columns: 'full', rows: 'auto' };
+  }
+
   static getConfigElement() { return document.createElement('package-tracker-card-editor'); }
-  static getStubConfig()    { return { sources: [], ...CARD_DEFAULTS }; }
+  static getStubConfig() {
+    // Deliberately empty, not auto-detected: a silently pre-filled source
+    // the user never chose was confusing in practice, even though it made
+    // the card-picker preview non-empty. Explicit entity selection (the
+    // Sources tab, or getEntitySuggestion for the manual-YAML picker) is
+    // the only way a source ends up in the config now.
+    return { sources: [] };
+  }
 }
 
-customElements.define('package-tracker-card', PackageTrackerCard);
+if (!customElements.get('package-tracker-card')) {
+  customElements.define('package-tracker-card', PackageTrackerCard);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EDITOR
@@ -2291,7 +2514,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._config         = null;
     this._hass           = null;
     this._built          = false;
-    this._ownFire        = false;
+    this._lastFiredConfig = null;
     this._tab            = 'sources';
     this._filterAdvOpen = false;
   }
@@ -2337,7 +2560,16 @@ class PackageTrackerCardEditor extends HTMLElement {
 
   setConfig(config) {
     if (!this._built) { this._config = this._normalize(config); this._init(); return; }
-    if (this._ownFire) { this._ownFire = false; return; }
+    // Echo of our own _fire(): HA calls back with (a config matching) what we
+    // just dispatched, possibly more than once and not necessarily right
+    // away -- confirmed the actual cause of numeric fields losing focus
+    // after one keystroke elsewhere in these cards, since a boolean flag
+    // alone can't distinguish "no echo yet" from "already consumed one, a
+    // second is still coming" or "echo never arrived, stay stuck forever"
+    // (this file's old _ownFire had no timeout fallback at all for that
+    // last case). Comparing directly against what we last actually
+    // dispatched catches every echo regardless of timing or count.
+    if (this._lastFiredConfig && deepEqual(config, this._lastFiredConfig)) return;
     this._config = this._normalize(config);
     this._renderTab();
   }
@@ -2354,8 +2586,9 @@ class PackageTrackerCardEditor extends HTMLElement {
 
   _fire(config) {
     this._config  = config;
-    this._ownFire = true;
-    this.dispatchEvent(new CustomEvent('config-changed', { detail: { config }, bubbles: true, composed: true }));
+    const stripped = stripDefaults(config);
+    this._lastFiredConfig = stripped;
+    this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: stripped }, bubbles: true, composed: true }));
   }
 
   _fireAndRender(config) { this._fire(config); this._renderTab(); }
@@ -2912,13 +3145,17 @@ class PackageTrackerCardEditor extends HTMLElement {
   }
 }
 
-customElements.define('package-tracker-card-editor', PackageTrackerCardEditor);
+if (!customElements.get('package-tracker-card-editor')) {
+  customElements.define('package-tracker-card-editor', PackageTrackerCardEditor);
+}
 
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'package-tracker-card', name: 'Package Tracker Card',
   description: 'Track packages from PostNL, Parcel, and DHL NL integrations.',
   preview: true,
+  documentationURL: 'https://github.com/klaptafel/package-tracker-card',
+  version: CARD_VERSION,
   getEntitySuggestion: (hass, entityId) => {
     const attrs = hass.states[entityId]?.attributes;
     if (!attrs) return null;

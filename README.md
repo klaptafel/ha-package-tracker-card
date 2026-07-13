@@ -1,7 +1,7 @@
 [![Made for Home Assistant](https://img.shields.io/badge/Made%20for-Home%20Assistant-blue?style=for-the-badge&logo=homeassistant)](https://www.home-assistant.io/)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
-# Package Tracker Card
+# Package Tracker Card: Home Assistant parcel tracking card
 
 > [!NOTE]
 > This card is vibe coded
