@@ -1,7 +1,7 @@
 const CARD_VERSION = '1.3.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
-// Canonical carrier list — one entry per real-world carrier, each with its
+// Canonical carrier list: one entry per real-world carrier, each with its
 // display name, brand icon, and the carrier codes used by every integration
 // that can report packages for it. Add a new integration's code under the
 // SAME carrier entry (e.g. codes.dhl_nl) rather than duplicating name/icon.
@@ -398,7 +398,7 @@ const TRANSLATIONS = {
     delivery_before: (day, to) => 'Delivery ' + day + ' before ' + to + '.',
     delivery_on: (day) => 'Delivery ' + day + '.',
     no_packages: 'No packages',
-    not_found: ' — not found',
+    not_found: ': not found',
     install_integration: 'Install integration',
     source_repo_link: 'View integration', source_repo_link_desc: 'Open the GitHub page for this integration',
     status: 'Status', status_desc: 'Status line below the name',
@@ -418,7 +418,7 @@ const TRANSLATIONS = {
     filter_date_label: 'Specific day', filter_date: 'Date', filter_date_desc: '0 = today  ·  -1 = yesterday  ·  1 = tomorrow  ·  Empty = no filter',
     filter_slot: 'Time slot', filter_slot_active: 'Active delivery window only', filter_slot_desc: 'Show only packages whose delivery window is currently active', filter_slot_requires_enroute: 'Set Status filter to En route to enable this.',
     filter_carrier: 'Carrier', carrier_code: 'Carriers', carrier_code_desc: 'Only show packages from selected carriers',
-    carrier_code_empty: 'No carriers detected yet — add a source first',
+    carrier_code_empty: 'No carriers detected yet; add a source first',
     hide_when_empty: 'Hide when empty', hide_when_empty_desc: 'Hide the card when there are no packages to show',
     parcel_row_label: 'Raw data',
     letterbox: 'Fits in your letterbox',
@@ -426,28 +426,28 @@ const TRANSLATIONS = {
     service_point: (carrier) => 'Delivery to a ' + (carrier || 'pickup') + ' point.',
     entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
     entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
-    entity_hint_postnl_canonical_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels (peternijssen/ha-postnl only — not the standard arjenbos/ha-postnl integration).',
-    entity_hint_postnl_canonical_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    entity_hint_postnl_canonical_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels (peternijssen/ha-postnl only, not the standard arjenbos/ha-postnl integration).',
+    entity_hint_postnl_canonical_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     entity_hint_postnl_canonical_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
-    entity_hint_postnl_canonical_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
+    entity_hint_postnl_canonical_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
     postnl_canonical_incoming_label: 'Incoming (active)', postnl_canonical_delivered_label: 'Delivered (history)', postnl_canonical_outgoing_label: 'Outgoing',
     postnl_canonical_outgoing_delivered_label: 'Outgoing (delivered)',
     postnl_canonical_letters_label: 'Letters', entity_hint_postnl_canonical_letters: 'Look for the sensor with a letters attribute named postnl_letters.',
     entity_hint_parcel: 'Look for a sensor with a deliveries attribute. Usually named parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels. This already includes parcels heading to a DHL ServicePoint.',
-    entity_hint_dhl_nl_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    entity_hint_dhl_nl_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     entity_hint_dhl_nl_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
-    entity_hint_dhl_nl_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
+    entity_hint_dhl_nl_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
     dhl_nl_incoming_label: 'Incoming (active)', dhl_nl_delivered_label: 'Delivered (history)', dhl_nl_outgoing_label: 'Outgoing',
     dhl_nl_outgoing_delivered_label: 'Outgoing (delivered)',
     entity_hint_dpd_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
-    entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    entity_hint_dpd_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     entity_hint_dpd_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
-    entity_hint_dpd_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional — shows completed return shipments.',
+    entity_hint_dpd_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
     dpd_incoming_label: 'Incoming (active)', dpd_delivered_label: 'Delivered (history)', dpd_outgoing_label: 'Outgoing',
     dpd_outgoing_delivered_label: 'Outgoing (delivered)',
     entity_hint_gls_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
-    entity_hint_gls_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional — adds recent delivery history.',
+    entity_hint_gls_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     gls_incoming_label: 'Incoming (active)', gls_delivered_label: 'Delivered (history)',
     alpha_badge: 'Beta', alpha_badge_desc: 'Based on an unreleased beta version of the underlying integration. The data shape may still change.',
     advanced: 'Advanced',
@@ -474,7 +474,7 @@ const TRANSLATIONS = {
     delivery_before: (day, to) => 'Levering ' + day + ' voor ' + to + '.',
     delivery_on: (day) => 'Levering ' + day + '.',
     no_packages: 'Geen pakketjes',
-    not_found: ' — niet gevonden',
+    not_found: ': niet gevonden',
     install_integration: 'Installeer integratie',
     source_repo_link: 'Bekijk integratie', source_repo_link_desc: 'Open de GitHub-pagina van deze integratie',
     status: 'Status', status_desc: 'Statusregel onder de naam',
@@ -494,7 +494,7 @@ const TRANSLATIONS = {
     filter_date_label: 'Specifieke dag', filter_date: 'Datum', filter_date_desc: '0 = vandaag  ·  -1 = gisteren  ·  1 = morgen  ·  Leeg = geen filter',
     filter_slot: 'Tijdslot', filter_slot_active: 'Alleen actief leveringstijdslot', filter_slot_desc: 'Toont alleen pakketjes waarvan het leveringstijdslot op dit moment actief is', filter_slot_requires_enroute: 'Stel de Status filter in op Onderweg om dit in te schakelen.',
     filter_carrier: 'Bezorgdienst', carrier_code: 'Bezorgdiensten', carrier_code_desc: 'Toon alleen pakketten van geselecteerde bezorgdiensten',
-    carrier_code_empty: 'Nog geen bezorgdiensten gedetecteerd — voeg eerst een bron toe',
+    carrier_code_empty: 'Nog geen bezorgdiensten gedetecteerd; voeg eerst een bron toe',
     hide_when_empty: 'Verberg bij leeg', hide_when_empty_desc: 'Verberg de kaart als er geen pakketjes zijn om te tonen',
     parcel_row_label: 'Ruwe data',
     letterbox: 'Past door de brievenbus',
@@ -502,28 +502,28 @@ const TRANSLATIONS = {
     service_point: (carrier) => 'Levering op een ' + (carrier || 'afhaal') + '-punt.',
     entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
     entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
-    entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels (alleen peternijssen/ha-postnl — niet de standaard arjenbos/ha-postnl integratie).',
-    entity_hint_postnl_canonical_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels (alleen peternijssen/ha-postnl, niet de standaard arjenbos/ha-postnl integratie).',
+    entity_hint_postnl_canonical_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     entity_hint_postnl_canonical_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
-    entity_hint_postnl_canonical_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
+    entity_hint_postnl_canonical_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
     postnl_canonical_incoming_label: 'Onderweg (actief)', postnl_canonical_delivered_label: 'Bezorgd (geschiedenis)', postnl_canonical_outgoing_label: 'Verstuurd',
     postnl_canonical_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     postnl_canonical_letters_label: 'Brieven', entity_hint_postnl_canonical_letters: 'Zoek naar de sensor met een letters attribuut genaamd postnl_letters.',
     entity_hint_parcel: 'Zoek naar een sensor met een deliveries attribuut. Meestal genaamd parcel_raw_shipment_data.',
     entity_hint_dhl_nl_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels. Dit bevat al pakketten die naar een DHL ServicePoint gaan.',
-    entity_hint_dhl_nl_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    entity_hint_dhl_nl_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     entity_hint_dhl_nl_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
-    entity_hint_dhl_nl_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
+    entity_hint_dhl_nl_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
     dhl_nl_incoming_label: 'Onderweg (actief)', dhl_nl_delivered_label: 'Bezorgd (geschiedenis)', dhl_nl_outgoing_label: 'Verstuurd',
     dhl_nl_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     entity_hint_dpd_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
-    entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    entity_hint_dpd_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     entity_hint_dpd_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
-    entity_hint_dpd_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel — toont afgeronde retourzendingen.',
+    entity_hint_dpd_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
     dpd_incoming_label: 'Onderweg (actief)', dpd_delivered_label: 'Bezorgd (geschiedenis)', dpd_outgoing_label: 'Verstuurd',
     dpd_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     entity_hint_gls_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
-    entity_hint_gls_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel — voegt recente bezorggeschiedenis toe.',
+    entity_hint_gls_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     gls_incoming_label: 'Onderweg (actief)', gls_delivered_label: 'Bezorgd (geschiedenis)',
     alpha_badge: 'Bèta', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta-versie van de onderliggende integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
@@ -532,7 +532,7 @@ const TRANSLATIONS = {
   },
 };
 
-// pl(n, one, other) — minimal pluralisation helper (EN only needs it)
+// pl(n, one, other): minimal pluralisation helper (EN only needs it)
 function pl(n, one, other) { return n === 1 ? one : other; }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -553,7 +553,7 @@ function formatDay(date, tr) {
   return tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
 }
 
-// Always a fixed calendar date ("17 juni"), never "today"/"X days ago" —
+// Always a fixed calendar date ("17 juni"), never "today"/"X days ago";
 // for places that already show a relative day phrase elsewhere on the same
 // row (e.g. a letter's delivered-state line), so the two don't repeat.
 function formatAbsoluteDate(date, tr) {
@@ -569,7 +569,7 @@ function ensurePeriod(s) { const t = (s || '').trimEnd(); return t && !t.endsWit
 
 // Some carrier APIs log the same status update multiple times within a
 // short window (e.g. three identical "Pakketgegevens verwerkt" events a
-// minute apart) — collapse runs of consecutive events with identical text
+// minute apart); collapse runs of consecutive events with identical text
 // into just the most recent one, regardless of which integration the
 // events came from.
 function dedupEvents(events) {
@@ -613,7 +613,7 @@ function formatTimeRemaining(toDate, tr, fromDate) {
   return tr.slot_within_minutes(m);
 }
 
-// Shared by postnl_incoming and dhl_nl — both have an identical
+// Shared by postnl_incoming and dhl_nl: both have an identical
 // planned_from/planned_to delivery-window shape. Returns null when
 // fromStr doesn't parse to a valid date (caller falls back to its own
 // status-only line1).
@@ -698,7 +698,7 @@ function mkItem(overrides) {
     ...overrides,
   };
   // Separate from trackingCode (which is also shown to the user with a
-  // copy button) — items without a meaningful tracking code, like letters,
+  // copy button); items without a meaningful tracking code, like letters,
   // can still have a real, stable unique identifier worth deduplicating on
   // (e.g. PostNL's mailitem id), without showing that internal id as if it
   // were a copyable tracking code.
@@ -747,20 +747,20 @@ function parcelStatus(code) {
   return ({
     0: STATUS_STYLE.delivered,
     // Per the official docs (parcelapp.net/help/api-view-deliveries.html):
-    // "no updates for a long time... believes it will never be updated" —
+    // "no updates for a long time... believes it will never be updated":
     // a stalled/stuck delivery, not healthy progress like a normal in-transit.
     1: STATUS_STYLE.problem,
     2: STATUS_STYLE.in_transit,
     3: STATUS_STYLE.at_pickup_point,
     4: STATUS_STYLE.out_for_delivery,
-    // "Delivery not found" — Parcel couldn't locate this tracking number at
+    // "Delivery not found": Parcel couldn't locate this tracking number at
     // all, which is worth flagging, not a neutral "we don't know" state.
     5: STATUS_STYLE.problem,
     6: STATUS_STYLE.missed,
     7: STATUS_STYLE.problem,
     // Confirmed via real data: a DPD parcel with canonical status
     // "registered" (raw ORDER_CREATED) showed up via Parcel with
-    // status_code 8 for the exact same barcode — not "expected" as
+    // status_code 8 for the exact same barcode, not "expected" as
     // originally (unverified) assumed. Also matches the official docs:
     // "carrier has received information... but has not physically received
     // it yet".
@@ -772,14 +772,14 @@ function parcelStatus(code) {
 // To add a new integration: add one entry here. Nothing else needs to change.
 //
 // Each entry defines:
-//   platforms   — integration platform strings (hass.entities[id].platform)
-//   entityHints — fallback: strings that may appear in entity IDs
-//   hasAttrs    — (attrs) => bool — confirms the right entity by attribute shape
-//   collect     — (attrs, ctx) => item[] — maps raw sensor data to normalised items
+//   platforms   : integration platform strings (hass.entities[id].platform)
+//   entityHints : fallback strings that may appear in entity IDs
+//   hasAttrs    : (attrs) => bool, confirms the right entity by attribute shape
+//   collect     : (attrs, ctx) => item[], maps raw sensor data to normalised items
 //
-// ctx = { tr } — shared context passed to collect
+// ctx = { tr }: shared context passed to collect
 
-// Shared PostNL collect — both incoming and outgoing use the same sensor shape
+// Shared PostNL collect: both incoming and outgoing use the same sensor shape
 function collectPostnl(attrs, ctx, mapFn) {
   return [
     ...(attrs.enroute   || []).map(i => mapFn(i, false, ctx.tr)),
@@ -801,9 +801,9 @@ function mapPostnlEvents(events) {
   })).filter(e => e.text);
 }
 
-// Canonical ParcelStatus — normalised status enum → icon/color/text
+// Canonical ParcelStatus: normalised status enum → icon/color/text
 // Source: HA community forum post by ptnijssen, June 19 2026 (BETA 2.0.0 changelog)
-// Carrier-agnostic ParcelStatus enum — shared across DHL NL, DPD, and (in the
+// Carrier-agnostic ParcelStatus enum, shared across DHL NL, DPD, and (in the
 // future) PostNL 4.0.0, all from the same peternijssen integration family.
 function canonicalParcelStatus(status) {
   return ({
@@ -831,7 +831,7 @@ function canonicalParcelStatusLine(status, tr) {
 
 // Prefer raw_status as the primary line whenever it's actually human-readable
 // text (not DHL NL/DPD's machine-code SCREAMING_SNAKE shape, see rawStatusLine
-// below) — e.g. PostNL's raw_status is already a real sentence ("Bezorger is
+// below); e.g. PostNL's raw_status is already a real sentence ("Bezorger is
 // onderweg") that's consistently more specific than the translated canonical
 // line ("Onderweg."), even when `status` itself is one of the seven known
 // values. Machine-code raw_status never reaches here (same regex used by
@@ -857,7 +857,7 @@ function humanizeRawStatus(rawStatus) {
 
 // DHL's `receiver.address.street` sometimes bundles the house number into the
 // street field (e.g. "Gors 15") while `destination.address.street` keeps it
-// separate ("Gors" + houseNumber "14") — strip a trailing number before
+// separate ("Gors" + houseNumber "14"); strip a trailing number before
 // comparing so we can tell whether a neighbour is on the same street.
 function normalizeStreetForCompare(street) {
   if (!street) return '';
@@ -876,7 +876,7 @@ function formatNeighbourAddress(raw) {
 
 function rawStatusLine(p) {
   // Only show raw_status when it looks like a machine code (SCREAMING_SNAKE,
-  // the shape DHL NL/DPD use) — PostNL's raw_status is already a translated,
+  // the shape DHL NL/DPD use); PostNL's raw_status is already a translated,
   // human-readable Dutch sentence ("Pakket is bezorgd") that never carries
   // more detail than the canonical status, just different wording. Showing
   // that would duplicate line1 in different words for every single status.
@@ -885,7 +885,7 @@ function rawStatusLine(p) {
   if (!text) return null;
   // Skip when raw_status is just the canonical status in a different format
   // (e.g. raw "DELIVERED" for canonical "delivered" would just repeat
-  // "Delivered." right under "Delivered yesterday.") — only show it when it
+  // "Delivered." right under "Delivered yesterday."); only show it when it
   // actually adds something, like "DELIVERED_AT_NEIGHBOURS".
   const normalize = (s) => String(s || '').toLowerCase().replace(/[_\s]/g, '');
   if (normalize(p.raw_status) === normalize(p.status)) return null;
@@ -896,103 +896,62 @@ function rawStatusLine(p) {
   return text;
 }
 
-// Shared mapper for both dhl_nl_incoming and dhl_nl_delivered — same normalised
-// parcel shape on both sensors (confirmed from sensor.py: both expose a
-// `parcels` attribute via the same coordinator data model).
-// Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
-// the future PostNL 4.0.0) — same normalised shape across all of them, only
-// the carrier identity and direction differ per source.
-function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
-  const status     = p.status || 'unknown';
-  // `status` is the authoritative signal (the integration itself documents
-  // status as taking precedence over category). In a narrow race condition
-  // the raw `delivered` boolean (category-based) can lag behind a more
-  // specific status like "delivered" — so we don't trust `delivered` at all,
-  // and fall back to whichever date field is actually populated.
-  const delivered  = status === 'delivered';
-  const { icon, color } = canonicalParcelStatus(status);
-  let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
-
-  if (delivered) {
-    const dateStr = p.delivered_at || p.planned_from; // fallback covers the race condition above
-    if (dateStr) {
-      const d = new Date(dateStr);
-      if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
-    }
-  } else if (p.planned_from) {
-    // DPD's own normalization currently falls back to a whole calendar day
-    // (00:00–23:59) for planned_from/planned_to even when it already knows a
-    // much tighter window in raw.deliveryTimeFrom/deliveryTimeTo — prefer
-    // that more specific window when present. Harmless no-op for carriers
-    // (like DHL NL) that don't have these raw fields.
-    let fromStr = p.planned_from, toStr = p.planned_to;
-    if (p.raw?.deliveryDate && p.raw?.deliveryTimeFrom && p.raw?.deliveryTimeTo) {
-      fromStr = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeFrom;
-      toStr   = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeTo;
-    }
-    const slot = computeDeliverySlot(fromStr, toStr, tr, bestStatusLine(status, p.raw_status, tr));
-    if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
-  }
-  if (!line1) line1 = bestStatusLine(status, p.raw_status, tr);
-  if (!line2) line2 = rawStatusLine(p);
-
-  // Prefer the most specific name available in `raw` — its shape differs per
-  // carrier (PostNL: raw.name is the webshop; DHL NL: raw.sender.name; DPD:
-  // raw.senderName), so we try each known path before falling back to the
-  // canonical `sender` field (which for PostNL is the household member who
-  // placed the order, not the webshop — less useful for identifying the
-  // parcel, but still the best we have when raw isn't available).
-  // For outgoing parcels, `sender`/raw sender fields are not useful (that's
-  // just the account holder, i.e. yourself) — DHL NL 2.1.0+ exposes a
-  // top-level `receiver` field with the actual addressee, which is what you
-  // actually want to see on something you sent. Falls back to the sender
-  // chain for carriers/versions that don't have `receiver` yet (e.g. DPD).
-  const name = (direction === 'outgoing' && p.receiver)
+// Prefer the most specific name available in `raw`; its shape differs per
+// carrier (PostNL: raw.name is the webshop; DHL NL: raw.sender.name; DPD:
+// raw.senderName), so we try each known path before falling back to the
+// canonical `sender` field (which for PostNL is the household member who
+// placed the order, not the webshop; less useful for identifying the
+// parcel, but still the best we have when raw isn't available).
+// For outgoing parcels, `sender`/raw sender fields are not useful (that's
+// just the account holder, i.e. yourself); DHL NL 2.1.0+ exposes a
+// top-level `receiver` field with the actual addressee, which is what you
+// actually want to see on something you sent. Falls back to the sender
+// chain for carriers/versions that don't have `receiver` yet (e.g. DPD).
+function resolveCanonicalName(p, direction) {
+  return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
     : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || '').trim();
+}
 
-  // Same principle for the letterbox/rerouted/pickup-point chips: read from
-  // raw when the carrier exposes that detail (confirmed for PostNL's
-  // shipment_type/delivery_address_type), gracefully no-op for carriers
-  // (DHL NL, DPD) that don't have an equivalent raw field.
-  const shipmentType = p.raw?.shipment_type;
-  const addressType  = p.raw?.delivery_address_type;
-
-  // Confirmed via real DPD data — both canonical (top-level, not just raw)
-  // fields, so other carriers in this family may expose them too. Weight is
-  // only shown when above 0 — every null/0 example we've seen so far was for
-  // an obviously non-weightless parcel, so 0 reads as "not yet known" rather
-  // than a real measurement. Assumes kg (near-certain for a European
-  // carrier, but unconfirmed) — flag if a real value turns out to use a
-  // different unit.
+// Confirmed via real DPD data: both canonical (top-level, not just raw)
+// fields, so other carriers in this family may expose them too. Weight is
+// only shown when above 0; every null/0 example we've seen so far was for
+// an obviously non-weightless parcel, so 0 reads as "not yet known" rather
+// than a real measurement. Assumes kg (near-certain for a European
+// carrier, but unconfirmed); flag if a real value turns out to use a
+// different unit.
+function resolveCanonicalPackageSize(p) {
   const sizeText   = p.dimensions?.text || null;
   const weightText = (typeof p.weight === 'number' && p.weight > 0) ? p.weight + ' kg' : null;
   const packageSize = [sizeText, weightText].filter(Boolean).join(' · ') || null;
-  // A ruler only makes sense when we actually have dimensions — weight-only
+  // A ruler only makes sense when we actually have dimensions; weight-only
   // info reads oddly next to a ruler icon, so use a scale instead.
   let packageSizeIcon = null;
   if      (sizeText)   packageSizeIcon = 'mdi:ruler-square';
   else if (weightText) packageSizeIcon = 'mdi:scale';
+  return { packageSize, packageSizeIcon };
+}
 
-  // Optional, off-by-default `history` array — confirmed directly by
-  // peternijssen (shared across DHL NL/DPD/PostNL canonical 2.3.0/2.3.0/4.2.0)
-  // as {timestamp, status, raw_status}[], oldest first. Reversed to
-  // newest-first, since that's the order the rest of the card's event
-  // timeline expects.
-  //
-  // Confirmed against real history data from all three: DHL NL's raw_status
-  // is a SCREAMING_SNAKE_CASE machine code (PARCEL_SORTED_AT_HUB), but
-  // PostNL's and — surprisingly — DPD's are already full, human-readable
-  // sentences ("Bezorger is onderweg", "Hub or other premises - Sorted").
-  // That's a meaningfully different shape from DPD's top-level raw_status
-  // (which IS a machine code, e.g. "DELIVERED") — the per-entry history
-  // field doesn't follow the same convention. So: when raw_status looks
-  // like a machine code, treat it as enrichment alongside the canonical
-  // status (same approach the main status line already uses). When it's
-  // already a sentence, it's inherently more specific than the generic
-  // canonical text ("In transit.") and is used directly instead.
+// Optional, off-by-default `history` array, confirmed directly by
+// peternijssen (shared across DHL NL/DPD/PostNL canonical 2.3.0/2.3.0/4.2.0)
+// as {timestamp, status, raw_status}[], oldest first. Reversed to
+// newest-first, since that's the order the rest of the card's event
+// timeline expects.
+//
+// Confirmed against real history data from all three: DHL NL's raw_status
+// is a SCREAMING_SNAKE_CASE machine code (PARCEL_SORTED_AT_HUB), but
+// PostNL's and (surprisingly) DPD's are already full, human-readable
+// sentences ("Bezorger is onderweg", "Hub or other premises - Sorted").
+// That's a meaningfully different shape from DPD's top-level raw_status
+// (which IS a machine code, e.g. "DELIVERED"); the per-entry history
+// field doesn't follow the same convention. So: when raw_status looks
+// like a machine code, treat it as enrichment alongside the canonical
+// status (same approach the main status line already uses). When it's
+// already a sentence, it's inherently more specific than the generic
+// canonical text ("In transit.") and is used directly instead.
+function resolveCanonicalEvents(p, tr) {
   const isMachineCode = (s) => /^[A-Z][A-Z0-9_]*$/.test(String(s || ''));
-  const events = Array.isArray(p.history) ? [...p.history].reverse().map(h => {
+  return Array.isArray(p.history) ? [...p.history].reverse().map(h => {
     const date = h.timestamp ? new Date(h.timestamp) : null;
     let text;
     if (h.raw_status && !isMachineCode(h.raw_status)) {
@@ -1007,6 +966,66 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     }
     return { date: date && !isNaN(date) ? date : null, text, location: null };
   }) : [];
+}
+
+// `status` is the authoritative signal (the integration itself documents
+// status as taking precedence over category). In a narrow race condition
+// the raw `delivered` boolean (category-based) can lag behind a more
+// specific status like "delivered", so we don't trust `delivered` at all,
+// and fall back to whichever date field is actually populated.
+function resolveCanonicalDeliverySlot(p, tr) {
+  const status    = p.status || 'unknown';
+  const delivered = status === 'delivered';
+  const { icon, color } = canonicalParcelStatus(status);
+  let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
+
+  if (delivered) {
+    const dateStr = p.delivered_at || p.planned_from; // fallback covers the race condition above
+    if (dateStr) {
+      const d = new Date(dateStr);
+      if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
+    }
+  } else if (p.planned_from) {
+    // DPD's own normalization currently falls back to a whole calendar day
+    // (00:00–23:59) for planned_from/planned_to even when it already knows a
+    // much tighter window in raw.deliveryTimeFrom/deliveryTimeTo; prefer
+    // that more specific window when present. Harmless no-op for carriers
+    // (like DHL NL) that don't have these raw fields.
+    let fromStr = p.planned_from, toStr = p.planned_to;
+    if (p.raw?.deliveryDate && p.raw?.deliveryTimeFrom && p.raw?.deliveryTimeTo) {
+      fromStr = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeFrom;
+      toStr   = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeTo;
+    }
+    const slot = computeDeliverySlot(fromStr, toStr, tr, bestStatusLine(status, p.raw_status, tr));
+    if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
+  }
+  if (!line1) line1 = bestStatusLine(status, p.raw_status, tr);
+  if (!line2) line2 = rawStatusLine(p);
+
+  return { status, delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd };
+}
+
+// Shared mapper for both dhl_nl_incoming and dhl_nl_delivered: same normalised
+// parcel shape on both sensors (confirmed from sensor.py: both expose a
+// `parcels` attribute via the same coordinator data model).
+// Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
+// the future PostNL 4.0.0), same normalised shape across all of them, only
+// the carrier identity and direction differ per source.
+function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
+  const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd } =
+    resolveCanonicalDeliverySlot(p, tr);
+
+  const name = resolveCanonicalName(p, direction);
+
+  // Same principle for the letterbox/rerouted/pickup-point chips: read from
+  // raw when the carrier exposes that detail (confirmed for PostNL's
+  // shipment_type/delivery_address_type), gracefully no-op for carriers
+  // (DHL NL, DPD) that don't have an equivalent raw field.
+  const shipmentType = p.raw?.shipment_type;
+  const addressType  = p.raw?.delivery_address_type;
+
+  const { packageSize, packageSizeIcon } = resolveCanonicalPackageSize(p);
+  const events = resolveCanonicalEvents(p, tr);
 
   return mkItem({
     name, line1, line2, icon, color,
@@ -1025,50 +1044,58 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   });
 }
 
-// PostNL 4.0's letters/mail-scan feature — structurally nothing like a
+// PostNL 4.0's letters/mail-scan feature: structurally nothing like a
 // parcel (no status, no tracking, no carrier diversity since it's always
 // PostNL), so it gets its own small mapper rather than forcing it through
 // mapCanonicalParcel. The envelope scan (image_url) takes over the icon slot
-// and is shown larger in the detail view — there's no event history or
+// and is shown larger in the detail view; there's no event history or
 // tracking code to show there instead.
 // The summary sensor's `image_url` per letter points directly at PostNL's
 // own authenticated API and can't be loaded from the browser. Each letter
 // also gets its own `image.*` entity (confirmed via real data: its `id`
 // attribute matches the letter's `id`) whose `entity_picture` is an
-// HA-proxied, already-authenticated path the browser *can* load — that's
+// HA-proxied, already-authenticated path the browser *can* load; that's
 // what Peter's own example dashboard uses too. Falls back to the raw
 // image_url (won't load, but at least the data is there) if no matching
 // image entity is found, e.g. while hass.states isn't available yet.
-function findPostnlLetterImage(letter, hass) {
-  if (!hass?.states) return null;
+// Builds the letter-id -> entity_picture lookup once per collect() call
+// instead of re-scanning all of hass.states for every letter (previously
+// O(letters * total entities) per render).
+function buildPostnlImageMap(hass) {
+  const map = new Map();
+  if (!hass?.states) return map;
   for (const [entityId, state] of Object.entries(hass.states)) {
-    if (entityId.startsWith('image.') && state.attributes?.id === letter.id) {
-      return state.attributes.entity_picture || null;
+    if (entityId.startsWith('image.') && state.attributes?.id !== undefined) {
+      map.set(state.attributes.id, state.attributes.entity_picture || null);
     }
   }
-  return null;
+  return map;
 }
 
-function mapPostnlLetter(letter, tr, hass) {
+function findPostnlLetterImage(letter, imageMap) {
+  return imageMap.get(letter.id) || null;
+}
+
+function mapPostnlLetter(letter, tr, imageMap) {
   const d = letter.date ? new Date(letter.date) : null;
   const validDate = d && !isNaN(d);
   // Stay in the active/enroute bucket on the scan date itself (today's mail
   // is still "new"), only move to delivered/history starting the next day.
   const delivered = validDate ? daysUntil(d) < 0 : true;
   // The letter's "delivery window" was simply that one scan day (there's no
-  // time component) — once that day has passed, describe it the same way a
+  // time component); once that day has passed, describe it the same way a
   // delivered parcel is ("Delivered yesterday."); while still today, use the
   // same all-day-window phrasing a midnight-only parcel slot gets.
   let line1 = null;
   if (validDate) line1 = delivered ? formatDeliveredText(d, tr) : tr.delivery_on(formatDay(d, tr));
-  // Always resolve the actual scan, even once delivered — it's still useful
+  // Always resolve the actual scan, even once delivered; it's still useful
   // to look back at what a piece of mail actually was. Only the small row
   // icon switches to a checkmark once delivered (handled in renderRow); the
   // detail view and click-to-expand keep working off this imageUrl either way.
-  const imageUrl = findPostnlLetterImage(letter, hass) || letter.image_url || null;
+  const imageUrl = findPostnlLetterImage(letter, imageMap) || letter.image_url || null;
   // `title` is a free-form string (in every example we've seen it happens
   // to read like a date, e.g. "17 juni", but nothing guarantees that stays
-  // true — it's not the same field as `date`). Build the displayed date
+  // true; it's not the same field as `date`). Build the displayed date
   // phrase ourselves from the actual parsed `date` instead, so the sentence
   // ("Mail item from ___") always stays grammatically correct regardless of
   // what title contains. Uses a fixed calendar date, not the relative
@@ -1088,18 +1115,42 @@ function mapPostnlLetter(letter, tr, hass) {
     letterbox: true, // mail always fits through the mailbox by definition
     imageUrl,
     // No tracking code worth showing, but `id` is a real, stable unique
-    // identifier (also used to match the per-letter image entity) — use it
+    // identifier (also used to match the per-letter image entity); use it
     // to dedupe instead. Confirmed against real PostNL data: a
     // LetterboxParcel (a parcel that fits through the mailbox) gets
     // announced through *both* MyMail (this letter, `id` = the tracking
     // barcode) and incoming/delivered parcels (same barcode as
-    // trackingCode) — so this also dedupes those two representations of
+    // trackingCode); so this also dedupes those two representations of
     // the same physical item into one row, not just the "same account
     // configured twice" case this comment originally covered. See
     // ENRICHMENT_FIELDS' `imageUrl` entry below for why the merge keeps
     // the letter's scan photo either way.
     dedupKey: letter.id || null,
   });
+}
+
+// Shared shape for the "canonical parcel" family (DHL NL, DPD, GLS, and
+// PostNL 4.0+'s own parcels sensors): same normalised `parcels` attribute +
+// mapCanonicalParcel() call across every one of these, only identity/
+// direction/hint-matching differ per entry. `direction` is passed straight
+// through to mapCanonicalParcel too: every entry in this family already
+// keeps its own `direction` field in sync with what its collect() call used
+// to pass mapCanonicalParcel (outgoing entries passed direction: 'outgoing'
+// explicitly, incoming entries omitted it and relied on the 'incoming'
+// default -- passing it through explicitly here is equivalent either way).
+function mkCanonicalEntry({
+  group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms,
+  entityHints, excludeHints, alpha, carrierGroup, carrierCode,
+}) {
+  return {
+    group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms, entityHints,
+    ...(excludeHints ? { excludeHints } : {}),
+    ...(alpha ? { alpha } : {}),
+    hasAttrs: (a) => Array.isArray(a.parcels),
+    collect(attrs, ctx) {
+      return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
+    },
+  };
 }
 
 const INTEGRATIONS = {
@@ -1175,7 +1226,7 @@ const INTEGRATIONS = {
     },
   },
 
-  postnl_canonical_incoming: {
+  postnl_canonical_incoming: mkCanonicalEntry({
     group:       'postnl_canonical',
     groupLabel:  'PostNL',
     rowLabel:    'Incoming (active)',
@@ -1186,11 +1237,10 @@ const INTEGRATIONS = {
     platforms:   ['postnl'],
     entityHints: ['incoming_parcels', 'postnl_incoming'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl' })); },
-  },
+    carrierGroup: 'postnl', carrierCode: 'postnl',
+  }),
 
-  postnl_canonical_delivered: {
+  postnl_canonical_delivered: mkCanonicalEntry({
     group:       'postnl_canonical',
     groupLabel:  'PostNL',
     rowLabel:    'Delivered (history)',
@@ -1202,15 +1252,14 @@ const INTEGRATIONS = {
     entityHints: ['delivered_parcels', 'postnl_delivered'],
     // outgoing_delivered: PostNL 4.3.0 added a separate outgoing_delivered_
     // parcels sensor (see postnl_canonical_outgoing_delivered below) whose
-    // entity_id contains "delivered_parcels" as a substring — without this
+    // entity_id contains "delivered_parcels" as a substring; without this
     // exclusion it would tie/outscore that dedicated type in bestTypeByHints
     // and get misdetected as regular incoming delivery history.
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl' })); },
-  },
+    carrierGroup: 'postnl', carrierCode: 'postnl',
+  }),
 
-  postnl_canonical_outgoing_delivered: {
+  postnl_canonical_outgoing_delivered: mkCanonicalEntry({
     group:       'postnl_canonical',
     groupLabel:  'PostNL',
     rowLabel:    'Outgoing (delivered)',
@@ -1221,15 +1270,14 @@ const INTEGRATIONS = {
     platforms:   ['postnl'],
     entityHints: ['outgoing_delivered_parcels'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     // New in PostNL 4.3.0 (confirmed via its own release notes): return
     // shipments land here once delivered back to the sender, kept separate
     // from postnl_canonical_delivered's regular incoming history so
     // completed returns don't get shown as if they were freshly received.
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'postnl', carrierCode: 'postnl',
+  }),
 
-  postnl_canonical_outgoing: {
+  postnl_canonical_outgoing: mkCanonicalEntry({
     group:       'postnl_canonical',
     groupLabel:  'PostNL',
     rowLabel:    'Outgoing',
@@ -1242,17 +1290,16 @@ const INTEGRATIONS = {
     // outgoing_delivered: the dedicated sensor's entity_id (e.g.
     // "postnl_outgoing_delivered_parcels") contains "postnl_outgoing" as a
     // substring too, tying with postnl_canonical_outgoing_delivered's own
-    // hint in bestTypeByHints — same collision as the one already excluded
+    // hint in bestTypeByHints; same collision as the one already excluded
     // on postnl_canonical_delivered above, mirrored here for its sibling.
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     // PostNL 4.0 (peternijssen fork) is stable. 4.1.0 added a `receiver`
     // field, confirmed via its own release notes ("matching the DHL and DPD
-    // integrations") — the outgoing-name ambiguity flagged here previously
+    // integrations"); the outgoing-name ambiguity flagged here previously
     // is resolved the same way DHL NL's was; mapCanonicalParcel already
     // reads `receiver` generically for any carrier, no change needed there.
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'postnl', carrierCode: 'postnl', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'postnl', carrierCode: 'postnl',
+  }),
 
   postnl_canonical_letters: {
     group:       'postnl_canonical',
@@ -1265,7 +1312,10 @@ const INTEGRATIONS = {
     platforms:   ['postnl'],
     entityHints: ['postnl_letters', 'letters'],
     hasAttrs:    (a) => Array.isArray(a.letters),
-    collect(attrs, ctx) { return (attrs.letters || []).map(l => mapPostnlLetter(l, ctx.tr, ctx.hass)); },
+    collect(attrs, ctx) {
+      const imageMap = buildPostnlImageMap(ctx.hass);
+      return (attrs.letters || []).map(l => mapPostnlLetter(l, ctx.tr, imageMap));
+    },
   },
 
   parcel: {
@@ -1315,7 +1365,7 @@ const INTEGRATIONS = {
             else if (start === '00:00')        line2 = tr.delivery_on(day);
             else if (end)                      line2 = tr.delivery_between(day, start, end);
             else {
-              // Single non-midnight timestamp, no end — confirmed against
+              // Single non-midnight timestamp, no end; confirmed against
               // real FedEx data ("before 22:00") to mean a deadline, not a
               // point estimate ("around 22:00"). The implicit window runs
               // from the start of that day until the deadline.
@@ -1351,7 +1401,7 @@ const INTEGRATIONS = {
     },
   },
 
-  dhl_nl_incoming: {
+  dhl_nl_incoming: mkCanonicalEntry({
     group:       'dhl_nl',
     groupLabel:  'DHL NL',
     rowLabel:    'Incoming (active)',
@@ -1362,11 +1412,10 @@ const INTEGRATIONS = {
     platforms:   ['dhl_nl'],
     entityHints: ['incoming_parcels', 'dhl_incoming', 'dhl_ontvang', 'dhl_bezorg'],
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl' })); },
-  },
+    carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
+  }),
 
-  dhl_nl_delivered: {
+  dhl_nl_delivered: mkCanonicalEntry({
     group:       'dhl_nl',
     groupLabel:  'DHL NL',
     rowLabel:    'Delivered (history)',
@@ -1378,11 +1427,10 @@ const INTEGRATIONS = {
     entityHints: ['delivered_parcels', 'dhl_delivered', 'dhl_bezorgd'],
     // outgoing_delivered: see the same exclusion on postnl_canonical_delivered.
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl' })); },
-  },
+    carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
+  }),
 
-  dhl_nl_outgoing_delivered: {
+  dhl_nl_outgoing_delivered: mkCanonicalEntry({
     group:       'dhl_nl',
     groupLabel:  'DHL NL',
     rowLabel:    'Outgoing (delivered)',
@@ -1393,15 +1441,14 @@ const INTEGRATIONS = {
     platforms:   ['dhl_nl'],
     entityHints: ['outgoing_delivered_parcels'],
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     // New in DHL NL 2.4.0: return shipments land here once delivered back
     // to the shop, kept separate from dhl_nl_delivered's regular incoming
     // history (see release notes: "Return shipments now show up as
     // outgoing parcels").
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
+  }),
 
-  dhl_nl_outgoing: {
+  dhl_nl_outgoing: mkCanonicalEntry({
     group:       'dhl_nl',
     groupLabel:  'DHL NL',
     rowLabel:    'Outgoing',
@@ -1413,11 +1460,10 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'dhl_outgoing', 'dhl_verstu', 'dhl_verzond'],
     // outgoing_delivered: see the same exclusion on postnl_canonical_outgoing.
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dhl_nl', carrierCode: 'dhlnl', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
+  }),
 
-  dpd_incoming: {
+  dpd_incoming: mkCanonicalEntry({
     group:       'dpd',
     groupLabel:  'DPD',
     rowLabel:    'Incoming (active)',
@@ -1428,11 +1474,10 @@ const INTEGRATIONS = {
     platforms:   ['dpd'],
     entityHints: ['incoming_parcels', 'dpd_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
-  },
+    carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
+  }),
 
-  dpd_delivered: {
+  dpd_delivered: mkCanonicalEntry({
     group:       'dpd',
     groupLabel:  'DPD',
     rowLabel:    'Delivered (history)',
@@ -1444,11 +1489,10 @@ const INTEGRATIONS = {
     entityHints: ['delivered_parcels', 'dpd_delivered'],
     // outgoing_delivered: see the same exclusion on postnl_canonical_delivered.
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode' })); },
-  },
+    carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
+  }),
 
-  dpd_outgoing_delivered: {
+  dpd_outgoing_delivered: mkCanonicalEntry({
     group:       'dpd',
     groupLabel:  'DPD',
     rowLabel:    'Outgoing (delivered)',
@@ -1459,13 +1503,12 @@ const INTEGRATIONS = {
     platforms:   ['dpd'],
     entityHints: ['outgoing_delivered_parcels'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     // New in DPD 2.4.0: completed outgoing parcels land here, kept separate
     // from dpd_delivered's regular incoming history.
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
+  }),
 
-  dpd_outgoing: {
+  dpd_outgoing: mkCanonicalEntry({
     group:       'dpd',
     groupLabel:  'DPD',
     rowLabel:    'Outgoing',
@@ -1477,17 +1520,16 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_parcels', 'dpd_outgoing'],
     // outgoing_delivered: see the same exclusion on postnl_canonical_outgoing.
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'outgoing_delivered'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     // DPD itself is stable (2.0.0). The `receiver` field is now confirmed
-    // present on real DPD incoming/delivered data — but not yet specifically
+    // present on real DPD incoming/delivered data, but not yet specifically
     // confirmed on the outgoing sensor itself, so the sender-vs-recipient
     // question for THIS source type remains technically unresolved. Badges
     // are integration-level, not per source-type, so this stays a
     // code-level caveat rather than a user-facing alpha/beta badge.
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'dpd', carrierCode: 'dpdgpcode', direction: 'outgoing' })); },
-  },
+    carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
+  }),
 
-  gls_incoming: {
+  gls_incoming: mkCanonicalEntry({
     group:       'gls',
     groupLabel:  'GLS',
     rowLabel:    'Incoming (active)',
@@ -1498,16 +1540,15 @@ const INTEGRATIONS = {
     platforms:   ['gls'],
     entityHints: ['incoming_parcels', 'gls_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     alpha:       true,
-    // No account needed — tracking numbers + postal code are entered manually.
+    // No account needed; tracking numbers + postal code are entered manually.
     // Multiple hubs (one per postal code) each become their own HA device;
     // the card treats them as independent sources. No multi-account
     // device-grouping via device-registry.
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'gls', carrierCode: 'gls' })); },
-  },
+    carrierGroup: 'gls', carrierCode: 'gls',
+  }),
 
-  gls_delivered: {
+  gls_delivered: mkCanonicalEntry({
     group:       'gls',
     groupLabel:  'GLS',
     rowLabel:    'Delivered (history)',
@@ -1518,10 +1559,9 @@ const INTEGRATIONS = {
     platforms:   ['gls'],
     entityHints: ['delivered_parcels', 'gls_delivered'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    hasAttrs:    (a) => Array.isArray(a.parcels),
     alpha:       true,
-    collect(attrs, ctx) { return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup: 'gls', carrierCode: 'gls' })); },
-  },
+    carrierGroup: 'gls', carrierCode: 'gls',
+  }),
 
 };
 
@@ -1530,7 +1570,7 @@ const INTEGRATIONS = {
 // Looks up the human-readable device name for an entity, if device-registry
 // info happens to be available on this hass object. Unlike hass.entities/
 // hass.states (which this card already relies on elsewhere), hass.devices
-// isn't confirmed to be populated in every Lovelace-card-editor context —
+// isn't confirmed to be populated in every Lovelace-card-editor context;
 // callers must treat a null result as "ungroupable", not an error.
 function deviceNameForEntity(entityId, hass) {
   const deviceId = hass?.entities?.[entityId]?.device_id;
@@ -1557,11 +1597,11 @@ function candidatesForType(type, hass) {
   return results;
 }
 
-// For a source group (e.g. "PostNL"), finds distinct devices — typically one
-// per configured account — that offer candidate entities for any of the
+// For a source group (e.g. "PostNL"), finds distinct devices (typically one
+// per configured account) that offer candidate entities for any of the
 // group's types, mapping each to which type->entity pairs it provides.
 // Returns null when device-registry info isn't available, or there's only
-// one distinguishable device — callers should fall back to the simpler
+// one distinguishable device; callers should fall back to the simpler
 // single add/remove-everything behavior in that case, since per-device
 // rows only add value once there's genuinely more than one to tell apart.
 function deviceCandidatesForGroup(group, hass, sources) {
@@ -1601,7 +1641,7 @@ function isPlatformInstalled(type, hass) {
     // platform match alone would wrongly mark BOTH as "installed". When we
     // have the actual sensor data, require the shape to match too.
     const attrs = hass.states?.[entityId]?.attributes;
-    if (!attrs) return true; // no data to check shape against yet — platform match is the best we have
+    if (!attrs) return true; // no data to check shape against yet; platform match is the best we have
     try { if (def.hasAttrs(attrs)) return true; } catch { /* keep looking */ }
   }
   return false;
@@ -1650,7 +1690,7 @@ function detectTypeFromHass(entityId, hass) {
     .map(([type]) => type);
 
   if (rawPlatformTypes.length === 0) {
-    // No platform match — try hints across all (non-excluding) types (fallback for missing platform info)
+    // No platform match; try hints across all (non-excluding) types (fallback for missing platform info)
     return bestTypeByHints(entityId, Object.keys(INTEGRATIONS).filter(t => !isExcluded(INTEGRATIONS[t])));
   }
 
@@ -1662,7 +1702,7 @@ function detectTypeFromHass(entityId, hass) {
   // kept the same domain) but expose a structurally different attrs shape
   // (e.g. enroute/delivered arrays vs a single parcels array). When we have
   // the actual sensor data, prefer types whose hasAttrs check the data
-  // really matches — this is a stronger signal than name-based hints alone.
+  // really matches; this is a stronger signal than name-based hints alone.
   if (attrs) {
     const shapeMatches = platformTypes.filter(t => { try { return INTEGRATIONS[t].hasAttrs(attrs); } catch { return false; } });
     if (shapeMatches.length) platformTypes = shapeMatches;
@@ -1670,7 +1710,7 @@ function detectTypeFromHass(entityId, hass) {
 
   if (platformTypes.length === 1) return platformTypes[0];
 
-  // Multiple types share this platform — use hints to disambiguate
+  // Multiple types share this platform; use hints to disambiguate
   return bestTypeByHints(entityId, platformTypes) || platformTypes[0];
 }
 
@@ -1691,13 +1731,13 @@ function applyFilter(items, filter) {
   const state = filter.state || 'all';
   if (state === 'enroute')   r = r.filter(i => !i.delivered);
   if (state === 'delivered') r = r.filter(i => i.delivered);
-  // 'carriers' (array, current) — falls back to legacy singular 'carrier' (string) for old configs
+  // 'carriers' (array, current); falls back to legacy singular 'carrier' (string) for old configs
   const carrierList = filterCarriers(filter);
   if (carrierList.length) {
     // Each entry may itself be a comma-joined list of codes (one dropdown
     // option can represent multiple underlying carrier codes that share
     // the same display name, e.g. PostNL's own 'postnl' and Parcel's
-    // 'tntp') — split before building the match set.
+    // 'tntp'); split before building the match set.
     const set = new Set(carrierList.flatMap(c => c.toLowerCase().split(',')));
     r = r.filter(i => i.carrierCode && set.has(i.carrierCode.toLowerCase()));
   }
@@ -1725,7 +1765,7 @@ function itemPriority(item, now, today) {
 }
 
 // ─── Card defaults ───────────────────────────────────────────────────────────
-// Single source of truth — shared by PackageTrackerCard.setConfig and the editor.
+// Single source of truth, shared by PackageTrackerCard.setConfig and the editor.
 
 const CARD_DEFAULTS = {
   max:    5,
@@ -1757,7 +1797,7 @@ function deepEqual(a, b) {
 }
 
 // Only keep keys that differ from CARD_DEFAULTS (or have no default at all,
-// e.g. `sources`) — _normalize merges every default into _config for
+// e.g. `sources`): _normalize merges every default into _config for
 // internal rendering, but firing that whole merged object back would
 // persist every untouched default into the saved YAML.
 function stripDefaults(config) {
@@ -1778,7 +1818,7 @@ const CARD_CSS = `
     -webkit-font-smoothing: var(--ha-font-smoothing, auto);
   }
   :host(.hidden) { display: none !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
-  /* ha-card doesn't clip its own children by default — needed so the
+  /* ha-card doesn't clip its own children by default; needed so the
      negative-margin edge-alignment trick below (ha-card > .row etc.) never
      pokes 1px past ha-card's own rounded corners. Same rule already exists
      in notify-dashboard-card.js. */
@@ -1890,7 +1930,7 @@ const CARD_CSS = `
     display: none; padding: 0 10px 10px calc(10px + 36px + 10px);
   }
   .detail.open { display: block; }
-  /* Subtle separator from whatever comes next when expanded — naturally
+  /* Subtle separator from whatever comes next when expanded; naturally
      never applies in split layout, since each item there sits alone in its
      own ha-card (always the "last" and only child). */
   .row-wrapper:not(:last-child) .detail.open { border-bottom: 1px solid var(--divider-color, rgba(0,0,0,.06)); }
@@ -1944,13 +1984,13 @@ function renderRow(item, show, tr, openItems) {
   const days = (!item.delivered && item.deliveryDate) ? daysUntil(item.deliveryDate) : null;
 
   // Chevron/detail are created further down (only when there's something to
-  // show), but a failed image load needs to retroactively hide them — so
+  // show), but a failed image load needs to retroactively hide them; so
   // both image error handlers below need a reference, hoisted here.
   let chevron = null, detail = null, chevIco = null;
   const hasOtherDetails = (item.events && item.events.length > 0) || !!item.trackingCode;
   function hideChevronIfImageWasTheOnlyReason() {
     // Only the scan image justified showing a chevron (no events, no
-    // tracking code) — once it fails to load there's nothing left to
+    // tracking code); once it fails to load there's nothing left to
     // reveal, so don't offer an expand that opens onto an empty box.
     if (hasOtherDetails) return;
     if (chevron) chevron.style.display = 'none';
@@ -1967,7 +2007,7 @@ function renderRow(item, show, tr, openItems) {
     iconWrap.appendChild(bg);
   }
   // Once delivered, always show the icon (a checkmark for letters) rather
-  // than the scan thumbnail — even though imageUrl itself stays resolved so
+  // than the scan thumbnail, even though imageUrl itself stays resolved so
   // the detail view below can still show/open the actual scan on request.
   if (item.imageUrl && !item.delivered) {
     const img = document.createElement('img');
@@ -1998,11 +2038,11 @@ function renderRow(item, show, tr, openItems) {
 
   // Content
   const content = mk('div', 'content');
-  content.appendChild(mk('div', 'name', item.name || '—'));
+  content.appendChild(mk('div', 'name', item.name || '-'));
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
   if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
-  // Letterbox is hidden once delivered — "this fits through your letterbox"
+  // Letterbox is hidden once delivered: "this fits through your letterbox"
   // is only useful before you've received it (you don't need to wait home),
   // whether that's a package or mail.
   const showLetterbox = item.letterbox && !item.delivered;
@@ -2066,7 +2106,7 @@ function renderRow(item, show, tr, openItems) {
       // timeline, tracking code, package size) sits right against the image
       // with only its own small top padding/margin, reading as cramped.
       bigImg.style.cssText = 'max-width:100%;max-height:320px;display:block;border-radius:8px;object-fit:contain;margin-bottom:10px;';
-      // If the scan fails to load here too, just drop it — any other detail
+      // If the scan fails to load here too, just drop it; any other detail
       // content (tracking code, events) below it is still useful on its own.
       bigImg.addEventListener('error', () => { bigImg.remove(); hideChevronIfImageWasTheOnlyReason(); });
       detail.appendChild(bigImg);
@@ -2165,6 +2205,7 @@ class PackageTrackerCard extends HTMLElement {
     this._built          = false;
     this._cachedItems    = [];
     this._openItems      = new Set();
+    this._sourceItemsCache = new Map();
   }
 
   connectedCallback() {
@@ -2181,7 +2222,7 @@ class PackageTrackerCard extends HTMLElement {
 
   _startCountdownTimer() {
     clearInterval(this._countdownTimer);
-    // Re-render every 5 minutes — only meaningful if there's an active slot
+    // Re-render every 5 minutes; only meaningful if there's an active slot
     this._countdownTimer = setInterval(() => {
       if (this._hasActiveSlot()) this._render();
     }, 5 * 60 * 1000);
@@ -2202,6 +2243,7 @@ class PackageTrackerCard extends HTMLElement {
     };
     this._lastHashes = {};
     this._cachedItems = [];
+    this._sourceItemsCache = new Map();
     if (this._countdownTimer) this._startCountdownTimer();
   }
 
@@ -2209,10 +2251,16 @@ class PackageTrackerCard extends HTMLElement {
     this._hass = hass;
     if (!this._config) return;
     let changed = !this._built;
-    if (hass.language !== this._lastLang) { this._lastLang = hass.language; changed = true; }
+    if (hass.language !== this._lastLang) {
+      this._lastLang = hass.language;
+      changed = true;
+      // Per-source item cache below is built with translated strings baked
+      // in, so a language switch must force every source to re-collect.
+      this._sourceItemsCache.clear();
+    }
     for (const { entity } of this._config.sources) {
       if (!entity) continue;
-      // Compare last_updated (not last_changed — that only fires on state-value
+      // Compare last_updated (not last_changed; that only fires on state-value
       // changes, missing attribute-only updates like a package status changing
       // while the sensor's count stays the same) instead of serializing attributes.
       const ts = hass.states[entity]?.last_updated ?? null;
@@ -2228,14 +2276,33 @@ class PackageTrackerCard extends HTMLElement {
     for (const source of this._config.sources) {
       const def = INTEGRATIONS[source.type];
       if (!def || !source.entity) continue;
-      const attrs = this._hass.states[source.entity]?.attributes;
+      const state = this._hass.states[source.entity];
+      const attrs = state?.attributes;
       if (!attrs) continue;
-      items.push(...def.collect(attrs, ctx));
+      // Skip re-running collect() for sources whose entity hasn't changed
+      // since the last collection; def.collect() (image-map building, event
+      // parsing, etc.) is the expensive part here, not the dedup/merge below.
+      const cached = this._sourceItemsCache.get(source.entity);
+      if (cached && cached.ts === state.last_updated) {
+        items.push(...cached.items);
+        continue;
+      }
+      // One source's collect() throwing (e.g. an integration ships an
+      // unexpected attribute shape) must not take down every other
+      // source's already-working packages -- same guard the editor's own
+      // _availableCarriers() already uses for this identical call.
+      try {
+        const sourceItems = def.collect(attrs, ctx);
+        this._sourceItemsCache.set(source.entity, { ts: state.last_updated, items: sourceItems });
+        items.push(...sourceItems);
+      } catch (err) {
+        console.error(`package-tracker-card: source "${source.type}" (${source.entity}) failed to collect`, err);
+      }
     }
-    // Deduplicate by tracking code — first source wins, but later source may contribute a better name.
+    // Deduplicate by tracking code: first source wins, but later source may contribute a better name.
     // EXCEPTION: for carriers in PARCEL_WINS_FOR, Parcel's own data is currently
     // richer than that carrier's dedicated integration (e.g. DPD's alpha
-    // integration has no delivery slot yet) — so Parcel wins wholesale instead
+    // integration has no delivery slot yet); so Parcel wins wholesale instead
     // of just contributing name/events. Revisit per carrier as those mature.
     const PARCEL_WINS_FOR = new Set(['dpd']);
     // Supplementary fields that may exist on one source but not the other,
@@ -2244,10 +2311,10 @@ class PackageTrackerCard extends HTMLElement {
     // integrations have package size/weight and pickup-point detail that
     // Parcel doesn't expose. Always backfilled from whichever side has them,
     // never overwriting a value the winning side already has.
-    // imageUrl: PostNL LetterboxParcel shipments get announced twice — once
+    // imageUrl: PostNL LetterboxParcel shipments get announced twice, once
     // via postnl_canonical_letters (MyMail scan, has the actual envelope
     // photo) and once via postnl_canonical_incoming/delivered (tracking
-    // data, no photo) — both share the same barcode as dedupKey. Without
+    // data, no photo); both share the same barcode as dedupKey. Without
     // this, whichever side wins the dedup (normally the parcel, since
     // sources are processed in config order and packages typically come
     // first) silently drops the letter's scan photo entirely.
@@ -2257,7 +2324,7 @@ class PackageTrackerCard extends HTMLElement {
     };
     // Now that DPD/DHL NL/PostNL can optionally report their own `history`
     // (in addition to Parcel's event log), the same real-world delivery can
-    // show up as events from both sources — same moments, different wording
+    // show up as events from both sources: same moments, different wording
     // (e.g. DPD's own "Hub or other premises - Sorted" vs. Parcel's "Je
     // pakket is klaar..." for the same timestamp). Picking one source
     // wholesale would throw away real, non-overlapping information (each
@@ -2284,7 +2351,7 @@ class PackageTrackerCard extends HTMLElement {
         const kept = seen.get(i.dedupKey);
         const keptBackup = { ...kept };
         // Identify which of the two (if either) is the Parcel-sourced item,
-        // regardless of arrival order — `kept` might be either one.
+        // regardless of arrival order; `kept` might be either one.
         let parcelItem = null, otherItem = null;
         if (i.integration === 'parcel' && kept.integration !== 'parcel') { parcelItem = i; otherItem = kept; }
         else if (kept.integration === 'parcel' && i.integration !== 'parcel') { parcelItem = kept; otherItem = i; }
@@ -2293,7 +2360,7 @@ class PackageTrackerCard extends HTMLElement {
             // Parcel wins the main fields (status/dates/etc.) wholesale for
             // this carrier, but its own event log might still be missing
             // moments the carrier's own (currently less mature) integration
-            // happens to have — merge rather than fully discarding those.
+            // happens to have; merge rather than fully discarding those.
             const mergedEvents = mergeEventTimelines(parcelItem.events, otherItem.events);
             if (kept !== parcelItem) Object.assign(kept, parcelItem);
             kept.events = mergedEvents;
@@ -2310,7 +2377,7 @@ class PackageTrackerCard extends HTMLElement {
           }
         }
         // Whichever branch ran (or didn't), backfill any enrichment field
-        // the winning side ended up without — first from kept's own
+        // the winning side ended up without: first from kept's own
         // pre-merge state (in case a wholesale overwrite cleared it), then
         // from the other source.
         backfill(kept, keptBackup);
@@ -2403,7 +2470,7 @@ class PackageTrackerCard extends HTMLElement {
       if (clickableIcon) {
         const chevronBtn = row.querySelector('.chevron-btn');
         if (item.imageUrl && chevronBtn) {
-          // A scan thumbnail with an expandable preview available — open
+          // A scan thumbnail with an expandable preview available: open
           // that inline instead of navigating to an external page.
           clickableIcon.addEventListener('click', () => chevronBtn.click());
         } else if (item.tapUrl) {
@@ -2444,7 +2511,7 @@ class PackageTrackerCard extends HTMLElement {
 
   getGridOptions() {
     // Package lists vary a lot in height depending on how many are in
-    // transit, so rows is 'auto' rather than a fixed count — full-width by
+    // transit, so rows is 'auto' rather than a fixed count; full-width by
     // default since a cramped narrow column reads poorly for a list card.
     return { columns: 'full', rows: 'auto' };
   }
@@ -2520,13 +2587,13 @@ class PackageTrackerCardEditor extends HTMLElement {
   }
 
   // Distinct {value, label} carrier options currently present across configured
-  // sources — used to populate the carrier filter dropdown with carriers the
+  // sources; used to populate the carrier filter dropdown with carriers the
   // person actually has, instead of the full ~330-carrier static list.
   _availableCarriers() {
     if (!this._hass || !this._config) return [];
     const lang = this._hass.language || 'en';
     const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
-    // Group by display label, not by code — the same real-world carrier can
+    // Group by display label, not by code; the same real-world carrier can
     // be reported under different codes depending on the source (e.g.
     // PostNL's own integrations use 'postnl', but Parcel reports PostNL
     // shipments under its own 'tntp' code) and would otherwise show up as
@@ -2662,14 +2729,14 @@ class PackageTrackerCardEditor extends HTMLElement {
       groups.get(g).types.push(type);
       if (def.alpha) groups.get(g).alpha = true;
     }
-    // Compute each group's installed/active status once — used for both
+    // Compute each group's installed/active status once; used for both
     // the sort order below and the row rendering further down.
     for (const group of groups.values()) {
       group.platformOk  = group.types.some(t => this._hass && isPlatformInstalled(t, this._hass));
       group.groupActive = group.types.some(t => sources.some(s => s.type === t));
     }
 
-    // Sort by installed status only (not active/configured) — that stays
+    // Sort by installed status only (not active/configured); that stays
     // stable regardless of what the user does in this editor, so adding or
     // removing a source doesn't make the list jump around under them.
     // Alphabetical by label within each tier.
@@ -2689,7 +2756,7 @@ class PackageTrackerCardEditor extends HTMLElement {
       // domain and can therefore never both be installed at once. Default
       // to showing only the peternijssen-based group ('postnl_canonical')
       // unless we're certain the standard arjenbos integration is what's
-      // actually installed — but never hide a group that already has a
+      // actually installed; but never hide a group that already has a
       // configured source, so an existing setup stays manageable.
       if (groupKey === 'postnl' && !groupActive) {
         const peterGroup = groups.get('postnl_canonical');
@@ -2733,7 +2800,7 @@ class PackageTrackerCardEditor extends HTMLElement {
 
       if (deviceMap) {
         // Multiple recognized devices/accounts for this group (e.g. two
-        // PostNL accounts) — show one section per device, each with its own
+        // PostNL accounts), show one section per device, each with its own
         // add/remove and per-type entity display, so it's both visible and
         // editable per account, the same granularity YAML already shows.
         // No group-level button here (each device manages its own below),
@@ -2744,7 +2811,7 @@ class PackageTrackerCardEditor extends HTMLElement {
           const deviceActive  = entityIds.some(e => sources.some(s => s.entity === e));
 
           // One shared left edge (matching the group header's own 14px) for
-          // everything belonging to this device — name row and per-type
+          // everything belonging to this device: name row and per-type
           // rows below line up with each other and with the title above;
           // the divider line is what separates one device from the next.
           const deviceBlock = document.createElement('div'); deviceBlock.className = 'device-block';
@@ -2776,7 +2843,7 @@ class PackageTrackerCardEditor extends HTMLElement {
           nameRow.appendChild(deviceBtnWrap);
           deviceBlock.appendChild(nameRow);
 
-          // Body — only once this device is active, mirroring exactly what
+          // Body: only once this device is active, mirroring exactly what
           // the single-device case shows below its own header: one entity
           // display per type, read-only-in-practice (locked to this
           // device's own entity) but visible the same way. Same 14px left
@@ -2815,13 +2882,13 @@ class PackageTrackerCardEditor extends HTMLElement {
       } else {
       const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
       if (groupActive) {
-        // Trash button — removes all sources for this group
+        // Trash button: removes all sources for this group
         const delBtn = document.createElement('ha-icon-button'); delBtn.className = 'delete-btn';
         delBtn.appendChild(mkIcon('mdi:delete-outline'));
         delBtn.addEventListener('click', () => saveGroup(group.types, []));
         btnWrap.appendChild(delBtn);
       } else if (platformOk) {
-        // Add button — ha-icon-button, blue
+        // Add button: ha-icon-button, blue
         const addBtn = document.createElement('ha-icon-button'); addBtn.className = 'add-btn';
         addBtn.appendChild(mkIcon('mdi:plus'));
         addBtn.addEventListener('click', () => {
@@ -2838,7 +2905,7 @@ class PackageTrackerCardEditor extends HTMLElement {
         });
         btnWrap.appendChild(addBtn);
       } else if (group.url) {
-        // Not installed — distinct icon (not the "+" used for adding a
+        // Not installed: distinct icon (not the "+" used for adding a
         // source) so the visual shape alone signals "install this first".
         const installBtn = document.createElement('ha-icon-button'); installBtn.className = 'install-btn';
         installBtn.title = uiTr.install_integration;
@@ -2851,9 +2918,9 @@ class PackageTrackerCardEditor extends HTMLElement {
       groupEl.appendChild(header);
       }
 
-      // Body — only shown when group is active AND not in per-device mode.
+      // Body: only shown when group is active AND not in per-device mode.
       // This section assumes at most one source per type (it picks/rebuilds
-      // via find()/findIndex(), which only ever sees the first match) — with
+      // via find()/findIndex(), which only ever sees the first match); with
       // multiple devices of the same type, touching it would silently
       // collapse the group down to one source per type, discarding the
       // others. The device rows above already handle add/remove correctly
@@ -2940,7 +3007,7 @@ class PackageTrackerCardEditor extends HTMLElement {
       return f;
     };
     const upd = (key, val) => save(buildUpdatedFilter(key, val));
-    // No-render variant — for fields that don't affect any other row's
+    // No-render variant: for fields that don't affect any other row's
     // visibility/disabled state, so typing or arrow-keying doesn't tear down
     // and recreate the input (which would steal focus after every keystroke).
     const saveNoRender = (f) => this._fire({ ...this._config, filter: f });
@@ -2961,7 +3028,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     statusGroup.appendChild(statusForm);
     root.appendChild(statusGroup);
 
-    // Direction filter — only show when both incoming and outgoing are configured
+    // Direction filter: only show when both incoming and outgoing are configured
     const activeTypes    = (this._config.sources || []).map(s => s.type).filter(Boolean);
     const hasIncoming    = activeTypes.some(t => INTEGRATIONS[t]?.direction === 'incoming');
     const hasOutgoing    = activeTypes.some(t => INTEGRATIONS[t]?.direction === 'outgoing');
@@ -3150,21 +3217,26 @@ if (!customElements.get('package-tracker-card-editor')) {
 }
 
 window.customCards = window.customCards || [];
-window.customCards.push({
-  type: 'package-tracker-card', name: 'Package Tracker Card',
-  description: 'Track packages from PostNL, Parcel, and DHL NL integrations.',
-  preview: true,
-  documentationURL: 'https://github.com/klaptafel/package-tracker-card',
-  version: CARD_VERSION,
-  getEntitySuggestion: (hass, entityId) => {
-    const attrs = hass.states[entityId]?.attributes;
-    if (!attrs) return null;
-    // Delegate to the same detection used by the Sources tab, so subset
-    // sensors like awaiting_pickup/en_route_to_servicepoint are correctly
-    // excluded here too, instead of duplicating ad-hoc detection logic.
-    const type = detectTypeFromHass(entityId, hass);
-    const def  = type && INTEGRATIONS[type];
-    if (!def || !def.hasAttrs(attrs)) return null;
-    return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
-  },
-});
+// Guarded like customElements.define above: a duplicate module load (HA
+// resource cache-bust, dashboard resource re-added) would otherwise list
+// this card twice in the card picker.
+if (!window.customCards.some((c) => c.type === 'package-tracker-card')) {
+  window.customCards.push({
+    type: 'package-tracker-card', name: 'Package Tracker Card',
+    description: 'Track packages from PostNL, Parcel, and DHL NL integrations.',
+    preview: true,
+    documentationURL: 'https://github.com/klaptafel/package-tracker-card',
+    version: CARD_VERSION,
+    getEntitySuggestion: (hass, entityId) => {
+      const attrs = hass.states[entityId]?.attributes;
+      if (!attrs) return null;
+      // Delegate to the same detection used by the Sources tab, so subset
+      // sensors like awaiting_pickup/en_route_to_servicepoint are correctly
+      // excluded here too, instead of duplicating ad-hoc detection logic.
+      const type = detectTypeFromHass(entityId, hass);
+      const def  = type && INTEGRATIONS[type];
+      if (!def || !def.hasAttrs(attrs)) return null;
+      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
+    },
+  });
+}

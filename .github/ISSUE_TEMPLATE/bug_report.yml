@@ -52,7 +52,7 @@ body:
       description: >
         Developer Tools → States → select the relevant sensor → copy the
         attributes. This is usually the single most useful thing you can
-        share — please scrub personal info first.
+        share; please scrub personal info first.
       render: yaml
     validations:
       required: true

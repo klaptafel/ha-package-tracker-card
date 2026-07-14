@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
+## [Unreleased]
+
+### Fixed
+- The "Open your Home Assistant instance" HACS badge in the README used an invalid category (`dashboard`), which made the link error out; now uses `plugin`, the correct HACS category for a Lovelace card.
+- One source's `collect()` throwing (e.g. an integration shipping an unexpected attribute shape) could previously crash the whole card's render, taking down every other source's already-working packages too; now caught and logged per source.
+
+### Changed
+- `findPostnlLetterImage` now builds an id → entity_picture lookup once per `collect()` call instead of rescanning all of `hass.states` for every letter.
+- `_collectItems()` now caches each source's collected items keyed by that source's `last_updated`, only re-running `collect()` for sources that actually changed instead of every source on every relevant `hass` tick.
+- `mapCanonicalParcel()` split into smaller named helpers (`resolveCanonicalName`, `resolveCanonicalPackageSize`, `resolveCanonicalEvents`, `resolveCanonicalDeliverySlot`) for readability; no behavior change.
+- The 14 near-identical DHL NL/DPD/GLS/PostNL-canonical `INTEGRATIONS` entries now go through a shared `mkCanonicalEntry()` factory instead of each repeating the same `hasAttrs`/`collect` boilerplate; verified field-for-field against the previous entries, no behavior change.
+
 ## [1.3.0] - 2026-07-13
 
 Adds support for PostNL/DHL NL/DPD's newer "outgoing, delivered" parcels: returns that have arrived back with the sender now show up as their own "Outgoing (delivered)" entry instead of being lumped in with regular deliveries. Carrier status text is now more descriptive (showing the carrier's own wording instead of a generic phrase), rows are aligned more closely with Home Assistant's native Tile card look, and a handful of small bugs are fixed: icons no longer drift toward the middle on long entries, PostNL letterbox parcels keep their scan photo, and editor fields no longer lose focus while you're typing in them.
