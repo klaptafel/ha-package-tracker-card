@@ -2,7 +2,9 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
-## [Unreleased]
+## [1.3.1] - 2026-07-14
+
+Fixes a bug where one malfunctioning source could crash the whole card instead of just showing an error for that one source, and a broken "Open in HACS" badge link. Also some internal cleanup with no visible effect.
 
 ### Fixed
 - The "Open your Home Assistant instance" HACS badge in the README used an invalid category (`dashboard`), which made the link error out; now uses `plugin`, the correct HACS category for a Lovelace card.
