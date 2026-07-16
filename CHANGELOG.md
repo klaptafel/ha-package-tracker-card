@@ -6,11 +6,12 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ### Added
 
-- **Dragonfly Shipping source** — supports [HummelsTech/ha-dragonfly](https://github.com/HummelsTech/ha-dragonfly)
+- **Dragonfly Shipping source** — supports [ha-parcel-integrations/ha-dragonfly](https://github.com/ha-parcel-integrations/ha-dragonfly)
   (Dragonfly Shipping / dragonflyshipping.nl). Two source types:
   `dragonfly_incoming` and `dragonfly_delivered`, auto-detected like the
   other canonical carriers. Parcels map to the existing "Dragonfly
-  Netherlands" carrier entry.
+  Netherlands" carrier entry, with its brand icon slot ready for whenever
+  custom-brand-icons adds a Dragonfly logo.
 
 ## [1.3.1] - 2026-07-14
 
