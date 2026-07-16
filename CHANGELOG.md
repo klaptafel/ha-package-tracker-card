@@ -13,6 +13,14 @@ All notable changes to this project are documented here. Format loosely follows 
   Netherlands" carrier entry, with its brand icon slot ready for whenever
   custom-brand-icons adds a Dragonfly logo.
 
+### Changed
+
+- **Carrier integration links point to their new home** — PostNL, DHL NL,
+  DPD, and GLS (all originally peternijssen's) have moved to the shared
+  [ha-parcel-integrations](https://github.com/ha-parcel-integrations) org;
+  every link in the README and in the editor's "not installed" download
+  links now points there instead of the old per-maintainer repos.
+
 ## [1.3.1] - 2026-07-14
 
 Fixes a bug where one malfunctioning source could crash the whole card instead of just showing an error for that one source, and a broken "Open in HACS" badge link. Also some internal cleanup with no visible effect.
