@@ -13,6 +13,17 @@ All notable changes to this project are documented here. Format loosely follows 
   Netherlands" carrier entry, with its brand icon slot ready for whenever
   custom-brand-icons adds a Dragonfly logo.
 
+- **Parcel Aggregator source** — supports
+  [ha-parcel-integrations/ha-parcel-aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator),
+  which merges DHL NL, PostNL, DPD, GLS, and Dragonfly into one set of
+  sensors. Four source types (`parcel_aggregator_incoming/outgoing/
+  delivered/outgoing_delivered`) resolve each parcel's carrier badge and
+  icon from its own `carrier` label, so it always shows the right brand
+  regardless of which carrier a given parcel came from. Once detected,
+  the editor offers only the aggregator and hides the five individual
+  carriers to avoid double-counting the same parcels; any of them you'd
+  already configured on their own stay put.
+
 ### Changed
 
 - **Carrier integration links point to their new home** — PostNL, DHL NL,

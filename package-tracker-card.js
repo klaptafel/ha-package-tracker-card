@@ -103,7 +103,7 @@ const CARRIERS = [
   { id: "dhlfreight", name: "DHL Freight", icon: "phu:dhl", codes: { parcel: ["dhlfreight"] } },
   { id: "dhlgf", name: "DHL Global Forwarding", icon: null, codes: { parcel: ["dhlgf"] } },
   { id: "dhlgm", name: "DHL Global Mail", icon: "phu:dhl", codes: { parcel: ["dhlgm"] } },
-  { id: "dhlnl", name: "DHL Netherlands", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"] } },
+  { id: "dhlnl", name: "DHL Netherlands", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"], parcel_aggregator: ["dhl"] } },
   { id: "dhlpoland", name: "DHL Poland", icon: null, codes: { parcel: ["dhlpoland"] } },
   { id: "dhlsc", name: "DHL Supply Chain", icon: "phu:dhl", codes: { parcel: ["dhlsc"] } },
   { id: "dhluk", name: "DHL Parcel UK", icon: "phu:dhl", codes: { parcel: ["dhluk"] } },
@@ -115,7 +115,7 @@ const CARRIERS = [
   { id: "dp", name: "Deutsche Post", icon: null, codes: { parcel: ["dp"] } },
   { id: "dpdat", name: "DPD Austria", icon: "phu:dpd", codes: { parcel: ["dpdat"] } },
   { id: "dpdfrpcode", name: "DPD France", icon: "phu:dpd", codes: { parcel: ["dpdfrpcode"] } },
-  { id: "dpdgpcode", name: "DPD Group", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"] } },
+  { id: "dpdgpcode", name: "DPD Group", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"], parcel_aggregator: ["dpd"] } },
   { id: "dpdie", name: "DPD Ireland", icon: "phu:dpd", codes: { parcel: ["dpdie"] } },
   { id: "dpditpcode", name: "DPD Italy (BRT)", icon: "phu:dpd", codes: { parcel: ["dpditpcode"] } },
   { id: "dpdpcode", name: "DPD Germany", icon: "phu:dpd", codes: { parcel: ["dpdpcode"] } },
@@ -127,7 +127,7 @@ const CARRIERS = [
   // set here in advance so both entries pick it up automatically once it's
   // added upstream, same as every other brand-icon reference in this list.
   { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"] } },
-  { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"], dragonfly: ["dragonfly"] } },
+  { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"], dragonfly: ["dragonfly"], parcel_aggregator: ["dragonfly"] } },
   { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
   { id: "dtdc", name: "DTDC India", icon: null, codes: { parcel: ["dtdc"] } },
   { id: "dynalogic", name: "Dynalogic", icon: null, codes: { parcel: ["dynalogic"] } },
@@ -158,7 +158,7 @@ const CARRIERS = [
   { id: "geniki", name: "Geniki Taxydromiki", icon: null, codes: { parcel: ["geniki"] } },
   { id: "geodis", name: "Geodis", icon: null, codes: { parcel: ["geodis"] } },
   { id: "globalp", name: "GlobalPost", icon: null, codes: { parcel: ["globalp"] } },
-  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"], gls: ["gls"] } },
+  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"], gls: ["gls"], parcel_aggregator: ["gls"] } },
   { id: "glsit", name: "GLS Italy", icon: "phu:gls-group", codes: { parcel: ["glsit"] } },
   { id: "gobolt", name: "GoBolt", icon: null, codes: { parcel: ["gobolt"] } },
   { id: "gofo", name: "GOFO Express", icon: null, codes: { parcel: ["gofo"] } },
@@ -303,7 +303,7 @@ const CARRIERS = [
   { id: "tntau", name: "TNT Australia", icon: null, codes: { parcel: ["tntau"] } },
   { id: "tntfr", name: "TNT France", icon: null, codes: { parcel: ["tntfr"] } },
   { id: "tntit", name: "TNT Italy", icon: null, codes: { parcel: ["tntit"] } },
-  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"] } },
+  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"], parcel_aggregator: ["postnl"] } },
   { id: "tntpit", name: "PostNL (International)", icon: "phu:postnl", codes: { parcel: ["tntpit"] } },
   { id: "tntuk", name: "TNT UK", icon: null, codes: { parcel: ["tntuk"] } },
   { id: "toll", name: "Toll - Team Global Express", icon: null, codes: { parcel: ["toll"] } },
@@ -455,6 +455,12 @@ const TRANSLATIONS = {
     entity_hint_dragonfly_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
     entity_hint_dragonfly_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     dragonfly_incoming_label: 'Incoming (active)', dragonfly_delivered_label: 'Delivered (history)',
+    entity_hint_parcel_aggregator_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
+    entity_hint_parcel_aggregator_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
+    entity_hint_parcel_aggregator_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
+    entity_hint_parcel_aggregator_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
+    parcel_aggregator_incoming_label: 'Incoming (active)', parcel_aggregator_outgoing_label: 'Outgoing',
+    parcel_aggregator_delivered_label: 'Delivered (history)', parcel_aggregator_outgoing_delivered_label: 'Outgoing (delivered)',
     alpha_badge: 'Beta', alpha_badge_desc: 'Based on an unreleased beta version of the underlying integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
@@ -534,6 +540,12 @@ const TRANSLATIONS = {
     entity_hint_dragonfly_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_dragonfly_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     dragonfly_incoming_label: 'Onderweg (actief)', dragonfly_delivered_label: 'Bezorgd (geschiedenis)',
+    entity_hint_parcel_aggregator_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
+    entity_hint_parcel_aggregator_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
+    entity_hint_parcel_aggregator_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
+    entity_hint_parcel_aggregator_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
+    parcel_aggregator_incoming_label: 'Onderweg (actief)', parcel_aggregator_outgoing_label: 'Verstuurd',
+    parcel_aggregator_delivered_label: 'Bezorgd (geschiedenis)', parcel_aggregator_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     alpha_badge: 'Bèta', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta-versie van de onderliggende integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
@@ -1053,6 +1065,19 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   });
 }
 
+// Parcel Aggregator merges every installed carrier's parcels into one set of
+// sensors, passing each source's normalised parcel dict straight through
+// (same canonical shape as the family above) with its own `carrier` label
+// added ("DHL", "PostNL", "DPD", "GLS", "Dragonfly" — see KNOWN_CARRIERS in
+// its coordinator.py). So unlike every other entry in this family, the
+// carrier can't be fixed per source entry; it has to be resolved per parcel
+// from that label instead, via the `parcel_aggregator` codes group added to
+// the relevant CARRIERS entries.
+function mapAggregatorParcel(p, tr, direction) {
+  const carrierCode = (p.carrier || '').toLowerCase();
+  return mapCanonicalParcel(p, tr, { carrierGroup: 'parcel_aggregator', carrierCode, direction });
+}
+
 // PostNL 4.0's letters/mail-scan feature: structurally nothing like a
 // parcel (no status, no tracking, no carrier diversity since it's always
 // PostNL), so it gets its own small mapper rather than forcing it through
@@ -1337,6 +1362,10 @@ const INTEGRATIONS = {
     url:         'https://github.com/jmdevita/parcel-ha',
     platforms:   ['parcel'],
     entityHints: ['parcel', 'pakket', 'pakje', 'zending', 'packag', 'shipment', 'tracking', 'raw', 'data'],
+    // "parcel_aggregator" (ha-parcel-integrations/ha-parcel-aggregator)
+    // contains "parcel" as a substring, so its entities would otherwise
+    // also platform-match this generic type; exclude them explicitly.
+    excludeHints: ['parcel_aggregator'],
     hasAttrs:    (a) => a.deliveries !== undefined,
     collect(attrs, ctx) {
       return (attrs.deliveries || []).map(i => this._map(i, ctx.tr));
@@ -1604,7 +1633,94 @@ const INTEGRATIONS = {
     carrierGroup: 'dragonfly', carrierCode: 'dragonfly',
   }),
 
+  // Parcel Aggregator (ha-parcel-integrations/ha-parcel-aggregator) merges
+  // DHL NL/PostNL/DPD/GLS/Dragonfly into one set of sensors, each parcel
+  // already carrying its own `carrier` label — see mapAggregatorParcel above.
+  // Not using mkCanonicalEntry since every other family member fixes one
+  // carrierGroup/carrierCode per source entry; here it varies per parcel.
+  parcel_aggregator_incoming: {
+    group:       'parcel_aggregator',
+    groupLabel:  'Parcel Aggregator',
+    rowLabel:    'Incoming (active)',
+    rowLabelKey: 'parcel_aggregator_incoming_label',
+    entityHintText: 'entity_hint_parcel_aggregator_incoming',
+    direction:   'incoming',
+    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
+    platforms:   ['parcel_aggregator'],
+    entityHints: ['incoming_parcels', 'parcel_aggregator_incoming'],
+    excludeHints: ['awaiting_pickup', 'next_delivery'],
+    alpha:       true,
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    collect(attrs, ctx) {
+      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'incoming'));
+    },
+  },
+
+  parcel_aggregator_outgoing: {
+    group:       'parcel_aggregator',
+    groupLabel:  'Parcel Aggregator',
+    rowLabel:    'Outgoing',
+    rowLabelKey: 'parcel_aggregator_outgoing_label',
+    entityHintText: 'entity_hint_parcel_aggregator_outgoing',
+    direction:   'outgoing',
+    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
+    platforms:   ['parcel_aggregator'],
+    entityHints: ['outgoing_parcels', 'parcel_aggregator_outgoing'],
+    // The dedicated outgoing_delivered sensor's entity_id contains
+    // "parcel_aggregator_outgoing" as a substring too (same collision
+    // postnl_canonical_outgoing already works around above).
+    excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
+    alpha:       true,
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    collect(attrs, ctx) {
+      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'outgoing'));
+    },
+  },
+
+  parcel_aggregator_delivered: {
+    group:       'parcel_aggregator',
+    groupLabel:  'Parcel Aggregator',
+    rowLabel:    'Delivered (history)',
+    rowLabelKey: 'parcel_aggregator_delivered_label',
+    entityHintText: 'entity_hint_parcel_aggregator_delivered',
+    direction:   'incoming',
+    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
+    platforms:   ['parcel_aggregator'],
+    entityHints: ['delivered_parcels', 'parcel_aggregator_delivered'],
+    // Same collision as outgoing above: "delivered_parcels" is also a
+    // substring of the outgoing_delivered sensor's entity_id.
+    excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
+    alpha:       true,
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    collect(attrs, ctx) {
+      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'incoming'));
+    },
+  },
+
+  parcel_aggregator_outgoing_delivered: {
+    group:       'parcel_aggregator',
+    groupLabel:  'Parcel Aggregator',
+    rowLabel:    'Outgoing (delivered)',
+    rowLabelKey: 'parcel_aggregator_outgoing_delivered_label',
+    entityHintText: 'entity_hint_parcel_aggregator_outgoing_delivered',
+    direction:   'outgoing',
+    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
+    platforms:   ['parcel_aggregator'],
+    entityHints: ['outgoing_delivered_parcels', 'parcel_aggregator_outgoing_delivered'],
+    excludeHints: ['awaiting_pickup', 'next_delivery'],
+    alpha:       true,
+    hasAttrs:    (a) => Array.isArray(a.parcels),
+    collect(attrs, ctx) {
+      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'outgoing'));
+    },
+  },
+
 };
+
+// Source groups whose data Parcel Aggregator re-exposes under its own
+// sensors; used to hide them from the Sources tab once the aggregator
+// itself is detected (see the editor's group-filtering loop below).
+const AGGREGATED_CARRIER_GROUPS = ['postnl_canonical', 'dhl_nl', 'dpd', 'gls', 'dragonfly'];
 
 // ─── Integration helpers ──────────────────────────────────────────────────────
 
@@ -2802,6 +2918,17 @@ class PackageTrackerCardEditor extends HTMLElement {
       if (groupKey === 'postnl' && !groupActive) {
         const peterGroup = groups.get('postnl_canonical');
         if (!platformOk || peterGroup?.platformOk) continue;
+      }
+
+      // Parcel Aggregator reads its data straight from these same five
+      // integrations' own sensors, so offering both is redundant (and
+      // double-counts if a user adds both for the same carrier). Once the
+      // aggregator is detected, hide the individual carriers in favor of
+      // it — but never hide one that's already configured, so an existing
+      // setup stays manageable.
+      if (AGGREGATED_CARRIER_GROUPS.includes(groupKey) && !groupActive) {
+        const aggregatorGroup = groups.get('parcel_aggregator');
+        if (aggregatorGroup?.platformOk) continue;
       }
 
       const groupEl = document.createElement('div'); groupEl.className = 'source-group';

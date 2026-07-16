@@ -39,7 +39,7 @@ The visual editor covers everything, organized the same way as the editor itself
 
 Auto-detected: open the editor's **Sources** tab and click **+** next to a detected integration to add it. Integrations you don't have installed show a download icon instead, linking straight to the repository. If you have multiple accounts of the same integration, each shows up as its own entry, addable/removable independently.
 
-PostNL, DHL NL, DPD, GLS, and Dragonfly each cover that one specific carrier. Parcel covers several carriers generically.
+PostNL, DHL NL, DPD, GLS, and Dragonfly each cover that one specific carrier. Parcel and Parcel Aggregator each cover several carriers generically.
 
 - [arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl)
 - [ha-parcel-integrations/ha-postnl](https://github.com/ha-parcel-integrations/ha-postnl), originally peternijssen's fork of the above; shares the same Home Assistant domain, so only one of the two can be installed at a time, detected automatically. Also adds scanned mail (letters) as a bonus, shown alongside your packages. **Requires 4.0.0 or newer**: older versions use a different data shape this card doesn't recognize. 4.2.0+ adds an optional per-parcel event history (off by default, enable it in the integration's options).
@@ -48,6 +48,7 @@ PostNL, DHL NL, DPD, GLS, and Dragonfly each cover that one specific carrier. Pa
 - [ha-parcel-integrations/ha-gls](https://github.com/ha-parcel-integrations/ha-gls): account-less — you enter tracking numbers plus your postal code yourself.
 - [ha-parcel-integrations/ha-dragonfly](https://github.com/ha-parcel-integrations/ha-dragonfly): Dragonfly Shipping (dragonflyshipping.nl), account-less — you enter Track & Trace codes yourself, no postal code needed.
 - [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha): a third-party aggregator. Works well on its own, or alongside a carrier's own integration above; the card merges event timelines per-moment rather than picking one source, so nothing is lost.
+- [ha-parcel-integrations/ha-parcel-aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator): merges DHL NL, PostNL, DPD, GLS, and Dragonfly into one set of sensors. Once detected, the editor offers only the aggregator and hides those five individually (any of them you'd already configured on their own stay put, so nothing breaks).
 
 | Option    | Default  | Description                                    |
 | --------- | -------- | ---------------------------------------------- |
