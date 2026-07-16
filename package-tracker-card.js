@@ -123,8 +123,11 @@ const CARRIERS = [
   { id: "dpduk", name: "DPD UK", icon: "phu:dpd", codes: { parcel: ["dpduk"] } },
   { id: "dpexw", name: "DPEX Worldwide", icon: null, codes: { parcel: ["dpexw"] } },
   { id: "dpr", name: "Deutsche Post Brief", icon: null, codes: { parcel: ["dpr"] } },
-  { id: "dragonfly", name: "Dragonfly", icon: null, codes: { parcel: ["dragonfly"] } },
-  { id: "dragonnl", name: "Dragonfly Netherlands", icon: null, codes: { parcel: ["dragonnl"], dragonfly: ["dragonfly"] } },
+  // No "dragonfly" logo in custom-brand-icons (elax46) yet as of 2026-07;
+  // set here in advance so both entries pick it up automatically once it's
+  // added upstream, same as every other brand-icon reference in this list.
+  { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"] } },
+  { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"], dragonfly: ["dragonfly"] } },
   { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
   { id: "dtdc", name: "DTDC India", icon: null, codes: { parcel: ["dtdc"] } },
   { id: "dynalogic", name: "Dynalogic", icon: null, codes: { parcel: ["dynalogic"] } },
