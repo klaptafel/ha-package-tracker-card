@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
+## [Unreleased]
+
+### Added
+
+- **Dragonfly Shipping source** — supports [HummelsTech/ha-dragonfly](https://github.com/HummelsTech/ha-dragonfly)
+  (Dragonfly Shipping / dragonflyshipping.nl). Two source types:
+  `dragonfly_incoming` and `dragonfly_delivered`, auto-detected like the
+  other canonical carriers. Parcels map to the existing "Dragonfly
+  Netherlands" carrier entry.
+
 ## [1.3.1] - 2026-07-14
 
 Fixes a bug where one malfunctioning source could crash the whole card instead of just showing an error for that one source, and a broken "Open in HACS" badge link. Also some internal cleanup with no visible effect.
