@@ -9,9 +9,9 @@ All notable changes to this project are documented here. Format loosely follows 
 - **Dragonfly Shipping source** — supports [ha-parcel-integrations/ha-dragonfly](https://github.com/ha-parcel-integrations/ha-dragonfly)
   (Dragonfly Shipping / dragonflyshipping.nl). Two source types:
   `dragonfly_incoming` and `dragonfly_delivered`, auto-detected like the
-  other canonical carriers. Parcels map to the existing "Dragonfly
-  Netherlands" carrier entry, with its brand icon slot ready for whenever
-  custom-brand-icons adds a Dragonfly logo.
+  other canonical carriers. Parcels map to the "Dragonfly" carrier entry,
+  with its brand icon slot ready for whenever custom-brand-icons adds a
+  Dragonfly logo.
 
 - **Parcel Aggregator source** — supports
   [ha-parcel-integrations/ha-parcel-aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator),
@@ -31,6 +31,11 @@ All notable changes to this project are documented here. Format loosely follows 
   [ha-parcel-integrations](https://github.com/ha-parcel-integrations) org;
   every link in the README and in the editor's "not installed" download
   links now points there instead of the old per-maintainer repos.
+
+- **Dropped the "Beta" badge from every source** (GLS, Dragonfly, Parcel
+  Aggregator) in the Sources tab. All three read data through the same
+  well-established canonical `parcels` shape the stable carriers already
+  use, so the extra warning wasn't earning its keep.
 
 ## [1.3.1] - 2026-07-14
 

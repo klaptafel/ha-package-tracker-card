@@ -103,7 +103,7 @@ const CARRIERS = [
   { id: "dhlfreight", name: "DHL Freight", icon: "phu:dhl", codes: { parcel: ["dhlfreight"] } },
   { id: "dhlgf", name: "DHL Global Forwarding", icon: null, codes: { parcel: ["dhlgf"] } },
   { id: "dhlgm", name: "DHL Global Mail", icon: "phu:dhl", codes: { parcel: ["dhlgm"] } },
-  { id: "dhlnl", name: "DHL Netherlands", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"], parcel_aggregator: ["dhl"] } },
+  { id: "dhlnl", name: "DHL Netherlands", short: "DHL", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"], parcel_aggregator: ["dhl"] } },
   { id: "dhlpoland", name: "DHL Poland", icon: null, codes: { parcel: ["dhlpoland"] } },
   { id: "dhlsc", name: "DHL Supply Chain", icon: "phu:dhl", codes: { parcel: ["dhlsc"] } },
   { id: "dhluk", name: "DHL Parcel UK", icon: "phu:dhl", codes: { parcel: ["dhluk"] } },
@@ -115,7 +115,7 @@ const CARRIERS = [
   { id: "dp", name: "Deutsche Post", icon: null, codes: { parcel: ["dp"] } },
   { id: "dpdat", name: "DPD Austria", icon: "phu:dpd", codes: { parcel: ["dpdat"] } },
   { id: "dpdfrpcode", name: "DPD France", icon: "phu:dpd", codes: { parcel: ["dpdfrpcode"] } },
-  { id: "dpdgpcode", name: "DPD Group", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"], parcel_aggregator: ["dpd"] } },
+  { id: "dpdgpcode", name: "DPD Group", short: "DPD", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"], parcel_aggregator: ["dpd"] } },
   { id: "dpdie", name: "DPD Ireland", icon: "phu:dpd", codes: { parcel: ["dpdie"] } },
   { id: "dpditpcode", name: "DPD Italy (BRT)", icon: "phu:dpd", codes: { parcel: ["dpditpcode"] } },
   { id: "dpdpcode", name: "DPD Germany", icon: "phu:dpd", codes: { parcel: ["dpdpcode"] } },
@@ -126,8 +126,8 @@ const CARRIERS = [
   // No "dragonfly" logo in custom-brand-icons (elax46) yet as of 2026-07;
   // set here in advance so both entries pick it up automatically once it's
   // added upstream, same as every other brand-icon reference in this list.
-  { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"] } },
-  { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"], dragonfly: ["dragonfly"], parcel_aggregator: ["dragonfly"] } },
+  { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"], dragonfly: ["dragonfly"], parcel_aggregator: ["dragonfly"] } },
+  { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"] } },
   { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
   { id: "dtdc", name: "DTDC India", icon: null, codes: { parcel: ["dtdc"] } },
   { id: "dynalogic", name: "Dynalogic", icon: null, codes: { parcel: ["dynalogic"] } },
@@ -461,7 +461,6 @@ const TRANSLATIONS = {
     entity_hint_parcel_aggregator_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
     parcel_aggregator_incoming_label: 'Incoming (active)', parcel_aggregator_outgoing_label: 'Outgoing',
     parcel_aggregator_delivered_label: 'Delivered (history)', parcel_aggregator_outgoing_delivered_label: 'Outgoing (delivered)',
-    alpha_badge: 'Beta', alpha_badge_desc: 'Based on an unreleased beta version of the underlying integration. The data shape may still change.',
     advanced: 'Advanced',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
@@ -546,7 +545,6 @@ const TRANSLATIONS = {
     entity_hint_parcel_aggregator_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
     parcel_aggregator_incoming_label: 'Onderweg (actief)', parcel_aggregator_outgoing_label: 'Verstuurd',
     parcel_aggregator_delivered_label: 'Bezorgd (geschiedenis)', parcel_aggregator_outgoing_delivered_label: 'Verstuurd (bezorgd)',
-    alpha_badge: 'Bèta', alpha_badge_desc: 'Gebaseerd op een nog niet uitgebrachte bèta-versie van de onderliggende integratie. De datastructuur kan nog wijzigen.',
     advanced: 'Geavanceerd',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
@@ -587,6 +585,16 @@ function formatTime(d) {
 }
 
 function ensurePeriod(s) { const t = (s || '').trimEnd(); return t && !t.endsWith('.') ? t + '.' : t; }
+
+// Shared by bestStatusLine/rawStatusLine/resolveCanonicalEvents below: is
+// this raw_status a DHL NL/DPD-style machine code (SCREAMING_SNAKE) rather
+// than an already human-readable sentence (PostNL's own raw_status)?
+function isMachineCodeStatus(s) { return /^[A-Z][A-Z0-9_]*$/.test(String(s || '')); }
+
+// Shared by rawStatusLine/resolveCanonicalEvents below: are these two status
+// strings effectively the same, ignoring case/underscore/whitespace
+// formatting differences (e.g. raw "DELIVERED" vs. canonical "delivered")?
+function normalizeStatusForCompare(s) { return String(s || '').toLowerCase().replace(/[_\s]/g, ''); }
 
 // Some carrier APIs log the same status update multiple times within a
 // short window (e.g. three identical "Pakketgegevens verwerkt" events a
@@ -858,7 +866,7 @@ function canonicalParcelStatusLine(status, tr) {
 // values. Machine-code raw_status never reaches here (same regex used by
 // rawStatusLine), so this can't show a raw enum value as the primary line.
 function bestStatusLine(status, rawStatus, tr) {
-  if (rawStatus && !/^[A-Z][A-Z0-9_]*$/.test(String(rawStatus))) {
+  if (rawStatus && !isMachineCodeStatus(rawStatus)) {
     return ensurePeriod(rawStatus);
   }
   return canonicalParcelStatusLine(status, tr);
@@ -901,15 +909,14 @@ function rawStatusLine(p) {
   // human-readable Dutch sentence ("Pakket is bezorgd") that never carries
   // more detail than the canonical status, just different wording. Showing
   // that would duplicate line1 in different words for every single status.
-  if (!/^[A-Z][A-Z0-9_]*$/.test(String(p.raw_status || ''))) return null;
+  if (!isMachineCodeStatus(p.raw_status || '')) return null;
   let text = humanizeRawStatus(p.raw_status);
   if (!text) return null;
   // Skip when raw_status is just the canonical status in a different format
   // (e.g. raw "DELIVERED" for canonical "delivered" would just repeat
   // "Delivered." right under "Delivered yesterday."); only show it when it
   // actually adds something, like "DELIVERED_AT_NEIGHBOURS".
-  const normalize = (s) => String(s || '').toLowerCase().replace(/[_\s]/g, '');
-  if (normalize(p.raw_status) === normalize(p.status)) return null;
+  if (normalizeStatusForCompare(p.raw_status) === normalizeStatusForCompare(p.status)) return null;
   if (p.raw?.destination?.locationType === 'NEIGHBOUR') {
     const addr = formatNeighbourAddress(p.raw);
     if (addr) text = text.slice(0, -1) + ' (' + addr + ').'; // insert before the trailing period
@@ -971,16 +978,14 @@ function resolveCanonicalPackageSize(p) {
 // already a sentence, it's inherently more specific than the generic
 // canonical text ("In transit.") and is used directly instead.
 function resolveCanonicalEvents(p, tr) {
-  const isMachineCode = (s) => /^[A-Z][A-Z0-9_]*$/.test(String(s || ''));
   return Array.isArray(p.history) ? [...p.history].reverse().map(h => {
     const date = h.timestamp ? new Date(h.timestamp) : null;
     let text;
-    if (h.raw_status && !isMachineCode(h.raw_status)) {
+    if (h.raw_status && !isMachineCodeStatus(h.raw_status)) {
       text = ensurePeriod(h.raw_status);
     } else {
       text = canonicalParcelStatusLine(h.status, tr);
-      const normalize = (s) => String(s || '').toLowerCase().replace(/[_\s]/g, '');
-      if (h.raw_status && normalize(h.raw_status) !== normalize(h.status)) {
+      if (h.raw_status && normalizeStatusForCompare(h.raw_status) !== normalizeStatusForCompare(h.status)) {
         const raw = humanizeRawStatus(h.raw_status);
         if (raw) text = text.replace(/\.$/, '') + ' (' + raw.replace(/\.$/, '').toLowerCase() + ').';
       }
@@ -1174,15 +1179,35 @@ function mapPostnlLetter(letter, tr, imageMap) {
 // default -- passing it through explicitly here is equivalent either way).
 function mkCanonicalEntry({
   group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms,
-  entityHints, excludeHints, alpha, carrierGroup, carrierCode,
+  entityHints, excludeHints, carrierGroup, carrierCode,
+  // Parcel Aggregator's carrier varies per parcel instead of per source
+  // entry (see mapAggregatorParcel below) -- an optional per-parcel mapper
+  // override lets it share this same shape instead of hand-rolling a
+  // duplicate one just to swap out how the carrier is resolved. Closes
+  // over the same `direction` this entry's own `direction` field is set
+  // to, so there's exactly one place stating it, not two.
+  mapper,
+  // This group's data is redundant once the named group is confirmed
+  // installed (see _renderSources's group-filtering loop) -- declared here,
+  // on the definition itself, instead of in a separately-maintained list of
+  // group keys elsewhere that has to be kept in sync by hand.
+  aggregatedBy,
+  // For this carrier, Parcel's own data currently wins wholesale over this
+  // dedicated integration's during dedup (see PARCEL_WINS_FOR below) --
+  // declared here so that Set can be derived from the registry itself
+  // instead of a second, disconnected place that has to be remembered and
+  // edited by hand as each dedicated integration matures.
+  parcelWins,
 }) {
   return {
     group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms, entityHints,
     ...(excludeHints ? { excludeHints } : {}),
-    ...(alpha ? { alpha } : {}),
+    ...(aggregatedBy ? { aggregatedBy } : {}),
+    ...(parcelWins ? { carrierGroup, parcelWins } : {}),
     hasAttrs: (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) {
-      return (attrs.parcels || []).map(p => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
+      const map = mapper || ((p) => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
+      return (attrs.parcels || []).map((p) => map(p, ctx));
     },
   };
 }
@@ -1272,6 +1297,7 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'postnl_incoming'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     carrierGroup: 'postnl', carrierCode: 'postnl',
+    aggregatedBy: 'parcel_aggregator',
   }),
 
   postnl_canonical_delivered: mkCanonicalEntry({
@@ -1451,6 +1477,7 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'dhl_incoming', 'dhl_ontvang', 'dhl_bezorg'],
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
     carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
+    aggregatedBy: 'parcel_aggregator',
   }),
 
   dhl_nl_delivered: mkCanonicalEntry({
@@ -1513,6 +1540,11 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'dpd_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
+    aggregatedBy: 'parcel_aggregator',
+    // Parcel's own data is currently richer than this integration's (e.g.
+    // no delivery slot yet) -- see PARCEL_WINS_FOR. Revisit as this
+    // integration matures; flip this back off once it's caught up.
+    parcelWins: true,
   }),
 
   dpd_delivered: mkCanonicalEntry({
@@ -1561,9 +1593,7 @@ const INTEGRATIONS = {
     // DPD itself is stable (2.0.0). The `receiver` field is now confirmed
     // present on real DPD incoming/delivered data, but not yet specifically
     // confirmed on the outgoing sensor itself, so the sender-vs-recipient
-    // question for THIS source type remains technically unresolved. Badges
-    // are integration-level, not per source-type, so this stays a
-    // code-level caveat rather than a user-facing alpha/beta badge.
+    // question for THIS source type remains technically unresolved.
     carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
   }),
 
@@ -1578,12 +1608,12 @@ const INTEGRATIONS = {
     platforms:   ['gls'],
     entityHints: ['incoming_parcels', 'gls_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    alpha:       true,
     // No account needed; tracking numbers + postal code are entered manually.
     // Multiple hubs (one per postal code) each become their own HA device;
     // the card treats them as independent sources. No multi-account
     // device-grouping via device-registry.
     carrierGroup: 'gls', carrierCode: 'gls',
+    aggregatedBy: 'parcel_aggregator',
   }),
 
   gls_delivered: mkCanonicalEntry({
@@ -1597,7 +1627,6 @@ const INTEGRATIONS = {
     platforms:   ['gls'],
     entityHints: ['delivered_parcels', 'gls_delivered'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
-    alpha:       true,
     carrierGroup: 'gls', carrierCode: 'gls',
   }),
 
@@ -1612,10 +1641,10 @@ const INTEGRATIONS = {
     platforms:   ['dragonfly'],
     entityHints: ['incoming_parcels', 'dragonfly_incoming'],
     excludeHints: ['next_delivery'],
-    alpha:       true,
     // No account and no postal code: tracking codes are entered manually in a
     // single hub (single_config_entry), so there is exactly one device.
     carrierGroup: 'dragonfly', carrierCode: 'dragonfly',
+    aggregatedBy: 'parcel_aggregator',
   }),
 
   dragonfly_delivered: mkCanonicalEntry({
@@ -1629,16 +1658,16 @@ const INTEGRATIONS = {
     platforms:   ['dragonfly'],
     entityHints: ['delivered_parcels', 'dragonfly_delivered'],
     excludeHints: ['next_delivery'],
-    alpha:       true,
     carrierGroup: 'dragonfly', carrierCode: 'dragonfly',
   }),
 
   // Parcel Aggregator (ha-parcel-integrations/ha-parcel-aggregator) merges
   // DHL NL/PostNL/DPD/GLS/Dragonfly into one set of sensors, each parcel
-  // already carrying its own `carrier` label — see mapAggregatorParcel above.
-  // Not using mkCanonicalEntry since every other family member fixes one
-  // carrierGroup/carrierCode per source entry; here it varies per parcel.
-  parcel_aggregator_incoming: {
+  // already carrying its own `carrier` label — see mapAggregatorParcel
+  // above. Same mkCanonicalEntry shape as every other family member, just
+  // with its `mapper` override since the carrier varies per parcel here
+  // instead of being fixed per source entry.
+  parcel_aggregator_incoming: mkCanonicalEntry({
     group:       'parcel_aggregator',
     groupLabel:  'Parcel Aggregator',
     rowLabel:    'Incoming (active)',
@@ -1649,14 +1678,10 @@ const INTEGRATIONS = {
     platforms:   ['parcel_aggregator'],
     entityHints: ['incoming_parcels', 'parcel_aggregator_incoming'],
     excludeHints: ['awaiting_pickup', 'next_delivery'],
-    alpha:       true,
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) {
-      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'incoming'));
-    },
-  },
+    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
+  }),
 
-  parcel_aggregator_outgoing: {
+  parcel_aggregator_outgoing: mkCanonicalEntry({
     group:       'parcel_aggregator',
     groupLabel:  'Parcel Aggregator',
     rowLabel:    'Outgoing',
@@ -1670,14 +1695,10 @@ const INTEGRATIONS = {
     // "parcel_aggregator_outgoing" as a substring too (same collision
     // postnl_canonical_outgoing already works around above).
     excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
-    alpha:       true,
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) {
-      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'outgoing'));
-    },
-  },
+    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
+  }),
 
-  parcel_aggregator_delivered: {
+  parcel_aggregator_delivered: mkCanonicalEntry({
     group:       'parcel_aggregator',
     groupLabel:  'Parcel Aggregator',
     rowLabel:    'Delivered (history)',
@@ -1690,14 +1711,10 @@ const INTEGRATIONS = {
     // Same collision as outgoing above: "delivered_parcels" is also a
     // substring of the outgoing_delivered sensor's entity_id.
     excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
-    alpha:       true,
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) {
-      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'incoming'));
-    },
-  },
+    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
+  }),
 
-  parcel_aggregator_outgoing_delivered: {
+  parcel_aggregator_outgoing_delivered: mkCanonicalEntry({
     group:       'parcel_aggregator',
     groupLabel:  'Parcel Aggregator',
     rowLabel:    'Outgoing (delivered)',
@@ -1708,19 +1725,10 @@ const INTEGRATIONS = {
     platforms:   ['parcel_aggregator'],
     entityHints: ['outgoing_delivered_parcels', 'parcel_aggregator_outgoing_delivered'],
     excludeHints: ['awaiting_pickup', 'next_delivery'],
-    alpha:       true,
-    hasAttrs:    (a) => Array.isArray(a.parcels),
-    collect(attrs, ctx) {
-      return (attrs.parcels || []).map(p => mapAggregatorParcel(p, ctx.tr, 'outgoing'));
-    },
-  },
+    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
+  }),
 
 };
-
-// Source groups whose data Parcel Aggregator re-exposes under its own
-// sensors; used to hide them from the Sources tab once the aggregator
-// itself is detected (see the editor's group-filtering loop below).
-const AGGREGATED_CARRIER_GROUPS = ['postnl_canonical', 'dhl_nl', 'dpd', 'gls', 'dragonfly'];
 
 // ─── Integration helpers ──────────────────────────────────────────────────────
 
@@ -1737,6 +1745,26 @@ function deviceNameForEntity(entityId, hass) {
   return device.name_by_user || device.name || null;
 }
 
+// Shared by candidatesForType/isPlatformInstalled below: entities whose
+// registry platform matches this type's def.platforms. That's as far as the
+// two questions overlap -- what counts as a further "real" match differs
+// (excludeHints filtering, how to treat an entity with no state data yet,
+// exception safety around hasAttrs), see each function's own comment, so
+// only this common scan itself is shared, not the whole function. Blindly
+// consolidating further (e.g. `candidatesForType(...).length > 0`) would
+// silently change isPlatformInstalled's behavior: it deliberately doesn't
+// apply excludeHints (a type-specific disambiguation, not a "is this
+// platform installed at all" concern) and treats a still-stateless entity
+// as optimistically installed rather than not-yet-matching.
+function* platformMatchingEntities(type, hass) {
+  const def = INTEGRATIONS[type];
+  if (!def) return;
+  for (const entry of Object.entries(hass.entities || {})) {
+    const info = entry[1];
+    if (def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) yield entry;
+  }
+}
+
 // Returns all entities that are candidates for a given integration type.
 // Candidate = matching platform (or entityHint) AND hasAttrs passes.
 function candidatesForType(type, hass) {
@@ -1744,8 +1772,7 @@ function candidatesForType(type, hass) {
   const def = INTEGRATIONS[type];
   if (!def) return [];
   const results = [];
-  for (const [entityId, info] of Object.entries(hass.entities || {})) {
-    if (!def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) continue;
+  for (const [entityId] of platformMatchingEntities(type, hass)) {
     if ((def.excludeHints || []).some(h => entityId.toLowerCase().includes(h))) continue;
     const attrs = hass.states[entityId]?.attributes;
     if (!attrs || !def.hasAttrs(attrs)) continue;
@@ -1789,8 +1816,7 @@ function isPlatformInstalled(type, hass) {
   if (!hass) return false;
   const def = INTEGRATIONS[type];
   if (!def) return false;
-  for (const [entityId, info] of Object.entries(hass.entities || {})) {
-    if (!def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) continue;
+  for (const [entityId] of platformMatchingEntities(type, hass)) {
     // Some integrations share a platform/domain with another (e.g. a fork
     // that kept the same domain, like peternijssen/ha-postnl vs the standard
     // arjenbos/ha-postnl) but expose a structurally different attrs shape.
@@ -1809,13 +1835,15 @@ function entitySegments(entityId) {
   return entityId.toLowerCase().replace(/^[^.]+\./, '').split(/[_-]/);
 }
 
-// Score a hint against an entity ID:
+// Score a hint against an entity ID (via its already-split segments, see
+// entitySegments -- computed once per entityId by bestTypeByHints below,
+// not once per hint, since the same entityId is scored against every hint
+// of every candidate type):
 // 3 = exact segment match ('verstuurd' matches segment 'verstuurd')
 // 2 = prefix segment match ('verstu' matches segment 'verstuurd')
 // 1 = substring match anywhere in the full entity ID
 // 0 = no match
-function hintScore(hint, entityId) {
-  const segments = entitySegments(entityId);
+function hintScore(hint, entityId, segments) {
   if (segments.includes(hint)) return 3;
   if (segments.some(s => s.startsWith(hint))) return 2;
   if (entityId.toLowerCase().includes(hint)) return 1;
@@ -1825,10 +1853,11 @@ function hintScore(hint, entityId) {
 // Disambiguate among candidate types using entity ID hints.
 // Returns the best type, or null if ambiguous or no match.
 function bestTypeByHints(entityId, types) {
+  const segments = entitySegments(entityId);
   let bestType = null, bestScore = 0, ambiguous = false;
   for (const type of types) {
     const def   = INTEGRATIONS[type];
-    const score = Math.max(0, ...(def.entityHints || []).map(h => hintScore(h, entityId)));
+    const score = Math.max(0, ...(def.entityHints || []).map(h => hintScore(h, entityId, segments)));
     if (score > bestScore) { bestScore = score; bestType = type; ambiguous = false; }
     else if (score > 0 && score === bestScore) { ambiguous = true; }
   }
@@ -1951,6 +1980,22 @@ function deepEqual(a, b) {
     return [...keys].every((k) => deepEqual(a[k], b[k]));
   }
   return a === b;
+}
+
+// Shared by PackageTrackerCard.setConfig and PackageTrackerCardEditor._normalize
+// -- both need the same two-level-deep merge (top-level fields, plus a
+// separate merge for the nested show/filter objects so an incoming config
+// only overriding e.g. show.location doesn't wipe out every other show.*
+// default). `base` lets the editor seed `sources: []` before the rest, for
+// a freshly-added card that has no sources yet.
+function mergeWithCardDefaults(config, base = {}) {
+  return {
+    ...base,
+    ...CARD_DEFAULTS,
+    ...config,
+    show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
+    filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
+  };
 }
 
 // Only keep keys that differ from CARD_DEFAULTS (or have no default at all,
@@ -2136,6 +2181,17 @@ function mkIcon(name, { size, color } = {}) {
   return ico;
 }
 
+// Editor's add/delete row-action button (Sources tab): same three-line
+// ha-icon-button + mdi icon + click handler scaffold needed once per
+// device and once per group, factored out rather than rebuilt each time.
+function mkIconButton(cls, icon, onClick) {
+  const btn = document.createElement('ha-icon-button');
+  btn.className = cls;
+  btn.appendChild(mkIcon(icon));
+  btn.addEventListener('click', onClick);
+  return btn;
+}
+
 function renderRow(item, show, tr, openItems) {
   const hex  = item.color || 'grey';
   const days = (!item.delivered && item.deliveryDate) ? daysUntil(item.deliveryDate) : null;
@@ -2226,7 +2282,14 @@ function renderRow(item, show, tr, openItems) {
     if (item.servicePoint) {
       addSeparator();
       carrier.appendChild(mkIcon('mdi:store-marker', { size: '13px' }));
-      const shortCarrier = ({ postnl: 'PostNL', dhlnl: 'DHL', dpdgpcode: 'DPD' })[item.carrierCode] || item.carrier;
+      // Read from the CARRIERS registry itself (an optional `short` field,
+      // e.g. "DHL Netherlands" -> "DHL") instead of a hand-maintained map
+      // here that has already drifted out of sync twice (GLS/Dragonfly were
+      // both missing from it) -- item.carrier is already this same lookup's
+      // full name (see mapCanonicalParcel), so it's the right fallback for
+      // any carrier that doesn't need shortening in the first place.
+      const carrierEntry = resolveCarrier(item.integration, item.carrierCode);
+      const shortCarrier = (carrierEntry && carrierEntry.short) || item.carrier;
       const spText = (tr && typeof tr.service_point === 'function')
         ? tr.service_point(shortCarrier)
         : 'Delivery to a ' + (shortCarrier || 'pickup') + ' point.';
@@ -2346,6 +2409,62 @@ function renderRow(item, show, tr, openItems) {
   return row;
 }
 
+// Dedup-merge helpers for PackageTrackerCard._collectItems() below -- pure,
+// no per-call state, so hoisted here instead of being rebuilt (a fresh Set,
+// a fresh array, two fresh closures) on every single call, which used to
+// happen on every render tick that touched a tracked entity.
+//
+// Deduplicate by tracking code: first source wins, but later source may contribute a better name.
+// EXCEPTION: for carriers in PARCEL_WINS_FOR, Parcel's own data is currently
+// richer than that carrier's dedicated integration (e.g. DPD's own
+// integration has no delivery slot yet); so Parcel wins wholesale instead
+// of just contributing name/events. Derived from each family's own
+// `parcelWins` flag (see mkCanonicalEntry) instead of being a second,
+// disconnected place that has to be remembered and edited by hand as each
+// dedicated integration matures -- flip the flag on the entry itself.
+const PARCEL_WINS_FOR = new Set(
+  Object.values(INTEGRATIONS).filter((d) => d.parcelWins).map((d) => d.carrierGroup)
+);
+// Supplementary fields that may exist on one source but not the other,
+// independent of which source wins the main structural fields (status/
+// dates): Parcel has full event history, the dedicated carrier
+// integrations have package size/weight and pickup-point detail that
+// Parcel doesn't expose. Always backfilled from whichever side has them,
+// never overwriting a value the winning side already has.
+// imageUrl: PostNL LetterboxParcel shipments get announced twice, once
+// via postnl_canonical_letters (MyMail scan, has the actual envelope
+// photo) and once via postnl_canonical_incoming/delivered (tracking
+// data, no photo); both share the same barcode as dedupKey. Without
+// this, whichever side wins the dedup (normally the parcel, since
+// sources are processed in config order and packages typically come
+// first) silently drops the letter's scan photo entirely.
+const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl'];
+function backfill(target, fallback) {
+  for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
+}
+// Now that DPD/DHL NL/PostNL can optionally report their own `history`
+// (in addition to Parcel's event log), the same real-world delivery can
+// show up as events from both sources: same moments, different wording
+// (e.g. DPD's own "Hub or other premises - Sorted" vs. Parcel's "Je
+// pakket is klaar..." for the same timestamp). Picking one source
+// wholesale would throw away real, non-overlapping information (each
+// side occasionally has a moment the other doesn't), so instead: merge
+// per-timestamp. The "primary" source's event wins when both have one
+// for (roughly) the same moment; the other source's event is added only
+// when primary has no event near that time at all.
+const EVENT_MERGE_WINDOW_MS = 2 * 60 * 1000;
+function mergeEventTimelines(primaryEvents, secondaryEvents) {
+  const primary = primaryEvents || [], secondary = secondaryEvents || [];
+  if (!secondary.length) return primary;
+  if (!primary.length) return secondary;
+  const extra = secondary.filter(se =>
+    !se.date || isNaN(se.date) ||
+    !primary.some(pe => pe.date && !isNaN(pe.date) && Math.abs(pe.date - se.date) <= EVENT_MERGE_WINDOW_MS)
+  );
+  if (!extra.length) return primary;
+  return [...primary, ...extra].sort((a, b) => (b.date || 0) - (a.date || 0));
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // CARD
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2392,12 +2511,7 @@ class PackageTrackerCard extends HTMLElement {
   setConfig(config) {
     if (!config) throw new Error('package-tracker-card: missing config');
     if (!Array.isArray(config.sources)) throw new Error('package-tracker-card: sources must be an array');
-    this._config = {
-      ...CARD_DEFAULTS,
-      ...config,
-      show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
-      filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
-    };
+    this._config = mergeWithCardDefaults(config);
     this._lastHashes = {};
     this._cachedItems = [];
     this._sourceItemsCache = new Map();
@@ -2456,51 +2570,9 @@ class PackageTrackerCard extends HTMLElement {
         console.error(`package-tracker-card: source "${source.type}" (${source.entity}) failed to collect`, err);
       }
     }
-    // Deduplicate by tracking code: first source wins, but later source may contribute a better name.
-    // EXCEPTION: for carriers in PARCEL_WINS_FOR, Parcel's own data is currently
-    // richer than that carrier's dedicated integration (e.g. DPD's alpha
-    // integration has no delivery slot yet); so Parcel wins wholesale instead
-    // of just contributing name/events. Revisit per carrier as those mature.
-    const PARCEL_WINS_FOR = new Set(['dpd']);
-    // Supplementary fields that may exist on one source but not the other,
-    // independent of which source wins the main structural fields (status/
-    // dates): Parcel has full event history, the dedicated carrier
-    // integrations have package size/weight and pickup-point detail that
-    // Parcel doesn't expose. Always backfilled from whichever side has them,
-    // never overwriting a value the winning side already has.
-    // imageUrl: PostNL LetterboxParcel shipments get announced twice, once
-    // via postnl_canonical_letters (MyMail scan, has the actual envelope
-    // photo) and once via postnl_canonical_incoming/delivered (tracking
-    // data, no photo); both share the same barcode as dedupKey. Without
-    // this, whichever side wins the dedup (normally the parcel, since
-    // sources are processed in config order and packages typically come
-    // first) silently drops the letter's scan photo entirely.
-    const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl'];
-    const backfill = (target, fallback) => {
-      for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
-    };
-    // Now that DPD/DHL NL/PostNL can optionally report their own `history`
-    // (in addition to Parcel's event log), the same real-world delivery can
-    // show up as events from both sources: same moments, different wording
-    // (e.g. DPD's own "Hub or other premises - Sorted" vs. Parcel's "Je
-    // pakket is klaar..." for the same timestamp). Picking one source
-    // wholesale would throw away real, non-overlapping information (each
-    // side occasionally has a moment the other doesn't), so instead: merge
-    // per-timestamp. The "primary" source's event wins when both have one
-    // for (roughly) the same moment; the other source's event is added only
-    // when primary has no event near that time at all.
-    const EVENT_MERGE_WINDOW_MS = 2 * 60 * 1000;
-    function mergeEventTimelines(primaryEvents, secondaryEvents) {
-      const primary = primaryEvents || [], secondary = secondaryEvents || [];
-      if (!secondary.length) return primary;
-      if (!primary.length) return secondary;
-      const extra = secondary.filter(se =>
-        !se.date || isNaN(se.date) ||
-        !primary.some(pe => pe.date && !isNaN(pe.date) && Math.abs(pe.date - se.date) <= EVENT_MERGE_WINDOW_MS)
-      );
-      if (!extra.length) return primary;
-      return [...primary, ...extra].sort((a, b) => (b.date || 0) - (a.date || 0));
-    }
+    // Dedup-merge helpers (PARCEL_WINS_FOR/ENRICHMENT_FIELDS/backfill/
+    // EVENT_MERGE_WINDOW_MS/mergeEventTimelines) are module-scope, above --
+    // pure, no per-call state, so not rebuilt here on every call.
     const seen = new Map();
     return items.filter(i => {
       if (!i.dedupKey) return true;
@@ -2799,13 +2871,7 @@ class PackageTrackerCardEditor extends HTMLElement {
   }
 
   _normalize(config) {
-    return {
-      sources: [],
-      ...CARD_DEFAULTS,
-      ...config,
-      show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
-      filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
-    };
+    return mergeWithCardDefaults(config, { sources: [] });
   }
 
   _fire(config) {
@@ -2882,9 +2948,9 @@ class PackageTrackerCardEditor extends HTMLElement {
     const groups = new Map();
     for (const [type, def] of Object.entries(INTEGRATIONS)) {
       const g = def.group || type;
-      if (!groups.has(g)) groups.set(g, { label: def.groupLabel || g, url: def.url, types: [], alpha: !!def.alpha });
+      if (!groups.has(g)) groups.set(g, { label: def.groupLabel || g, url: def.url, types: [] });
       groups.get(g).types.push(type);
-      if (def.alpha) groups.get(g).alpha = true;
+      if (def.aggregatedBy) groups.get(g).aggregatedBy = def.aggregatedBy;
     }
     // Compute each group's installed/active status once; used for both
     // the sort order below and the row rendering further down.
@@ -2920,14 +2986,14 @@ class PackageTrackerCardEditor extends HTMLElement {
         if (!platformOk || peterGroup?.platformOk) continue;
       }
 
-      // Parcel Aggregator reads its data straight from these same five
-      // integrations' own sensors, so offering both is redundant (and
-      // double-counts if a user adds both for the same carrier). Once the
-      // aggregator is detected, hide the individual carriers in favor of
-      // it — but never hide one that's already configured, so an existing
-      // setup stays manageable.
-      if (AGGREGATED_CARRIER_GROUPS.includes(groupKey) && !groupActive) {
-        const aggregatorGroup = groups.get('parcel_aggregator');
+      // A group declaring `aggregatedBy` (see mkCanonicalEntry) has its data
+      // re-exposed under that other group's own sensors, so offering both
+      // is redundant (and double-counts if a user adds both for the same
+      // carrier). Once the aggregator is detected, hide the individual
+      // carrier in favor of it — but never hide one that's already
+      // configured, so an existing setup stays manageable.
+      if (group.aggregatedBy && !groupActive) {
+        const aggregatorGroup = groups.get(group.aggregatedBy);
         if (aggregatorGroup?.platformOk) continue;
       }
 
@@ -2942,15 +3008,6 @@ class PackageTrackerCardEditor extends HTMLElement {
         style: 'flex-shrink:0;font-size:14px;font-weight:500;color:' + (platformOk || groupActive ? 'var(--primary-text-color)' : 'var(--disabled-color,#9e9e9e)') + ';',
       }));
 
-      if (group.alpha) {
-        const badge = document.createElement('span');
-        badge.textContent = uiTr.alpha_badge;
-        badge.title = uiTr.alpha_badge_desc;
-        badge.style.cssText = 'font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;' +
-          'padding:2px 6px;border-radius:8px;margin-left:8px;flex-shrink:0;' +
-          'background:var(--warning-color,#ff9800);color:#fff;opacity:.85;cursor:help;';
-        header.appendChild(badge);
-      }
 
       header.appendChild(Object.assign(document.createElement('div'), { style: 'flex:1;min-width:8px;' }));
 
@@ -2992,21 +3049,15 @@ class PackageTrackerCardEditor extends HTMLElement {
           }));
           const deviceBtnWrap = document.createElement('div'); deviceBtnWrap.className = 'row-action';
           if (deviceActive) {
-            const delBtn = document.createElement('ha-icon-button'); delBtn.className = 'delete-btn';
-            delBtn.appendChild(mkIcon('mdi:delete-outline'));
-            delBtn.addEventListener('click', () => {
+            deviceBtnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
               this._fireAndRender({ ...this._config, sources: sources.filter(s => !entityIds.includes(s.entity)) });
-            });
-            deviceBtnWrap.appendChild(delBtn);
+            }));
           } else {
-            const addBtn = document.createElement('ha-icon-button'); addBtn.className = 'add-btn';
-            addBtn.appendChild(mkIcon('mdi:plus'));
-            addBtn.addEventListener('click', () => {
+            deviceBtnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
               const newSources = [...sources];
               for (const [type, entityId] of entityMap) newSources.push({ type, entity: entityId });
               this._fireAndRender({ ...this._config, sources: newSources });
-            });
-            deviceBtnWrap.appendChild(addBtn);
+            }));
           }
           nameRow.appendChild(deviceBtnWrap);
           deviceBlock.appendChild(nameRow);
@@ -3051,15 +3102,10 @@ class PackageTrackerCardEditor extends HTMLElement {
       const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
       if (groupActive) {
         // Trash button: removes all sources for this group
-        const delBtn = document.createElement('ha-icon-button'); delBtn.className = 'delete-btn';
-        delBtn.appendChild(mkIcon('mdi:delete-outline'));
-        delBtn.addEventListener('click', () => saveGroup(group.types, []));
-        btnWrap.appendChild(delBtn);
+        btnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => saveGroup(group.types, [])));
       } else if (platformOk) {
         // Add button: ha-icon-button, blue
-        const addBtn = document.createElement('ha-icon-button'); addBtn.className = 'add-btn';
-        addBtn.appendChild(mkIcon('mdi:plus'));
-        addBtn.addEventListener('click', () => {
+        btnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
           const toAdd = [];
           for (const type of group.types) {
             const candidates = this._hass ? candidatesForType(type, this._hass) : [];
@@ -3070,8 +3116,7 @@ class PackageTrackerCardEditor extends HTMLElement {
             if (available.length) toAdd.push({ type, entity: available[0] });
           }
           saveGroup(group.types, toAdd);
-        });
-        btnWrap.appendChild(addBtn);
+        }));
       } else if (group.url) {
         // Not installed: distinct icon (not the "+" used for adding a
         // source) so the visual shape alone signals "install this first".
@@ -3184,16 +3229,15 @@ class PackageTrackerCardEditor extends HTMLElement {
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_status }));
     const statusGroup = document.createElement('div'); statusGroup.className = 'settings-group';
-    const statusForm  = document.createElement('ha-form');
-    statusForm.schema = [{ name: 'state', selector: { select: { options: [
-      { value: 'enroute',   label: uiTr.enroute },
-      { value: 'delivered', label: uiTr.delivered },
-      { value: 'all',       label: uiTr.all },
-    ] } } }];
-    statusForm.data = { state: filter.state || 'all' };
-    statusForm.computeLabel = () => '';
-    statusForm.addEventListener('value-changed', (e) => { if (e.detail.value.state) save({ ...filter, state: e.detail.value.state }); });
-    statusGroup.appendChild(statusForm);
+    statusGroup.appendChild(this._mkForm(
+      { select: { options: [
+        { value: 'enroute',   label: uiTr.enroute },
+        { value: 'delivered', label: uiTr.delivered },
+        { value: 'all',       label: uiTr.all },
+      ] } },
+      filter.state || 'all',
+      (val) => { if (val) save({ ...filter, state: val }); },
+    ));
     root.appendChild(statusGroup);
 
     // Direction filter: only show when both incoming and outgoing are configured
@@ -3203,16 +3247,15 @@ class PackageTrackerCardEditor extends HTMLElement {
     if (hasIncoming && hasOutgoing) {
       root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_direction }));
       const dirGroup = document.createElement('div'); dirGroup.className = 'settings-group';
-      const dirForm  = document.createElement('ha-form');
-      dirForm.schema = [{ name: 'direction', selector: { select: { options: [
-        { value: 'all',      label: uiTr.all },
-        { value: 'incoming', label: uiTr.incoming },
-        { value: 'outgoing', label: uiTr.outgoing },
-      ] } } }];
-      dirForm.data = { direction: filter.direction || 'all' };
-      dirForm.computeLabel = () => '';
-      dirForm.addEventListener('value-changed', (e) => upd('direction', e.detail.value.direction !== 'all' ? e.detail.value.direction : undefined));
-      dirGroup.appendChild(dirForm);
+      dirGroup.appendChild(this._mkForm(
+        { select: { options: [
+          { value: 'all',      label: uiTr.all },
+          { value: 'incoming', label: uiTr.incoming },
+          { value: 'outgoing', label: uiTr.outgoing },
+        ] } },
+        filter.direction || 'all',
+        (val) => upd('direction', val !== 'all' ? val : undefined),
+      ));
       root.appendChild(dirGroup);
     }
 
@@ -3233,30 +3276,29 @@ class PackageTrackerCardEditor extends HTMLElement {
     // Carrier
     advContent.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', style: 'margin-top:0', textContent: uiTr.filter_carrier }));
     const carrierGroup = document.createElement('div'); carrierGroup.className = 'settings-group';
-    const carrierRow = document.createElement('div'); carrierRow.className = 'srow';
-    const ct = document.createElement('div'); ct.className = 'srow-text';
-    ct.appendChild(Object.assign(document.createElement('span'), { className: 'srow-label', textContent: uiTr.carrier_code }));
-    const cd = Object.assign(document.createElement('span'), { className: 'srow-desc' });
     const carrierOptions = this._availableCarriers();
-    cd.textContent = carrierOptions.length ? uiTr.carrier_code_desc : uiTr.carrier_code_empty;
-    ct.appendChild(cd); carrierRow.appendChild(ct);
-    const carrierForm = document.createElement('ha-form');
-    carrierForm.schema = [{ name: 'carriers', selector: { select: { multiple: true, mode: 'dropdown', options: carrierOptions } } }];
-    const initialCarriers = filterCarriers(filter);
-    carrierForm.data = { carriers: initialCarriers };
-    carrierForm.computeLabel = () => '';
-    carrierForm.style.cssText = 'flex-shrink:0;width:220px;';
-    carrierForm.disabled = !carrierOptions.length;
-    if (this._hass) carrierForm.hass = this._hass;
-    carrierForm.addEventListener('value-changed', (e) => {
-      const val = e.detail.value?.carriers ?? [];
-      const f = { ...filter };
-      if (val.length) f.carriers = val; else delete f.carriers;
-      delete f.carrier; // drop legacy singular key once the new UI is used
-      save(f);
-    });
-    carrierRow.appendChild(carrierForm);
-    carrierGroup.appendChild(carrierRow);
+    carrierGroup.appendChild(this._mkFormRow(
+      uiTr.carrier_code,
+      { select: { multiple: true, mode: 'dropdown', options: carrierOptions } },
+      filterCarriers(filter),
+      (val) => {
+        const f = { ...filter };
+        if (val.length) f.carriers = val; else delete f.carriers;
+        delete f.carrier; // drop legacy singular key once the new UI is used
+        save(f);
+      },
+      {
+        // _mkFormRow shows disabledReason instead of description while
+        // disabled (see _mkToggleRow's own use of the same pattern) --
+        // disabled here is exactly "no carrier options at all", so that's
+        // also exactly when the "no carriers detected yet" text should
+        // replace the normal helper text, not just additionally gate the form.
+        description: uiTr.carrier_code_desc,
+        disabledReason: uiTr.carrier_code_empty,
+        disabled: !carrierOptions.length,
+        width: '220px',
+      },
+    ));
     advContent.appendChild(carrierGroup);
 
     // Time slot
@@ -3290,15 +3332,14 @@ class PackageTrackerCardEditor extends HTMLElement {
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.layout }));
     const layoutGroup = document.createElement('div'); layoutGroup.className = 'settings-group';
-    const layoutForm  = document.createElement('ha-form');
-    layoutForm.schema = [{ name: 'layout', selector: { select: { options: [
-      { value: 'single', label: uiTr.single_card },
-      { value: 'split',  label: uiTr.split_cards },
-    ] } } }];
-    layoutForm.data = { layout: c.layout || 'single' };
-    layoutForm.computeLabel = () => '';
-    layoutForm.addEventListener('value-changed', (e) => { if (e.detail.value.layout) this._fireAndRender({ ...c, layout: e.detail.value.layout }); });
-    layoutGroup.appendChild(layoutForm);
+    layoutGroup.appendChild(this._mkForm(
+      { select: { options: [
+        { value: 'single', label: uiTr.single_card },
+        { value: 'split',  label: uiTr.split_cards },
+      ] } },
+      c.layout || 'single',
+      (val) => { if (val) this._fireAndRender({ ...c, layout: val }); },
+    ));
     layoutGroup.appendChild(this._mkNumberRow(uiTr.max_packages, c.max ?? 5, 1, 50, '', null, (val) => this._fire({ ...c, max: val !== '' ? Number(val) : 5 })));
     root.appendChild(layoutGroup);
 
@@ -3356,27 +3397,61 @@ class PackageTrackerCardEditor extends HTMLElement {
     return row;
   }
 
-  _mkNumberRow(label, value, min, max, unit, description, onChange) {
-    const row = document.createElement('div'); row.className = 'srow';
+  // Minimal single-field ha-form -- schema/data/computeLabel/hass wiring
+  // only, no row/label wrapper. Every hand-rolled `ha-form` in this editor
+  // (status/direction/layout selects, carrier multi-select, number rows)
+  // repeated the same handful of lines to wire up a `{ name: 'v', selector }`
+  // schema and its value-changed listener; this is the one place that does
+  // it now. Callers that want the .srow/.srow-label treatment use
+  // _mkFormRow (below) instead; callers that already render their own
+  // surrounding layout (e.g. a bare dropdown directly under its own
+  // section-label, full width, no separate per-row label) use this
+  // directly. onChange only fires with a defined value -- a call site that
+  // needs its own additional gating (e.g. "only save when non-empty") does
+  // that inside its own onChange callback, same as before this helper
+  // existed.
+  _mkForm(selector, value, onChange, { disabled = false, width = null } = {}) {
+    const form = document.createElement('ha-form');
+    form.schema = [{ name: 'v', selector }];
+    form.data = { v: value };
+    form.computeLabel = () => '';
+    form.disabled = disabled;
+    if (width) form.style.cssText = `flex-shrink:0;width:${width};`;
+    if (this._hass) form.hass = this._hass;
+    if (!disabled) {
+      form.addEventListener('value-changed', (e) => {
+        const val = e.detail.value?.v;
+        if (val !== undefined) onChange(val);
+      });
+    }
+    return form;
+  }
+
+  // .srow/.srow-text/.srow-label/.srow-desc row wrapped around _mkForm --
+  // ported from cover-media-card.js's own _mkFormRow, same shape this file
+  // already uses for _mkToggleRow.
+  _mkFormRow(label, selector, value, onChange, { description = null, disabled = false, disabledReason = null, width = '110px' } = {}) {
+    const row = document.createElement('div'); row.className = 'srow' + (disabled ? ' srow-disabled' : '');
     const tw  = document.createElement('div'); tw.className  = 'srow-text';
     tw.appendChild(Object.assign(document.createElement('span'), { className: 'srow-label', textContent: label }));
-    if (description) tw.appendChild(Object.assign(document.createElement('span'), { className: 'srow-desc', textContent: description }));
-    const form = document.createElement('ha-form');
-    form.schema = [{ name: 'v', selector: { number: {
-      min: min ?? 0, max: max ?? 9999, step: 1,
-      ...(unit ? { unit_of_measurement: unit } : {}),
-      mode: 'box',
-    } } }];
-    form.data = { v: value ?? 0 };
-    form.computeLabel = () => '';
-    form.style.cssText = 'flex-shrink:0;width:110px;';
-    if (this._hass) form.hass = this._hass;
-    form.addEventListener('value-changed', (e) => {
-      const val = e.detail.value?.v;
-      if (val !== undefined) onChange(val);
-    });
-    row.append(tw, form);
+    const desc = disabled ? disabledReason : description;
+    if (desc) tw.appendChild(Object.assign(document.createElement('span'), { className: 'srow-desc', textContent: desc }));
+    row.append(tw, this._mkForm(selector, value, onChange, { disabled, width }));
     return row;
+  }
+
+  _mkNumberRow(label, value, min, max, unit, description, onChange) {
+    return this._mkFormRow(
+      label,
+      { number: {
+        min: min ?? 0, max: max ?? 9999, step: 1,
+        ...(unit ? { unit_of_measurement: unit } : {}),
+        mode: 'box',
+      } },
+      value ?? 0,
+      onChange,
+      { description },
+    );
   }
 }
 
@@ -3391,7 +3466,7 @@ window.customCards = window.customCards || [];
 if (!window.customCards.some((c) => c.type === 'package-tracker-card')) {
   window.customCards.push({
     type: 'package-tracker-card', name: 'Package Tracker Card',
-    description: 'Track packages from PostNL, Parcel, and DHL NL integrations.',
+    description: 'Track packages from PostNL, Parcel, DHL NL, DPD, GLS, Dragonfly, and Parcel Aggregator integrations.',
     preview: true,
     documentationURL: 'https://github.com/klaptafel/package-tracker-card',
     version: CARD_VERSION,
