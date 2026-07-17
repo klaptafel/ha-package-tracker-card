@@ -4,7 +4,14 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ## [1.4.0] - 2026-07-17
 
-Adds two new package sources: Dragonfly Shipping, and a Parcel Aggregator that merges DHL NL, PostNL, DPD, GLS, and Dragonfly into one set of sensors (once detected, the editor hides the five individual carriers to avoid double-counting the same parcels). Carrier integration links throughout the README and editor now point to their new shared home.
+**Adds Dragonfly Shipping support**
+A new package source for Dragonfly Shipping (dragonflyshipping.nl).
+
+**Adds a Parcel Aggregator source**
+Merges several carriers into one set of sensors; once detected, the editor hides the individual carriers it covers to avoid double-counting the same parcels.
+
+**Carrier integration links updated**
+Links throughout the README and editor now point to the integrations' new shared home.
 
 ### Added
 
