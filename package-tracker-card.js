@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.4.0';
+const CARD_VERSION = '1.5.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -462,6 +462,7 @@ const TRANSLATIONS = {
     parcel_aggregator_incoming_label: 'Incoming (active)', parcel_aggregator_outgoing_label: 'Outgoing',
     parcel_aggregator_delivered_label: 'Delivered (history)', parcel_aggregator_outgoing_delivered_label: 'Outgoing (delivered)',
     advanced: 'Advanced',
+    sources_more_integrations: 'More integrations',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
@@ -546,6 +547,7 @@ const TRANSLATIONS = {
     parcel_aggregator_incoming_label: 'Onderweg (actief)', parcel_aggregator_outgoing_label: 'Verstuurd',
     parcel_aggregator_delivered_label: 'Bezorgd (geschiedenis)', parcel_aggregator_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     advanced: 'Geavanceerd',
+    sources_more_integrations: 'Meer integraties',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
@@ -2828,6 +2830,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._lastFiredConfig = null;
     this._tab            = 'sources';
     this._filterAdvOpen = false;
+    this._sourcesMoreOpen = false;
   }
 
   // Distinct {value, label} carrier options currently present across configured
@@ -2985,10 +2988,24 @@ class PackageTrackerCardEditor extends HTMLElement {
     });
 
     const list = document.createElement('div'); list.className = 'item-list';
+    // Once at least one supported integration is actually installed, a
+    // not-installed group is no longer onboarding-critical (the user has
+    // clearly already found and installed things from this family) --
+    // collapse those "go install this" prompts behind a toggle instead of
+    // always listing every supported integration, which only gets more
+    // cluttered as the ha-parcel-integrations family grows. Gated on
+    // installed, not configured: even before adding a single source, having
+    // any real integration detected is enough to stop needing the full
+    // discovery list. A card with nothing installed at all still shows the
+    // full list, so there's still something to discover on first open.
+    const anyIntegrationInstalled = [...groups.values()].some(g => g.platformOk);
+    const moreList = document.createElement('div'); moreList.className = 'item-list';
+    moreList.style.marginTop = '8px'; // matches .advanced-content's own spacing below its toggle
 
     for (const [groupKey, group] of sortedGroups) {
       const platformOk  = group.platformOk;
       const groupActive = group.groupActive;
+      const deferToMore = anyIntegrationInstalled && !platformOk && !groupActive;
 
       // arjenbos/ha-postnl and peternijssen/ha-postnl share the same HA
       // domain and can therefore never both be installed at once. Default
@@ -3216,10 +3233,25 @@ class PackageTrackerCardEditor extends HTMLElement {
         groupEl.appendChild(body);
       }
 
-      list.appendChild(groupEl);
+      (deferToMore ? moreList : list).appendChild(groupEl);
     }
 
     root.appendChild(list);
+
+    if (moreList.children.length) {
+      const moreBtn = document.createElement('button');
+      moreBtn.className = 'advanced-toggle' + (this._sourcesMoreOpen ? ' open' : '');
+      moreBtn.appendChild(mkIcon('mdi:chevron-down'));
+      moreBtn.appendChild(document.createTextNode(' ' + uiTr.sources_more_integrations));
+      moreList.style.display = this._sourcesMoreOpen ? '' : 'none';
+      moreBtn.addEventListener('click', () => {
+        this._sourcesMoreOpen = !this._sourcesMoreOpen;
+        moreBtn.classList.toggle('open', this._sourcesMoreOpen);
+        moreList.style.display = this._sourcesMoreOpen ? '' : 'none';
+      });
+      root.appendChild(moreBtn);
+      root.appendChild(moreList);
+    }
   }
 
   // ── Filter ────────────────────────────────────────────────────────────────
