@@ -2,22 +2,22 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
-## [1.5.1] - 2026-07-18
-
-Fixes the card footer link and the "Open documentation" link in the card picker, both of which pointed at a URL missing the `ha-` prefix and so 404'd.
-
-### Fixed
-- The footer link and `documentationURL` both pointed to `github.com/klaptafel/package-tracker-card` instead of `github.com/klaptafel/ha-package-tracker-card`, a 404. Present since the project's first release.
-
 ## [1.5.0] - 2026-07-18
 
-The Sources editor no longer lists every integration you don't have installed once you've got at least one already: install prompts for integrations you don't have collapse behind a "More integrations" toggle, keeping the list manageable as the supported family keeps growing.
+**Adds a "More integrations" collapsible section to the Sources editor**
+Once at least one supported integration is detected as installed, the remaining not-yet-installed integrations move behind a toggle instead of always being listed inline, keeping the list manageable as the supported family keeps growing.
+
+**Fixes the card footer and documentation links**
+Both pointed at a URL missing the `ha-` prefix and so 404'd.
 
 ### Added
 - A "More integrations" collapsible section in the Sources editor: once at least one supported integration is detected as installed, the remaining not-yet-installed integrations move behind a toggle instead of always being listed inline. A card with nothing installed yet still shows the full list, so there's still something to discover on first open.
 
 ### Changed
 - `aggregatedBy` (hides an individual carrier's source once Parcel Aggregator is detected) now defaults on for every carrier built from the shared canonical entry factory, instead of being hand-placed on one type per carrier group; new integrations added to the family get this automatically.
+
+### Fixed
+- The footer link and `documentationURL` both pointed to `github.com/klaptafel/package-tracker-card` instead of `github.com/klaptafel/ha-package-tracker-card`, a 404. Present since the project's first release.
 
 ## [1.4.0] - 2026-07-17
 
