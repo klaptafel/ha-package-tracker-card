@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.5.0';
+const CARD_VERSION = '1.5.1';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -2929,7 +2929,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._content = document.createElement('div'); this._content.className = 'tab-content';
     card.appendChild(this._content);
     card.appendChild(Object.assign(document.createElement('a'), {
-      href: 'https://github.com/klaptafel/package-tracker-card',
+      href: 'https://github.com/klaptafel/ha-package-tracker-card',
       target: '_blank', rel: 'noopener noreferrer',
       className: 'version-link', textContent: 'Package Tracker Card v' + CARD_VERSION,
     }));
@@ -3515,7 +3515,7 @@ if (!window.customCards.some((c) => c.type === 'package-tracker-card')) {
     type: 'package-tracker-card', name: 'Package Tracker Card',
     description: 'Track packages from PostNL, Parcel, DHL NL, DPD, GLS, Dragonfly, and Parcel Aggregator integrations.',
     preview: true,
-    documentationURL: 'https://github.com/klaptafel/package-tracker-card',
+    documentationURL: 'https://github.com/klaptafel/ha-package-tracker-card',
     version: CARD_VERSION,
     getEntitySuggestion: (hass, entityId) => {
       const attrs = hass.states[entityId]?.attributes;
