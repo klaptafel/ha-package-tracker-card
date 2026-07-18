@@ -1190,8 +1190,24 @@ function mkCanonicalEntry({
   // This group's data is redundant once the named group is confirmed
   // installed (see _renderSources's group-filtering loop) -- declared here,
   // on the definition itself, instead of in a separately-maintained list of
-  // group keys elsewhere that has to be kept in sync by hand.
-  aggregatedBy,
+  // group keys elsewhere that has to be kept in sync by hand. Defaults on:
+  // every mkCanonicalEntry user is by definition an ha-parcel-integrations
+  // family member, and Parcel Aggregator covers the whole family by design,
+  // so new integrations (e.g. a future ha-trunkrs) get this for free. Only
+  // Parcel Aggregator's own entries opt out (pass aggregatedBy: null), since
+  // it can't aggregate itself.
+  //
+  // Caveat when wiring up a brand-new carrier: this only checks whether the
+  // Parcel Aggregator *integration* is installed, not whether it has
+  // actually started merging that specific carrier yet -- there's no
+  // version detection anywhere in this file (everything else here goes by
+  // attribute shape, not integration version) and none is worth adding
+  // just for this. So before adding a new carrier's mkCanonicalEntry,
+  // confirm in ha-parcel-aggregator's own release notes that it already
+  // covers that carrier; if not yet, pass aggregatedBy: null explicitly
+  // until it does (this is exactly why Dragonfly only got this default
+  // once ha-parcel-aggregator 1.6.0 actually added Dragonfly support).
+  aggregatedBy = 'parcel_aggregator',
   // For this carrier, Parcel's own data currently wins wholesale over this
   // dedicated integration's during dedup (see PARCEL_WINS_FOR below) --
   // declared here so that Set can be derived from the registry itself
@@ -1297,7 +1313,6 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'postnl_incoming'],
     excludeHints: ['en_route', 'awaiting_pickup', 'pickup_pending', 'next_delivery', 'letter'],
     carrierGroup: 'postnl', carrierCode: 'postnl',
-    aggregatedBy: 'parcel_aggregator',
   }),
 
   postnl_canonical_delivered: mkCanonicalEntry({
@@ -1477,7 +1492,6 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'dhl_incoming', 'dhl_ontvang', 'dhl_bezorg'],
     excludeHints: ['awaiting_pickup', 'pickup_pending', 'en_route', 'next_delivery'],
     carrierGroup: 'dhl_nl', carrierCode: 'dhlnl',
-    aggregatedBy: 'parcel_aggregator',
   }),
 
   dhl_nl_delivered: mkCanonicalEntry({
@@ -1540,7 +1554,6 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'dpd_incoming'],
     excludeHints: ['en_route_to_parcel_shop', 'awaiting_pickup', 'pickup_pending', 'next_delivery'],
     carrierGroup: 'dpd', carrierCode: 'dpdgpcode',
-    aggregatedBy: 'parcel_aggregator',
     // Parcel's own data is currently richer than this integration's (e.g.
     // no delivery slot yet) -- see PARCEL_WINS_FOR. Revisit as this
     // integration matures; flip this back off once it's caught up.
@@ -1613,7 +1626,6 @@ const INTEGRATIONS = {
     // the card treats them as independent sources. No multi-account
     // device-grouping via device-registry.
     carrierGroup: 'gls', carrierCode: 'gls',
-    aggregatedBy: 'parcel_aggregator',
   }),
 
   gls_delivered: mkCanonicalEntry({
@@ -1644,7 +1656,6 @@ const INTEGRATIONS = {
     // No account and no postal code: tracking codes are entered manually in a
     // single hub (single_config_entry), so there is exactly one device.
     carrierGroup: 'dragonfly', carrierCode: 'dragonfly',
-    aggregatedBy: 'parcel_aggregator',
   }),
 
   dragonfly_delivered: mkCanonicalEntry({
@@ -1679,6 +1690,7 @@ const INTEGRATIONS = {
     entityHints: ['incoming_parcels', 'parcel_aggregator_incoming'],
     excludeHints: ['awaiting_pickup', 'next_delivery'],
     mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
+    aggregatedBy: null,
   }),
 
   parcel_aggregator_outgoing: mkCanonicalEntry({
@@ -1696,6 +1708,7 @@ const INTEGRATIONS = {
     // postnl_canonical_outgoing already works around above).
     excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
     mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
+    aggregatedBy: null,
   }),
 
   parcel_aggregator_delivered: mkCanonicalEntry({
@@ -1712,6 +1725,7 @@ const INTEGRATIONS = {
     // substring of the outgoing_delivered sensor's entity_id.
     excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
     mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
+    aggregatedBy: null,
   }),
 
   parcel_aggregator_outgoing_delivered: mkCanonicalEntry({
@@ -1726,6 +1740,7 @@ const INTEGRATIONS = {
     entityHints: ['outgoing_delivered_parcels', 'parcel_aggregator_outgoing_delivered'],
     excludeHints: ['awaiting_pickup', 'next_delivery'],
     mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
+    aggregatedBy: null,
   }),
 
 };
