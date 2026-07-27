@@ -11,7 +11,7 @@ const CARRIERS = [
   { id: "acs", name: "ACS Courier", icon: null, codes: { parcel: ["acs"] } },
   { id: "adrexo", name: "Colis Privé", icon: null, codes: { parcel: ["adrexo"] } },
   { id: "airroad", name: "AirRoad", icon: null, codes: { parcel: ["airroad"] } },
-  { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: null, codes: { parcel: ["aliex"] } },
+  { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: "phu:cainiao", codes: { parcel: ["aliex"], parcel_aggregator: ["cainiao"] } },
   { id: "allegro", name: "Allegro One", icon: null, codes: { parcel: ["allegro"] } },
   { id: "allied", name: "Allied Express", icon: null, codes: { parcel: ["allied"] } },
   { id: "amshipfr", name: "Amazon Shipping France", icon: null, codes: { parcel: ["amshipfr"] } },
@@ -83,7 +83,7 @@ const CARRIERS = [
   { id: "colomb", name: "Colombia post (4-72)", icon: null, codes: { parcel: ["colomb"] } },
   { id: "colp", name: "Collect+", icon: null, codes: { parcel: ["colp"] } },
   { id: "cope", name: "COPE", icon: null, codes: { parcel: ["cope"] } },
-  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"] } },
+  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"], parcel_aggregator: ["correos"] } },
   { id: "corbra", name: "Correios", icon: null, codes: { parcel: ["corbra"] } },
   { id: "corm", name: "Correos de Mexico", icon: null, codes: { parcel: ["corm"] } },
   { id: "corurg", name: "Correo Uruguayo", icon: null, codes: { parcel: ["corurg"] } },
@@ -170,7 +170,7 @@ const CARRIERS = [
   { id: "gso", name: "GLS US", icon: "phu:gls-group", codes: { parcel: ["gso"] } },
   { id: "hawai", name: "Hawaiian Air Cargo", icon: null, codes: { parcel: ["hawai"] } },
   { id: "her2mann", name: "Hermes 2-Mann-Handling", icon: null, codes: { parcel: ["her2mann"] } },
-  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"] } },
+  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"], parcel_aggregator: ["hermes"] } },
   { id: "hk", name: "Hongkong Post", icon: null, codes: { parcel: ["hk"] } },
   { id: "hr", name: "Hrvatska pošta", icon: null, codes: { parcel: ["hr"] } },
   { id: "hrpar", name: "HR Parcel", icon: null, codes: { parcel: ["hrpar"] } },
@@ -310,7 +310,7 @@ const CARRIERS = [
   { id: "topyou", name: "TopYou Logistics", icon: null, codes: { parcel: ["topyou"] } },
   { id: "tourline", name: "CTT Express", icon: null, codes: { parcel: ["tourline"] } },
   { id: "transm", name: "TransMission", icon: null, codes: { parcel: ["transm"] } },
-  { id: "trnkrpcode", name: "Trunkrs", icon: null, codes: { parcel: ["trnkrpcode"] } },
+  { id: "trnkrpcode", name: "Trunkrs", icon: "phu:trunkrs", codes: { parcel: ["trnkrpcode"], parcel_aggregator: ["trunkrs"] } },
   { id: "trpack", name: "TrakPak", icon: null, codes: { parcel: ["trpack"] } },
   { id: "turk", name: "PTT", icon: null, codes: { parcel: ["turk"] } },
   { id: "tw", name: "Taiwan (Chunghwa) Post", icon: null, codes: { parcel: ["tw"] } },
@@ -349,9 +349,16 @@ function resolveCarrier(group, code) {
   if (!code) return null;
   return _carrierIndex.get(group + ':' + String(code).toLowerCase()) || null;
 }
-function carrierName(group, code) {
+// `fallbackName` (optional): only ever passed by mapAggregatorParcel, with
+// the aggregator's own already-properly-cased carrier label (e.g.
+// "Trunkrs") -- a new family carrier reaches this card through the
+// aggregator with no CARRIERS entry of its own yet, and falling back to
+// `code` (that same label, lowercased for the lookup above) would show
+// "trunkrs" instead of "Trunkrs". Every other call site never passes this,
+// so their own behavior (fall back to the bare code) is unchanged.
+function carrierName(group, code, fallbackName) {
   const c = resolveCarrier(group, code);
-  return (c && c.name) || code || null;
+  return (c && c.name) || fallbackName || code || null;
 }
 
 let _brandIconsAvailable = false;
@@ -372,10 +379,26 @@ function waitForBrandIcons(timeout = 5000) {
   });
 }
 
+// For `parcel_aggregator` specifically (and only that group -- see below),
+// guesses `phu:<code>` when there's no explicit CARRIERS entry yet, instead
+// of showing no icon at all. Safe to guess wrong: custom-brand-icons' own
+// getIcon() (see its custom-icons-builder.cjs) returns '' for an unknown
+// name rather than throwing, so ha-icon just renders nothing -- the same
+// end result as returning null here, at worst a few pixels of empty space
+// next to the carrier name, never a broken-icon glyph or an error. Scoped
+// to `parcel_aggregator` only: its carrier labels are the family's own
+// clean, human-readable names (KNOWN_CARRIERS in its const.py, e.g. "DHL",
+// "Trunkrs") designed to double as a slug once lowercased -- unlike the
+// plain `parcel` group's cryptic 17track codes (e.g. "dhlnlpcode"), where
+// this same guess would almost never resolve and isn't a reasonable bet at
+// all. A carrier whose real slug doesn't match its lowercased name (e.g.
+// GLS -> "gls-group", not "gls") still needs its own explicit
+// `parcel_aggregator` code/icon pair, same as today.
 function getBrandIcon(group, code) {
   if (!code || !isBrandIconsAvailable()) return null;
   const c = resolveCarrier(group, code);
-  return (c && c.icon) || null;
+  if (c && c.icon) return c.icon;
+  return group === 'parcel_aggregator' ? `phu:${code}` : null;
 }
 
 // ─── Translations ────────────────────────────────────────────────────────────
@@ -1039,7 +1062,7 @@ function resolveCanonicalDeliverySlot(p, tr) {
 // Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
 // the future PostNL 4.0.0), same normalised shape across all of them, only
 // the carrier identity and direction differ per source.
-function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
+function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming', fallbackCarrierName }) {
   const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd } =
     resolveCanonicalDeliverySlot(p, tr);
 
@@ -1058,7 +1081,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   return mkItem({
     name, line1, line2, icon, color,
     deliveryDate, slotActive, delivered, slotEnd,
-    carrierCode, carrier: carrierName(carrierGroup, carrierCode), brandIcon: getBrandIcon(carrierGroup, carrierCode),
+    carrierCode, carrier: carrierName(carrierGroup, carrierCode, fallbackCarrierName), brandIcon: getBrandIcon(carrierGroup, carrierCode),
     tapUrl: p.url || null, direction,
     integration: carrierGroup,
     letterbox:    shipmentType === 'LetterboxParcel',
@@ -1075,14 +1098,24 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
 // Parcel Aggregator merges every installed carrier's parcels into one set of
 // sensors, passing each source's normalised parcel dict straight through
 // (same canonical shape as the family above) with its own `carrier` label
-// added ("DHL", "PostNL", "DPD", "GLS", "Dragonfly" — see KNOWN_CARRIERS in
-// its coordinator.py). So unlike every other entry in this family, the
-// carrier can't be fixed per source entry; it has to be resolved per parcel
-// from that label instead, via the `parcel_aggregator` codes group added to
-// the relevant CARRIERS entries.
+// added (see KNOWN_CARRIERS in its own const.py, e.g. "DHL", "PostNL",
+// "DPD", "GLS", "Dragonfly", "Trunkrs", "Cainiao", "Hermes", "Correos" --
+// the aggregator itself auto-discovers any family integration you have
+// installed, no update needed there when a new one ships). So unlike every
+// other entry in this family, the carrier can't be fixed per source entry;
+// it has to be resolved per parcel from that label instead.
+//
+// A brand-new family carrier (no explicit `parcel_aggregator` CARRIERS
+// entry yet) still gets a correctly-cased name (fallbackCarrierName below)
+// and, in the common case, a working icon too (see getBrandIcon's own
+// `phu:<code>` guess) -- so most future family additions need nothing here
+// at all. An explicit CARRIERS entry is still worth adding once a carrier's
+// icon slug doesn't match its lowercased name (see getBrandIcon's comment).
 function mapAggregatorParcel(p, tr, direction) {
   const carrierCode = (p.carrier || '').toLowerCase();
-  return mapCanonicalParcel(p, tr, { carrierGroup: 'parcel_aggregator', carrierCode, direction });
+  return mapCanonicalParcel(p, tr, {
+    carrierGroup: 'parcel_aggregator', carrierCode, direction, fallbackCarrierName: p.carrier || null,
+  });
 }
 
 // PostNL 4.0's letters/mail-scan feature: structurally nothing like a

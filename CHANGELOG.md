@@ -2,6 +2,37 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
+## [1.6.0] - 2026-07-27
+
+**Trunkrs and AliExpress Shipping (Cainiao) now have brand icons**
+Both carriers already appeared in the carrier list; they just didn't have a logo yet. Now that
+custom-brand-icons has added them, install/update that companion resource to see the icons.
+
+**Parcel Aggregator now recognizes brand-new family carriers automatically**
+If you use Parcel Aggregator to combine several carriers into one set of sensors, parcels from Trunkrs,
+Cainiao, Hermes and Correos now show their real name and brand icon there too, instead of a plain
+lowercase label with no logo. Most future carriers added to the family will pick this up automatically as
+well, without needing an update to this card.
+
+### Added
+- Brand icons for **AliExpress Shipping (Cainiao)** and **Trunkrs**, now that custom-brand-icons has added
+  `phu:cainiao`/`phu:trunkrs` (both carriers already existed in the list, just without a logo slot filled
+  in yet).
+- Four new ha-parcel-integrations family members (Trunkrs, Cainiao, Hermes, Correos) now get a proper
+  name and icon when their parcels come through a Parcel Aggregator source, instead of falling back to
+  the raw, lowercased carrier label with no logo. No new dedicated source type for any of them: the
+  aggregator already auto-discovers every family integration on its own, so this card only needed the
+  `parcel_aggregator` carrier-code mapping, not a native per-carrier integration the way DHL NL/PostNL/
+  DPD/GLS/Dragonfly have.
+- A brand-new family carrier reaching this card only through the Parcel Aggregator (no explicit
+  `parcel_aggregator` CARRIERS entry of its own yet) now gets the aggregator's own correctly-cased name
+  automatically (e.g. "Trunkrs", not "trunkrs"), and a guessed `phu:<carrier>` icon that works whenever
+  the icon's slug happens to match the lowercased carrier name (true for every family carrier so far).
+  Guessing wrong is harmless: custom-brand-icons' own icon lookup returns nothing for an unrecognised
+  name rather than erroring, so ha-icon just renders empty instead of showing a broken icon. A carrier
+  whose real icon slug doesn't match its name (like GLS's `gls-group`) still needs an explicit
+  `parcel_aggregator` code/icon pair, same as before.
+
 ## [1.5.0] - 2026-07-18
 
 **Adds a "More integrations" collapsible section to the Sources editor**
