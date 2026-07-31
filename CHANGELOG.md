@@ -30,7 +30,9 @@ integration it was superseded by; the Sources editor picks it up automatically o
 Either way, any old `parcel_aggregator_*` or `postnl_incoming`/`postnl_outgoing` source still in your config is
 automatically dropped the next time it's saved, no crash.
 
-While you're here: tired of the ever growing update list? [Update Manager](https://github.com/HA-Update-Manager/ha-update-manager) is a new integration that lets you set your own rules for which updates install automatically, and holds off if the community has already flagged a release as broken.
+<hr>
+
+*While you're here: tired of the ever growing update list? [Update Manager](https://github.com/HA-Update-Manager/ha-update-manager) is a new integration that lets you set your own rules for which updates install automatically, and holds off if the community has already flagged a release as broken.*
 
 ### Added
 - Generic detection for any current or future ha-parcel-integrations family member: the Sources editor now
