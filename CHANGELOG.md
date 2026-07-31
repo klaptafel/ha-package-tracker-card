@@ -5,30 +5,16 @@ All notable changes to this project are documented here. Format loosely follows 
 ## [2.0.0] - 2026-07-30
 
 **🚀 Any ha-parcel-integrations carrier is now recognized automatically**
-[Every carrier in that organization](https://github.com/ha-parcel-integrations#integrations) (PostNL, DHL NL, DPD, GLS, Dragonfly, Vinted Go, and whatever joins
-next) exposes its parcels the same way. This card now reads that convention directly from your
-entities, so a brand-new family member shows up in the
-Sources editor and on the card the moment you install it. Existing
-configs for these carriers keep working as-is and migrate to the simpler new shape automatically the next
-time they're saved through the editor.
+[Every carrier in that organization](https://github.com/ha-parcel-integrations#integrations) (PostNL, DHL NL, DPD, GLS, Dragonfly, Vinted Go, and whatever joins next) exposes its parcels the same way. This card now reads that convention directly from your entities, so a brand-new family member shows up in the Sources editor and on the card the moment you install it. Existing configs for these carriers keep working as-is and migrate to the simpler new shape automatically the next time they're saved through the editor.
 
 **🎉 Cards now work with zero configuration**
-Add the card with no `sources` list at all and it shows every package it recognizes automatically; use
-`filter` to narrow that down for a specific card instance instead (e.g. one account only). Adding any
-explicit source switches that card back to showing just what's listed, same as before. Existing configs
-that already list sources are unaffected either way.
+Add the card with no `sources` list at all and it shows every package it recognizes automatically; use `filter` to narrow that down for a specific card instance instead (e.g. one account only). Adding any explicit source switches that card back to showing just what's listed, same as before. Existing configs that already list sources are unaffected either way.
 
 **⚠️ Breaking: Parcel Aggregator and the original arjenbos/ha-postnl integration are no longer supported**
-- If you use [Parcel Aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator): you won't notice anything. It only ever relayed carriers you already had
-installed as their own ha-parcel-integrations member, and that member is now read directly (see above), so
-your packages keep showing up exactly as before, no action needed on your end. 
-- If you use the original
-[arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl) integration: you'll stop seeing PostNL packages
-through this card. Install [ha-parcel-integrations/ha-postnl](https://github.com/ha-parcel-integrations/ha-postnl) instead, the actively maintained PostNL
-integration it was superseded by; the Sources editor picks it up automatically once it's installed. 
+- If you use [Parcel Aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator): you won't notice anything. It only ever relayed carriers you already had installed as their own ha-parcel-integrations member, and that member is now read directly (see above), so your packages keep showing up exactly as before, no action needed on your end.
+- If you use the original [arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl) integration: you'll stop seeing PostNL packages through this card. Install [ha-parcel-integrations/ha-postnl](https://github.com/ha-parcel-integrations/ha-postnl) instead, the actively maintained PostNL integration it was superseded by; the Sources editor picks it up automatically once it's installed.
 
-Either way, any old `parcel_aggregator_*` or `postnl_incoming`/`postnl_outgoing` source still in your config is
-automatically dropped the next time it's saved, no crash.
+Either way, any old `parcel_aggregator_*` or `postnl_incoming`/`postnl_outgoing` source still in your config is automatically dropped the next time it's saved, no crash.
 
 <hr>
 
