@@ -2,6 +2,70 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Versions before 1.2.0 are not retroactively documented: see git history / GitHub releases for those.
 
+## [2.0.0] - 2026-07-30
+
+**🚀 Any ha-parcel-integrations carrier is now recognized automatically**
+[Every carrier in that organization](https://github.com/ha-parcel-integrations#integrations) (PostNL, DHL NL, DPD, GLS, Dragonfly, Vinted Go, and whatever joins
+next) exposes its parcels the same way. This card now reads that convention directly from your
+entities, so a brand-new family member shows up in the
+Sources editor and on the card the moment you install it. Existing
+configs for these carriers keep working as-is and migrate to the simpler new shape automatically the next
+time they're saved through the editor.
+
+**🎉 Cards now work with zero configuration**
+Add the card with no `sources` list at all and it shows every package it recognizes automatically; use
+`filter` to narrow that down for a specific card instance instead (e.g. one account only). Adding any
+explicit source switches that card back to showing just what's listed, same as before. Existing configs
+that already list sources are unaffected either way.
+
+**⚠️ Breaking: Parcel Aggregator and the original arjenbos/ha-postnl integration are no longer supported**
+- If you use [Parcel Aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator): you won't notice anything. It only ever relayed carriers you already had
+installed as their own ha-parcel-integrations member, and that member is now read directly (see above), so
+your packages keep showing up exactly as before, no action needed on your end. 
+- If you use the original
+[arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl) integration: you'll stop seeing PostNL packages
+through this card. Install [ha-parcel-integrations/ha-postnl](https://github.com/ha-parcel-integrations/ha-postnl) instead, the actively maintained PostNL
+integration it was superseded by; the Sources editor picks it up automatically once it's installed. 
+
+Either way, any old `parcel_aggregator_*` or `postnl_incoming`/`postnl_outgoing` source still in your config is
+automatically dropped the next time it's saved, no crash.
+
+While you're here: tired of the ever growing update list? [Update Manager](https://github.com/HA-Update-Manager/ha-update-manager) is a new integration that lets you set your own rules for which updates install automatically, and holds off if the community has already flagged a release as broken.
+
+### Added
+- Generic detection for any current or future ha-parcel-integrations family member: the Sources editor now
+  discovers these carriers straight from your Home Assistant entities, grouped per account where relevant
+  (including that account's own PostNL Letters, shown alongside its parcel rows instead of separately),
+  without needing a dedicated entry in this card for each one.
+- A plain empty-state message with a link to this README when no supported integration is detected or
+  configured at all, replacing the per-integration "not yet installed" prompts removed below.
+- `sources` is now optional. Leave it empty and the card shows everything it recognizes automatically
+  instead of nothing; use `filter` to narrow that down for a specific card instance (e.g. one account only).
+  Adding any explicit source switches that card back to showing just what's listed, same as before.
+- A link to the [ha-parcel-integrations](https://github.com/ha-parcel-integrations) organization page next
+  to each carrier the Sources editor discovers, so you can always find its specific repo even though this
+  card no longer keeps its own list of member repos.
+- A configured source whose entity is later renamed or removed now shows up in its own small section in
+  the Sources editor with a working remove button, instead of silently becoming invisible with no way to
+  clean it up short of editing the YAML by hand.
+
+### Changed
+- Sources for a recognized family carrier no longer need a `type` in the config; just `entity`. Existing
+  configs with the old `type` value are migrated to this simpler shape automatically the next time the
+  Sources editor saves a change. Non-family sources (the plain "parcel" integration, PostNL's Letters) are
+  unaffected.
+- The "not yet installed, click to install" prompts are removed from the Sources editor entirely, including
+  for the one remaining integration that still used them (jmdevita/parcel-ha): they can't be shown for
+  something detected live from your entities, and by now only served that single case, no longer worth a
+  whole separate "more integrations" toggle.
+- Two accounts of the same recognized carrier now always get their own separate row in the Sources editor,
+  even if one of them has no device name in Home Assistant (it gets a generic "Account N" label instead).
+
+### Removed
+- Parcel Aggregator support (see breaking-change note above): its own `INTEGRATIONS` entries, carrier-name
+  resolution, and CARRIERS code mappings are gone from this card.
+- The original arjenbos/ha-postnl integration (see breaking-change note above).
+
 ## [1.6.0] - 2026-07-27
 
 **Trunkrs and AliExpress Shipping (Cainiao) now have brand icons**

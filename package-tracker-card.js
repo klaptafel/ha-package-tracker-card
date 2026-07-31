@@ -1,4 +1,4 @@
-const CARD_VERSION = '1.5.0';
+const CARD_VERSION = '2.0.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -11,7 +11,7 @@ const CARRIERS = [
   { id: "acs", name: "ACS Courier", icon: null, codes: { parcel: ["acs"] } },
   { id: "adrexo", name: "Colis Privé", icon: null, codes: { parcel: ["adrexo"] } },
   { id: "airroad", name: "AirRoad", icon: null, codes: { parcel: ["airroad"] } },
-  { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: "phu:cainiao", codes: { parcel: ["aliex"], parcel_aggregator: ["cainiao"] } },
+  { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: "phu:cainiao", codes: { parcel: ["aliex"] } },
   { id: "allegro", name: "Allegro One", icon: null, codes: { parcel: ["allegro"] } },
   { id: "allied", name: "Allied Express", icon: null, codes: { parcel: ["allied"] } },
   { id: "amshipfr", name: "Amazon Shipping France", icon: null, codes: { parcel: ["amshipfr"] } },
@@ -83,7 +83,7 @@ const CARRIERS = [
   { id: "colomb", name: "Colombia post (4-72)", icon: null, codes: { parcel: ["colomb"] } },
   { id: "colp", name: "Collect+", icon: null, codes: { parcel: ["colp"] } },
   { id: "cope", name: "COPE", icon: null, codes: { parcel: ["cope"] } },
-  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"], parcel_aggregator: ["correos"] } },
+  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"] } },
   { id: "corbra", name: "Correios", icon: null, codes: { parcel: ["corbra"] } },
   { id: "corm", name: "Correos de Mexico", icon: null, codes: { parcel: ["corm"] } },
   { id: "corurg", name: "Correo Uruguayo", icon: null, codes: { parcel: ["corurg"] } },
@@ -103,7 +103,7 @@ const CARRIERS = [
   { id: "dhlfreight", name: "DHL Freight", icon: "phu:dhl", codes: { parcel: ["dhlfreight"] } },
   { id: "dhlgf", name: "DHL Global Forwarding", icon: null, codes: { parcel: ["dhlgf"] } },
   { id: "dhlgm", name: "DHL Global Mail", icon: "phu:dhl", codes: { parcel: ["dhlgm"] } },
-  { id: "dhlnl", name: "DHL Netherlands", short: "DHL", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"], parcel_aggregator: ["dhl"] } },
+  { id: "dhlnl", name: "DHL Netherlands", short: "DHL", icon: "phu:dhl", codes: { parcel: ["dhlnl", "dhlnlpcode"], dhl_nl: ["dhlnl"] } },
   { id: "dhlpoland", name: "DHL Poland", icon: null, codes: { parcel: ["dhlpoland"] } },
   { id: "dhlsc", name: "DHL Supply Chain", icon: "phu:dhl", codes: { parcel: ["dhlsc"] } },
   { id: "dhluk", name: "DHL Parcel UK", icon: "phu:dhl", codes: { parcel: ["dhluk"] } },
@@ -115,7 +115,7 @@ const CARRIERS = [
   { id: "dp", name: "Deutsche Post", icon: null, codes: { parcel: ["dp"] } },
   { id: "dpdat", name: "DPD Austria", icon: "phu:dpd", codes: { parcel: ["dpdat"] } },
   { id: "dpdfrpcode", name: "DPD France", icon: "phu:dpd", codes: { parcel: ["dpdfrpcode"] } },
-  { id: "dpdgpcode", name: "DPD Group", short: "DPD", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"], parcel_aggregator: ["dpd"] } },
+  { id: "dpdgpcode", name: "DPD Group", short: "DPD", icon: "phu:dpd", codes: { parcel: ["dpdgpcode"], dpd: ["dpdgpcode"] } },
   { id: "dpdie", name: "DPD Ireland", icon: "phu:dpd", codes: { parcel: ["dpdie"] } },
   { id: "dpditpcode", name: "DPD Italy (BRT)", icon: "phu:dpd", codes: { parcel: ["dpditpcode"] } },
   { id: "dpdpcode", name: "DPD Germany", icon: "phu:dpd", codes: { parcel: ["dpdpcode"] } },
@@ -126,7 +126,7 @@ const CARRIERS = [
   // No "dragonfly" logo in custom-brand-icons (elax46) yet as of 2026-07;
   // set here in advance so both entries pick it up automatically once it's
   // added upstream, same as every other brand-icon reference in this list.
-  { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"], dragonfly: ["dragonfly"], parcel_aggregator: ["dragonfly"] } },
+  { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"], dragonfly: ["dragonfly"] } },
   { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"] } },
   { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
   { id: "dtdc", name: "DTDC India", icon: null, codes: { parcel: ["dtdc"] } },
@@ -158,7 +158,7 @@ const CARRIERS = [
   { id: "geniki", name: "Geniki Taxydromiki", icon: null, codes: { parcel: ["geniki"] } },
   { id: "geodis", name: "Geodis", icon: null, codes: { parcel: ["geodis"] } },
   { id: "globalp", name: "GlobalPost", icon: null, codes: { parcel: ["globalp"] } },
-  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"], gls: ["gls"], parcel_aggregator: ["gls"] } },
+  { id: "gls", name: "GLS", icon: "phu:gls-group", codes: { parcel: ["gls"], gls: ["gls"] } },
   { id: "glsit", name: "GLS Italy", icon: "phu:gls-group", codes: { parcel: ["glsit"] } },
   { id: "gobolt", name: "GoBolt", icon: null, codes: { parcel: ["gobolt"] } },
   { id: "gofo", name: "GOFO Express", icon: null, codes: { parcel: ["gofo"] } },
@@ -170,7 +170,7 @@ const CARRIERS = [
   { id: "gso", name: "GLS US", icon: "phu:gls-group", codes: { parcel: ["gso"] } },
   { id: "hawai", name: "Hawaiian Air Cargo", icon: null, codes: { parcel: ["hawai"] } },
   { id: "her2mann", name: "Hermes 2-Mann-Handling", icon: null, codes: { parcel: ["her2mann"] } },
-  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"], parcel_aggregator: ["hermes"] } },
+  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"] } },
   { id: "hk", name: "Hongkong Post", icon: null, codes: { parcel: ["hk"] } },
   { id: "hr", name: "Hrvatska pošta", icon: null, codes: { parcel: ["hr"] } },
   { id: "hrpar", name: "HR Parcel", icon: null, codes: { parcel: ["hrpar"] } },
@@ -182,7 +182,13 @@ const CARRIERS = [
   { id: "in", name: "India Post", icon: null, codes: { parcel: ["in"] } },
   { id: "indon", name: "Indonesia Post", icon: null, codes: { parcel: ["indon"] } },
   { id: "inpespcode", name: "Inpost Spain", icon: null, codes: { parcel: ["inpespcode"] } },
-  { id: "inpost", name: "InPost Paczkomaty", icon: null, codes: { parcel: ["inpost"] } },
+  // ha-parcel-integrations' own InPost member (PL + IT, per the maintainer's
+  // own carrier list, GitHub discussion 2026-07-30) is domain `inpost`,
+  // shared here with the Parcel integration's existing "inpost" code entry
+  // -- "InPost Paczkomaty" is accurate for Parcel's PL-only code, but the
+  // shorter "InPost" reads better as this card's own generic-discovery
+  // fallback name, which also needs to cover the IT variant.
+  { id: "inpost", name: "InPost Paczkomaty", short: "InPost", icon: null, codes: { parcel: ["inpost"], inpost: ["inpost"] } },
   { id: "inpostit", name: "InPost Italy", icon: null, codes: { parcel: ["inpostit"] } },
   { id: "inpostuk", name: "InPost UK", icon: null, codes: { parcel: ["inpostuk"] } },
   { id: "intelc", name: "Dragonfly - Intelcom", icon: null, codes: { parcel: ["intelc"] } },
@@ -303,14 +309,14 @@ const CARRIERS = [
   { id: "tntau", name: "TNT Australia", icon: null, codes: { parcel: ["tntau"] } },
   { id: "tntfr", name: "TNT France", icon: null, codes: { parcel: ["tntfr"] } },
   { id: "tntit", name: "TNT Italy", icon: null, codes: { parcel: ["tntit"] } },
-  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"], parcel_aggregator: ["postnl"] } },
+  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"] } },
   { id: "tntpit", name: "PostNL (International)", icon: "phu:postnl", codes: { parcel: ["tntpit"] } },
   { id: "tntuk", name: "TNT UK", icon: null, codes: { parcel: ["tntuk"] } },
   { id: "toll", name: "Toll - Team Global Express", icon: null, codes: { parcel: ["toll"] } },
   { id: "topyou", name: "TopYou Logistics", icon: null, codes: { parcel: ["topyou"] } },
   { id: "tourline", name: "CTT Express", icon: null, codes: { parcel: ["tourline"] } },
   { id: "transm", name: "TransMission", icon: null, codes: { parcel: ["transm"] } },
-  { id: "trnkrpcode", name: "Trunkrs", icon: "phu:trunkrs", codes: { parcel: ["trnkrpcode"], parcel_aggregator: ["trunkrs"] } },
+  { id: "trnkrpcode", name: "Trunkrs", icon: "phu:trunkrs", codes: { parcel: ["trnkrpcode"] } },
   { id: "trpack", name: "TrakPak", icon: null, codes: { parcel: ["trpack"] } },
   { id: "turk", name: "PTT", icon: null, codes: { parcel: ["turk"] } },
   { id: "tw", name: "Taiwan (Chunghwa) Post", icon: null, codes: { parcel: ["tw"] } },
@@ -349,16 +355,9 @@ function resolveCarrier(group, code) {
   if (!code) return null;
   return _carrierIndex.get(group + ':' + String(code).toLowerCase()) || null;
 }
-// `fallbackName` (optional): only ever passed by mapAggregatorParcel, with
-// the aggregator's own already-properly-cased carrier label (e.g.
-// "Trunkrs") -- a new family carrier reaches this card through the
-// aggregator with no CARRIERS entry of its own yet, and falling back to
-// `code` (that same label, lowercased for the lookup above) would show
-// "trunkrs" instead of "Trunkrs". Every other call site never passes this,
-// so their own behavior (fall back to the bare code) is unchanged.
-function carrierName(group, code, fallbackName) {
+function carrierName(group, code) {
   const c = resolveCarrier(group, code);
-  return (c && c.name) || fallbackName || code || null;
+  return (c && c.name) || code || null;
 }
 
 let _brandIconsAvailable = false;
@@ -379,26 +378,29 @@ function waitForBrandIcons(timeout = 5000) {
   });
 }
 
-// For `parcel_aggregator` specifically (and only that group -- see below),
-// guesses `phu:<code>` when there's no explicit CARRIERS entry yet, instead
-// of showing no icon at all. Safe to guess wrong: custom-brand-icons' own
-// getIcon() (see its custom-icons-builder.cjs) returns '' for an unknown
-// name rather than throwing, so ha-icon just renders nothing -- the same
-// end result as returning null here, at worst a few pixels of empty space
-// next to the carrier name, never a broken-icon glyph or an error. Scoped
-// to `parcel_aggregator` only: its carrier labels are the family's own
-// clean, human-readable names (KNOWN_CARRIERS in its const.py, e.g. "DHL",
-// "Trunkrs") designed to double as a slug once lowercased -- unlike the
-// plain `parcel` group's cryptic 17track codes (e.g. "dhlnlpcode"), where
-// this same guess would almost never resolve and isn't a reasonable bet at
-// all. A carrier whose real slug doesn't match its lowercased name (e.g.
-// GLS -> "gls-group", not "gls") still needs its own explicit
-// `parcel_aggregator` code/icon pair, same as today.
 function getBrandIcon(group, code) {
   if (!code || !isBrandIconsAvailable()) return null;
   const c = resolveCarrier(group, code);
-  if (c && c.icon) return c.icon;
-  return group === 'parcel_aggregator' ? `phu:${code}` : null;
+  return (c && c.icon) || null;
+}
+
+// Name-based icon lookup for canonicalSourceInfo's own generically-detected
+// sources: those only ever have a plain carrier *name* (e.g. "DHL", read
+// straight from the item's own carrier field) to go on, never the curated
+// group+code pair _carrierIndex above is keyed by, so getBrandIcon itself
+// doesn't apply. Matches on `short` first, not just `name` -- DHL/DPD's own
+// CARRIERS entries are named "DHL Netherlands"/"DPD Group" (their real,
+// precise names) with a separate short: "DHL"/"DPD", and that short form is
+// exactly what parcels.py itself stamps on every item, not the full name.
+const _carrierIconByName = new Map();
+for (const c of CARRIERS) {
+  if (!c.icon) continue;
+  _carrierIconByName.set(c.name.toLowerCase(), c.icon);
+  if (c.short) _carrierIconByName.set(c.short.toLowerCase(), c.icon);
+}
+function genericCarrierIcon(name) {
+  if (!name || !isBrandIconsAvailable()) return null;
+  return _carrierIconByName.get(name.toLowerCase()) || null;
 }
 
 // ─── Translations ────────────────────────────────────────────────────────────
@@ -425,7 +427,6 @@ const TRANSLATIONS = {
     delivery_on: (day) => 'Delivery ' + day + '.',
     no_packages: 'No packages',
     not_found: ': not found',
-    install_integration: 'Install integration',
     source_repo_link: 'View integration', source_repo_link_desc: 'Open the GitHub page for this integration',
     status: 'Status', status_desc: 'Status line below the name',
     carrier: 'Carrier', carrier_desc: 'Name of the carrier',
@@ -450,9 +451,7 @@ const TRANSLATIONS = {
     letterbox: 'Fits in your letterbox',
     rerouted: 'Delivery to a pickup point.',
     service_point: (carrier) => 'Delivery to a ' + (carrier || 'pickup') + ' point.',
-    entity_hint_postnl: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_delivery or postnl_bezorging.',
-    entity_hint_postnl_outgoing: 'Look for a sensor with enroute and delivered attributes. Usually named postnl_distribution.',
-    entity_hint_postnl_canonical_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels (peternijssen/ha-postnl only, not the standard arjenbos/ha-postnl integration).',
+    entity_hint_postnl_canonical_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
     entity_hint_postnl_canonical_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     entity_hint_postnl_canonical_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
     entity_hint_postnl_canonical_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
@@ -478,15 +477,13 @@ const TRANSLATIONS = {
     entity_hint_dragonfly_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
     entity_hint_dragonfly_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
     dragonfly_incoming_label: 'Incoming (active)', dragonfly_delivered_label: 'Delivered (history)',
-    entity_hint_parcel_aggregator_incoming: 'Look for the sensor with a parcels attribute named incoming_parcels.',
-    entity_hint_parcel_aggregator_outgoing: 'Look for the sensor with a parcels attribute named outgoing_parcels.',
-    entity_hint_parcel_aggregator_delivered: 'Look for the sensor with a parcels attribute named delivered_parcels. Optional: adds recent delivery history.',
-    entity_hint_parcel_aggregator_outgoing_delivered: 'Look for the sensor with a parcels attribute named outgoing_delivered_parcels. Optional: shows completed return shipments.',
-    parcel_aggregator_incoming_label: 'Incoming (active)', parcel_aggregator_outgoing_label: 'Outgoing',
-    parcel_aggregator_delivered_label: 'Delivered (history)', parcel_aggregator_outgoing_delivered_label: 'Outgoing (delivered)',
     advanced: 'Advanced',
-    sources_more_integrations: 'More integrations',
     sources_auto_detect_notice: 'Sources are auto-detected from your Home Assistant integrations. Add the ones you want to track.',
+    sources_none_configured_notice: "With nothing added below, the card itself already shows everything it recognizes; use the Filter tab to narrow that down, or add specific sources here to limit it to just those.",
+    sources_empty_notice: 'No supported integrations detected yet.',
+    sources_empty_link: 'See what this card supports',
+    source_unnamed_device: 'Account',
+    sources_orphaned_notice: "These were configured, but their entity no longer exists (removed or renamed). Remove them, or add the entity back under its original name to keep using them.",
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
   nl: {
@@ -510,7 +507,6 @@ const TRANSLATIONS = {
     delivery_on: (day) => 'Levering ' + day + '.',
     no_packages: 'Geen pakketjes',
     not_found: ': niet gevonden',
-    install_integration: 'Installeer integratie',
     source_repo_link: 'Bekijk integratie', source_repo_link_desc: 'Open de GitHub-pagina van deze integratie',
     status: 'Status', status_desc: 'Statusregel onder de naam',
     carrier: 'Bezorgdienst', carrier_desc: 'Naam van de bezorgdienst',
@@ -535,9 +531,7 @@ const TRANSLATIONS = {
     letterbox: 'Past door de brievenbus',
     rerouted: 'Levering op een afhaalpunt.',
     service_point: (carrier) => 'Levering op een ' + (carrier || 'afhaal') + '-punt.',
-    entity_hint_postnl: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_bezorging of postnl_delivery.',
-    entity_hint_postnl_outgoing: 'Zoek naar een sensor met enroute en delivered attributen. Meestal genaamd postnl_distribution.',
-    entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels (alleen peternijssen/ha-postnl, niet de standaard arjenbos/ha-postnl integratie).',
+    entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_postnl_canonical_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     entity_hint_postnl_canonical_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
     entity_hint_postnl_canonical_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
@@ -563,15 +557,13 @@ const TRANSLATIONS = {
     entity_hint_dragonfly_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_dragonfly_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     dragonfly_incoming_label: 'Onderweg (actief)', dragonfly_delivered_label: 'Bezorgd (geschiedenis)',
-    entity_hint_parcel_aggregator_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
-    entity_hint_parcel_aggregator_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
-    entity_hint_parcel_aggregator_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
-    entity_hint_parcel_aggregator_outgoing_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_delivered_parcels. Optioneel: toont afgeronde retourzendingen.',
-    parcel_aggregator_incoming_label: 'Onderweg (actief)', parcel_aggregator_outgoing_label: 'Verstuurd',
-    parcel_aggregator_delivered_label: 'Bezorgd (geschiedenis)', parcel_aggregator_outgoing_delivered_label: 'Verstuurd (bezorgd)',
     advanced: 'Geavanceerd',
-    sources_more_integrations: 'Meer integraties',
     sources_auto_detect_notice: 'Bronnen worden automatisch gedetecteerd vanuit je Home Assistant integraties. Voeg de gewenste toe.',
+    sources_none_configured_notice: 'Voeg je hieronder niets toe, dan toont de kaart zelf al alles wat herkend wordt; gebruik de Filter-tab om dat te versmallen, of voeg hier specifieke bronnen toe om de kaart tot alleen die te beperken.',
+    sources_empty_notice: 'Nog geen ondersteunde integraties gedetecteerd.',
+    sources_empty_link: 'Bekijk wat deze kaart ondersteunt',
+    source_unnamed_device: 'Account',
+    sources_orphaned_notice: 'Deze waren toegevoegd, maar hun entity bestaat niet meer (verwijderd of hernoemd). Verwijder ze, of voeg de entity terug toe onder de oorspronkelijke naam om ze te blijven gebruiken.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
 };
@@ -667,10 +659,9 @@ function formatTimeRemaining(toDate, tr, fromDate) {
   return tr.slot_within_minutes(m);
 }
 
-// Shared by postnl_incoming and dhl_nl: both have an identical
-// planned_from/planned_to delivery-window shape. Returns null when
-// fromStr doesn't parse to a valid date (caller falls back to its own
-// status-only line1).
+// Shared delivery-window shape (planned_from/planned_to) across the
+// canonical parcel family. Returns null when fromStr doesn't parse to a
+// valid date (caller falls back to its own status-only line1).
 function computeDeliverySlot(fromStr, toStr, tr, statusLine) {
   const from = new Date(fromStr);
   if (isNaN(from)) return null;
@@ -782,21 +773,6 @@ const STATUS_STYLE = {
   unknown:             { icon: 'mdi:package-variant',              color: 'grey'   },
 };
 
-function postnlStatus(status) {
-  const s = (status || '').toLowerCase();
-  if (s.includes('nog niet'))             return STATUS_STYLE.expected;
-  if (s.includes('verwacht'))             return STATUS_STYLE.expected;
-  if (s.includes('bij postnl'))           return STATUS_STYLE.in_transit;
-  if (s.includes('gesorteerd'))           return STATUS_STYLE.in_transit;
-  if (s.includes('onderweg'))             return STATUS_STYLE.out_for_delivery;
-  if (s.includes('gemist'))               return STATUS_STYLE.missed;
-  if (s.includes('bezorgd bij de buren')) return STATUS_STYLE.delivered_neighbour;
-  if (s.includes('bezorgd'))              return STATUS_STYLE.delivered;
-  if (s.includes('af te halen'))          return STATUS_STYLE.at_pickup_point;
-  if (s.includes('vertraagd'))            return STATUS_STYLE.problem;
-  return STATUS_STYLE.unknown;
-}
-
 function parcelStatus(code) {
   return ({
     0: STATUS_STYLE.delivered,
@@ -832,28 +808,6 @@ function parcelStatus(code) {
 //   collect     : (attrs, ctx) => item[], maps raw sensor data to normalised items
 //
 // ctx = { tr }: shared context passed to collect
-
-// Shared PostNL collect: both incoming and outgoing use the same sensor shape
-function collectPostnl(attrs, ctx, mapFn) {
-  return [
-    ...(attrs.enroute   || []).map(i => mapFn(i, false, ctx.tr)),
-    ...(attrs.delivered || []).map(i => mapFn(i, true,  ctx.tr)),
-  ];
-}
-const hasPostnlAttrs = (a) => a.enroute !== undefined || a.delivered !== undefined;
-
-// Strip PostNL address suffix (e.g. '3SIUMH990064820-NL-1040AH' → '3SIUMH990064820')
-function stripPostnlTrackingCode(key) {
-  return key ? key.replace(/-[A-Z]{2}-.*$/, '') : null;
-}
-
-function mapPostnlEvents(events) {
-  return (events || []).map(e => ({
-    date: e.date ? new Date(e.date) : null,
-    text: e.description || e.status || '',
-    location: e.location_code || null,
-  })).filter(e => e.text);
-}
 
 // Canonical ParcelStatus: normalised status enum → icon/color/text
 // Source: HA community forum post by ptnijssen, June 19 2026 (BETA 2.0.0 changelog)
@@ -1062,7 +1016,7 @@ function resolveCanonicalDeliverySlot(p, tr) {
 // Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
 // the future PostNL 4.0.0), same normalised shape across all of them, only
 // the carrier identity and direction differ per source.
-function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming', fallbackCarrierName }) {
+function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
   const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd } =
     resolveCanonicalDeliverySlot(p, tr);
 
@@ -1081,7 +1035,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   return mkItem({
     name, line1, line2, icon, color,
     deliveryDate, slotActive, delivered, slotEnd,
-    carrierCode, carrier: carrierName(carrierGroup, carrierCode, fallbackCarrierName), brandIcon: getBrandIcon(carrierGroup, carrierCode),
+    carrierCode, carrier: carrierName(carrierGroup, carrierCode), brandIcon: getBrandIcon(carrierGroup, carrierCode),
     tapUrl: p.url || null, direction,
     integration: carrierGroup,
     letterbox:    shipmentType === 'LetterboxParcel',
@@ -1092,29 +1046,6 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     packageSize,
     packageSizeIcon,
     events,
-  });
-}
-
-// Parcel Aggregator merges every installed carrier's parcels into one set of
-// sensors, passing each source's normalised parcel dict straight through
-// (same canonical shape as the family above) with its own `carrier` label
-// added (see KNOWN_CARRIERS in its own const.py, e.g. "DHL", "PostNL",
-// "DPD", "GLS", "Dragonfly", "Trunkrs", "Cainiao", "Hermes", "Correos" --
-// the aggregator itself auto-discovers any family integration you have
-// installed, no update needed there when a new one ships). So unlike every
-// other entry in this family, the carrier can't be fixed per source entry;
-// it has to be resolved per parcel from that label instead.
-//
-// A brand-new family carrier (no explicit `parcel_aggregator` CARRIERS
-// entry yet) still gets a correctly-cased name (fallbackCarrierName below)
-// and, in the common case, a working icon too (see getBrandIcon's own
-// `phu:<code>` guess) -- so most future family additions need nothing here
-// at all. An explicit CARRIERS entry is still worth adding once a carrier's
-// icon slug doesn't match its lowercased name (see getBrandIcon's comment).
-function mapAggregatorParcel(p, tr, direction) {
-  const carrierCode = (p.carrier || '').toLowerCase();
-  return mapCanonicalParcel(p, tr, {
-    carrierGroup: 'parcel_aggregator', carrierCode, direction, fallbackCarrierName: p.carrier || null,
   });
 }
 
@@ -1215,34 +1146,6 @@ function mapPostnlLetter(letter, tr, imageMap) {
 function mkCanonicalEntry({
   group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms,
   entityHints, excludeHints, carrierGroup, carrierCode,
-  // Parcel Aggregator's carrier varies per parcel instead of per source
-  // entry (see mapAggregatorParcel below) -- an optional per-parcel mapper
-  // override lets it share this same shape instead of hand-rolling a
-  // duplicate one just to swap out how the carrier is resolved. Closes
-  // over the same `direction` this entry's own `direction` field is set
-  // to, so there's exactly one place stating it, not two.
-  mapper,
-  // This group's data is redundant once the named group is confirmed
-  // installed (see _renderSources's group-filtering loop) -- declared here,
-  // on the definition itself, instead of in a separately-maintained list of
-  // group keys elsewhere that has to be kept in sync by hand. Defaults on:
-  // every mkCanonicalEntry user is by definition an ha-parcel-integrations
-  // family member, and Parcel Aggregator covers the whole family by design,
-  // so new integrations (e.g. a future ha-trunkrs) get this for free. Only
-  // Parcel Aggregator's own entries opt out (pass aggregatedBy: null), since
-  // it can't aggregate itself.
-  //
-  // Caveat when wiring up a brand-new carrier: this only checks whether the
-  // Parcel Aggregator *integration* is installed, not whether it has
-  // actually started merging that specific carrier yet -- there's no
-  // version detection anywhere in this file (everything else here goes by
-  // attribute shape, not integration version) and none is worth adding
-  // just for this. So before adding a new carrier's mkCanonicalEntry,
-  // confirm in ha-parcel-aggregator's own release notes that it already
-  // covers that carrier; if not yet, pass aggregatedBy: null explicitly
-  // until it does (this is exactly why Dragonfly only got this default
-  // once ha-parcel-aggregator 1.6.0 actually added Dragonfly support).
-  aggregatedBy = 'parcel_aggregator',
   // For this carrier, Parcel's own data currently wins wholesale over this
   // dedicated integration's during dedup (see PARCEL_WINS_FOR below) --
   // declared here so that Set can be derived from the registry itself
@@ -1253,88 +1156,23 @@ function mkCanonicalEntry({
   return {
     group, groupLabel, rowLabel, rowLabelKey, entityHintText, direction, url, platforms, entityHints,
     ...(excludeHints ? { excludeHints } : {}),
-    ...(aggregatedBy ? { aggregatedBy } : {}),
+    // Marks this as a real per-carrier ha-parcel-integrations family entry,
+    // so _renderSources's group-filtering loop knows to skip its old
+    // registry-driven rendering in favor of the generic canonical discovery
+    // section (see discoverCanonicalSources/canonicalSourceInfo), and
+    // migrateSourceType knows its config can be migrated to the type-less
+    // `{ entity }` shape. Every mkCanonicalEntry user is by definition such
+    // a family member, so this is unconditional, not a parameter.
+    canonical: true,
     ...(parcelWins ? { carrierGroup, parcelWins } : {}),
     hasAttrs: (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) {
-      const map = mapper || ((p) => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
-      return (attrs.parcels || []).map((p) => map(p, ctx));
+      return (attrs.parcels || []).map((p) => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
     },
   };
 }
 
 const INTEGRATIONS = {
-
-  postnl_incoming: {
-    group:       'postnl',
-    groupLabel:  'PostNL',
-    rowLabel:    'Incoming',
-    rowLabelKey: 'incoming',
-    entityHintText: 'entity_hint_postnl',
-    direction:   'incoming',
-    url:         'https://github.com/arjenbos/ha-postnl',
-    platforms:   ['postnl'],
-    entityHints: ['deliver', 'ontvang', 'bezorg', 'lever', 'inbound', 'inkom', 'binnenkom', 'receiv', 'incom'],
-    hasAttrs: hasPostnlAttrs,
-    collect(attrs, ctx) { return collectPostnl(attrs, ctx, this._map.bind(this)); },
-    _map(item, delivered, tr) {
-      const { icon, color } = postnlStatus(item.status_message);
-      let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
-      if (delivered && item.delivery_date) {
-        const d = new Date(item.delivery_date);
-        if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
-      } else if (!delivered && item.planned_from) {
-        // v2.2.0 pre-release adds expected_from/expected_to: a tighter,
-        // real-time window that narrows as the courier approaches. Prefer
-        // it when present; fall back to planned_from/planned_to for stable
-        // installs that don't have it yet.
-        const fromStr = item.expected_from || item.planned_from;
-        const toStr   = item.expected_to   || item.planned_to;
-        const slot = computeDeliverySlot(fromStr, toStr, tr, ensurePeriod(item.status_message || ''));
-        if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
-      }
-      if (!line1) line1 = ensurePeriod(item.status_message || '');
-      return mkItem({ name: (item.name || '').trim(), line1, line2, icon, color,
-        deliveryDate, slotActive, delivered: delivered || !!item.delivered,
-        carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
-        tapUrl: item.url || null, direction: 'incoming', slotEnd,
-        integration: 'postnl_incoming',
-        letterbox: item.shipment_type === 'LetterboxParcel',
-        rerouted:     item.delivery_address_type === 'Rerouted',
-        servicePoint: item.delivery_address_type === 'ServicePoint',
-        trackingCode: stripPostnlTrackingCode(item.key),
-        events: mapPostnlEvents(item.events) });
-    },
-  },
-
-  postnl_outgoing: {
-    group:       'postnl',
-    groupLabel:  'PostNL',
-    rowLabel:    'Outgoing',
-    rowLabelKey: 'outgoing',
-    entityHintText: 'entity_hint_postnl_outgoing',
-    direction:   'outgoing',
-    url:         'https://github.com/arjenbos/ha-postnl',
-    platforms:   ['postnl'],
-    entityHints: ['distribut', 'verstu', 'verzend', 'uitgang', 'uitgaand', 'outgo', 'outbound', 'sent', 'shipment', 'shipping'],
-    hasAttrs: hasPostnlAttrs,
-    collect(attrs, ctx) { return collectPostnl(attrs, ctx, this._map.bind(this)); },
-    _map(item, delivered, tr) {
-      const { icon, color } = postnlStatus(item.status_message);
-      let deliveryDate = null, line1 = null;
-      if (item.delivery_date) {
-        const d = new Date(item.delivery_date);
-        if (!isNaN(d)) { deliveryDate = d; line1 = formatDeliveredText(d, tr); }
-      }
-      if (!line1) line1 = ensurePeriod(item.status_message || '');
-      return mkItem({ name: (item.name || '').trim(), line1, icon, color,
-        deliveryDate, delivered: delivered || !!item.delivered,
-        carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
-        tapUrl: item.url || null, direction: 'outgoing',
-        trackingCode: stripPostnlTrackingCode(item.key),
-        events: mapPostnlEvents(item.events) });
-    },
-  },
 
   postnl_canonical_incoming: mkCanonicalEntry({
     group:       'postnl_canonical',
@@ -1412,7 +1250,14 @@ const INTEGRATIONS = {
   }),
 
   postnl_canonical_letters: {
-    group:       'postnl_canonical',
+    // Own group key, deliberately not 'postnl_canonical': that group's other
+    // four entries are superseded by the generic canonical detector below
+    // (see canonicalSourceInfo) and no longer rendered through this
+    // registry-driven path in the editor. Letters has no `carrier` field at
+    // all (confirmed against its own letters.py -- see canonicalSourceInfo's
+    // comment) and stays registry-driven; sharing the old group key would
+    // have swept it away together with the other four.
+    group:       'postnl_letters',
     groupLabel:  'PostNL',
     rowLabel:    'Letters',
     rowLabelKey: 'postnl_canonical_letters_label',
@@ -1707,77 +1552,6 @@ const INTEGRATIONS = {
     carrierGroup: 'dragonfly', carrierCode: 'dragonfly',
   }),
 
-  // Parcel Aggregator (ha-parcel-integrations/ha-parcel-aggregator) merges
-  // DHL NL/PostNL/DPD/GLS/Dragonfly into one set of sensors, each parcel
-  // already carrying its own `carrier` label — see mapAggregatorParcel
-  // above. Same mkCanonicalEntry shape as every other family member, just
-  // with its `mapper` override since the carrier varies per parcel here
-  // instead of being fixed per source entry.
-  parcel_aggregator_incoming: mkCanonicalEntry({
-    group:       'parcel_aggregator',
-    groupLabel:  'Parcel Aggregator',
-    rowLabel:    'Incoming (active)',
-    rowLabelKey: 'parcel_aggregator_incoming_label',
-    entityHintText: 'entity_hint_parcel_aggregator_incoming',
-    direction:   'incoming',
-    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
-    platforms:   ['parcel_aggregator'],
-    entityHints: ['incoming_parcels', 'parcel_aggregator_incoming'],
-    excludeHints: ['awaiting_pickup', 'next_delivery'],
-    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
-    aggregatedBy: null,
-  }),
-
-  parcel_aggregator_outgoing: mkCanonicalEntry({
-    group:       'parcel_aggregator',
-    groupLabel:  'Parcel Aggregator',
-    rowLabel:    'Outgoing',
-    rowLabelKey: 'parcel_aggregator_outgoing_label',
-    entityHintText: 'entity_hint_parcel_aggregator_outgoing',
-    direction:   'outgoing',
-    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
-    platforms:   ['parcel_aggregator'],
-    entityHints: ['outgoing_parcels', 'parcel_aggregator_outgoing'],
-    // The dedicated outgoing_delivered sensor's entity_id contains
-    // "parcel_aggregator_outgoing" as a substring too (same collision
-    // postnl_canonical_outgoing already works around above).
-    excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
-    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
-    aggregatedBy: null,
-  }),
-
-  parcel_aggregator_delivered: mkCanonicalEntry({
-    group:       'parcel_aggregator',
-    groupLabel:  'Parcel Aggregator',
-    rowLabel:    'Delivered (history)',
-    rowLabelKey: 'parcel_aggregator_delivered_label',
-    entityHintText: 'entity_hint_parcel_aggregator_delivered',
-    direction:   'incoming',
-    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
-    platforms:   ['parcel_aggregator'],
-    entityHints: ['delivered_parcels', 'parcel_aggregator_delivered'],
-    // Same collision as outgoing above: "delivered_parcels" is also a
-    // substring of the outgoing_delivered sensor's entity_id.
-    excludeHints: ['outgoing_delivered', 'awaiting_pickup', 'next_delivery'],
-    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'incoming'),
-    aggregatedBy: null,
-  }),
-
-  parcel_aggregator_outgoing_delivered: mkCanonicalEntry({
-    group:       'parcel_aggregator',
-    groupLabel:  'Parcel Aggregator',
-    rowLabel:    'Outgoing (delivered)',
-    rowLabelKey: 'parcel_aggregator_outgoing_delivered_label',
-    entityHintText: 'entity_hint_parcel_aggregator_outgoing_delivered',
-    direction:   'outgoing',
-    url:         'https://github.com/ha-parcel-integrations/ha-parcel-aggregator',
-    platforms:   ['parcel_aggregator'],
-    entityHints: ['outgoing_delivered_parcels', 'parcel_aggregator_outgoing_delivered'],
-    excludeHints: ['awaiting_pickup', 'next_delivery'],
-    mapper: (p, ctx) => mapAggregatorParcel(p, ctx.tr, 'outgoing'),
-    aggregatedBy: null,
-  }),
-
 };
 
 // ─── Integration helpers ──────────────────────────────────────────────────────
@@ -1793,6 +1567,276 @@ function deviceNameForEntity(entityId, hass) {
   const device = hass?.devices?.[deviceId];
   if (!device) return null;
   return device.name_by_user || device.name || null;
+}
+
+// The four possible parcel-sensor "buckets" a ha-parcel-integrations family
+// member can expose -- these are the exact `translation_key` values each
+// entry sets on its own sensor (confirmed directly against every current
+// family member's sensor.py, 2026-07-30; NOT the bare 'incoming'/'delivered'/
+// etc., an earlier mistake in this file that made canonicalSourceInfo below
+// never match anything). Mapped here to the true 2-value direction each
+// bucket represents -- "delivered_parcels" is still an incoming parcel, just
+// in the delivered-history slot, and "outgoing_delivered_parcels" is still
+// outgoing. Confirmed against the existing registry's own `direction` field
+// (e.g. dhl_nl_delivered sets direction: 'incoming', never 'delivered') and
+// the family's own Parcel Aggregator, which uses the same "bucket" term for
+// this exact 4-value concept (its own coordinator.py:
+// ATTR_KEY_BY_BUCKET/SOURCE_SUFFIXES). Never conflate bucket with direction
+// elsewhere in this file -- a source whose bucket is "delivered_parcels"
+// still has to count as incoming wherever direction actually matters (e.g.
+// the direction filter below).
+const BUCKET_DIRECTION = {
+  incoming_parcels: 'incoming',
+  delivered_parcels: 'incoming',
+  outgoing_parcels: 'outgoing',
+  outgoing_delivered_parcels: 'outgoing',
+};
+
+// "vinted_go" -> "Vinted Go": readable fallback carrier name straight from a
+// raw platform/domain string, for canonicalSourceInfo's own empty-parcels
+// fallback below. Deliberately not routed through carrierName/resolveCarrier
+// (the CARRIERS lookup table below, keyed by group+code pairs) -- a bare
+// platform string doesn't correspond to that group/code shape, so a lookup
+// attempt would only ever hit the same fallback this already is.
+// Reuses the existing CARRIERS list instead of a second, separately
+// maintained name table: dhl_nl/dpd/gls/dragonfly/postnl already have a
+// `codes[group]` entry each (added for mkCanonicalEntry's own
+// carrierName/getBrandIcon lookups), so the exact same curated `short`/
+// `name` this card already shows once real parcel data exists (e.g. "DHL",
+// not "Dhl Nl") is available here too, for the one moment before that: a
+// device with zero current parcels, nothing yet to read the real carrier
+// string from.
+function platformDisplayName(platform) {
+  const entry = CARRIERS.find(c => Array.isArray(c.codes?.[platform]));
+  return entry ? (entry.short || entry.name) : null;
+}
+
+// Only used as a fallback (see canonicalSourceInfo/discoverCanonicalSources)
+// when a device has zero current parcels to read its real carrier name
+// from. A brand-new ha-parcel-integrations member with no CARRIERS entry
+// of its own still needs zero registration anywhere to be *detected* --
+// this only affects how it's *displayed* during that same zero-parcels
+// window, and plain title-casing is a reasonable default for that (matches
+// every current family member's own name already: Dragonfly, Hermes,
+// Packeta, Correos, Trunkrs, Cainiao, Vinted Go all title-case correctly
+// as-is, confirmed against the maintainer's own carrier list, GitHub
+// discussion 2026-07-30).
+function prettifyPlatformName(platform) {
+  if (!platform) return null;
+  return platformDisplayName(platform) || platform.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+
+// Generic detection for any ha-parcel-integrations family member, present or
+// future, with zero per-carrier registration needed here -- confirmed
+// against the real source of every current member (PostNL, DHL NL, DPD,
+// GLS, Dragonfly, Vinted Go, 2026-07-30): every one exposes its parcel list
+// under the same literal `parcels` attribute, and sets its own entity's
+// translation_key to exactly one of the four bucket names above. Returns
+// null for anything that doesn't match this shape -- non-family sources
+// (the plain "parcel" integration, PostNL's own Letters, which has no
+// `carrier` field on its items at all, confirmed against its own
+// letters.py) keep using the INTEGRATIONS registry below, unchanged. Parcel
+// Aggregator's own sensors actually DO match this shape (same family
+// convention), but callers must exclude its platform explicitly before
+// calling this -- see discoverCanonicalSources's own comment for why.
+function canonicalSourceInfo(entityId, hass) {
+  const attrs = hass?.states?.[entityId]?.attributes;
+  if (!Array.isArray(attrs?.parcels)) return null;
+  const bucket = hass?.entities?.[entityId]?.translation_key;
+  if (!BUCKET_DIRECTION[bucket]) return null;
+  const platform = hass?.entities?.[entityId]?.platform;
+  const carrier = attrs.parcels[0]?.carrier || prettifyPlatformName(platform) || platform || null;
+  // carrierGroup: platform, not a display name -- for every current family
+  // member this is exactly the same string mkCanonicalEntry's own
+  // hand-written entries already use as their carrierGroup (postnl, dhl_nl,
+  // dpd, gls, dragonfly), which matters for PARCEL_WINS_FOR: without this,
+  // a generically-detected DPD source's item.integration would never match
+  // that set and DPD's dedup override would silently stop applying.
+  return { carrier, bucket, carrierGroup: platform };
+}
+
+// Reuses the existing PostNL-prefixed translation keys for the four bucket
+// row labels: their actual text ("Incoming (active)", "Delivered (history)",
+// etc.) is already carrier-agnostic, only the key name predates the generic
+// detector below, so there's no need for a duplicate/renamed set of keys.
+const BUCKET_ROW_LABEL_KEY = {
+  incoming_parcels: 'postnl_canonical_incoming_label',
+  delivered_parcels: 'postnl_canonical_delivered_label',
+  outgoing_parcels: 'postnl_canonical_outgoing_label',
+  outgoing_delivered_parcels: 'postnl_canonical_outgoing_delivered_label',
+  letters: 'postnl_canonical_letters_label',
+};
+
+// Fixed display order for a discovered device's bucket rows -- Map
+// insertion order otherwise just follows whatever order hass.entities
+// happened to iterate in, which isn't necessarily a sensible reading order
+// (confirmed via testing, 2026-07-30: Letters could land in the middle).
+// Letters last: it's a bonus feature folded in for display, not one of the
+// four core buckets.
+const BUCKET_ORDER = ['incoming_parcels', 'outgoing_parcels', 'delivered_parcels', 'outgoing_delivered_parcels', 'letters'];
+function sortedBucketEntries(buckets) {
+  return [...buckets.entries()].sort(([a], [b]) => BUCKET_ORDER.indexOf(a) - BUCKET_ORDER.indexOf(b));
+}
+
+// Live discovery for any ha-parcel-integrations family member, grouped by
+// carrier then by device/account (mirroring deviceCandidatesForGroup's own
+// per-device grouping, so multi-account setups still get one row per
+// account). Parcel Aggregator support has been removed from this card
+// entirely (it added no value once a carrier's own repo can be read
+// directly, and merging several carriers into one view is something this
+// card already does itself) -- but its sensors still exist on any instance
+// that has it installed, and still match this exact same family convention
+// (same `parcels` attribute, same translation_key values), so its platform
+// is explicitly excluded here. Without this, a user who still has Parcel
+// Aggregator installed for some other reason would see its re-exposed data
+// offered as if it were itself a new, distinct carrier.
+// Memoized on `hass.entities` object identity, not on hass itself: HA's
+// frontend only replaces `hass.entities` when the entity registry actually
+// changes (add/rename/remove), while `hass.states` gets a new reference on
+// every single state update -- and this card's own `hass` setter (and, in
+// auto-detect mode, effectiveSources/autoDetectedEntities) call this on
+// every one of those. Without memoizing, a card with `sources: []` would
+// re-scan the entire entity registry on every state-changed event
+// system-wide, not just when something relevant to this card changed.
+let _discoveryCacheEntities = null;
+let _discoveryCacheResult = null;
+function discoverCanonicalSources(hass) {
+  if (hass?.entities && hass.entities === _discoveryCacheEntities) return _discoveryCacheResult;
+
+  const byCarrier = new Map(); // carrier -> Map(deviceId -> { deviceName, buckets: Map(bucket -> entityId) })
+  if (!hass?.entities) return byCarrier;
+
+  // First pass: group by device, not carrier. canonicalSourceInfo falls back
+  // to the platform name (e.g. "Dhl Nl") for a bucket with zero current
+  // items, which can differ from a sibling bucket's real item-provided
+  // carrier label (e.g. "DHL") on that very same device/account -- grouping
+  // directly by info.carrier would then split one device into two separate
+  // carrier groups purely because one of its buckets happens to be empty
+  // right now (confirmed via testing, 2026-07-30). Resolve one carrier name
+  // per device instead, preferring whichever bucket has a real item to read
+  // from; only fall back to the platform name if every bucket on this
+  // device is currently empty.
+  // PostNL's own Letters feature (see postnl_canonical_letters's own
+  // comment: structurally nothing like a parcel, no carrier field, not
+  // covered by canonicalSourceInfo at all) still belongs to the exact same
+  // account/device as that account's own canonical parcel buckets, and is
+  // folded in here so it shows up alongside them instead of as a
+  // disconnected section -- confirmed via direct user feedback, 2026-07-30:
+  // with two PostNL accounts configured, each account's own Letters entity
+  // is expected under that same account, not lumped into one generic row.
+  // Its config still keeps the old `{ type, entity }` shape (see
+  // sourceForBucket below); only the rendering is merged here, not the
+  // underlying detection/collection, which stays registry-driven.
+  const lettersDef = INTEGRATIONS.postnl_canonical_letters;
+
+  const byDevice = new Map(); // deviceId -> { deviceName, carrier, buckets: Map(bucket -> entityId) }
+  for (const entityId of Object.keys(hass.entities)) {
+    const entry = hass.entities[entityId];
+    if (entry?.platform === 'parcel_aggregator') continue;
+    const attrs = hass.states[entityId]?.attributes;
+
+    const info = canonicalSourceInfo(entityId, hass);
+    const isLetters = !info && attrs && lettersDef.platforms.some(p => (entry?.platform || '').includes(p)) && lettersDef.hasAttrs(attrs);
+    if (!info && !isLetters) continue;
+
+    const deviceId = entry?.device_id || entityId;
+    if (!byDevice.has(deviceId)) {
+      byDevice.set(deviceId, { deviceName: deviceNameForEntity(entityId, hass), carrier: null, buckets: new Map() });
+    }
+    const device = byDevice.get(deviceId);
+
+    if (isLetters) { device.buckets.set('letters', entityId); continue; }
+
+    device.buckets.set(info.bucket, entityId);
+    const hasRealCarrier = !!attrs?.parcels?.[0]?.carrier;
+    if (hasRealCarrier || !device.carrier) device.carrier = info.carrier;
+  }
+
+  for (const [deviceId, { deviceName, carrier, buckets }] of byDevice) {
+    // A device seen only through its Letters entity (no parcel buckets at
+    // all -- possible if PostNL's parcel sensors happen to be disabled)
+    // never got a carrier resolved above; fall back the same way
+    // canonicalSourceInfo does for an empty bucket. Final `|| 'Unknown'`:
+    // the entity registry is expected to always have a `platform` for a
+    // real integration entity, but nothing guarantees that, and a null Map
+    // key here would later crash the editor's carrier sort (sortedCarriers).
+    const resolvedCarrier = carrier || prettifyPlatformName(hass.entities[buckets.get('letters')]?.platform) || 'Unknown';
+    if (!byCarrier.has(resolvedCarrier)) byCarrier.set(resolvedCarrier, new Map());
+    byCarrier.get(resolvedCarrier).set(deviceId, { deviceName, buckets });
+  }
+  _discoveryCacheEntities = hass.entities;
+  _discoveryCacheResult = byCarrier;
+  return byCarrier;
+}
+
+// A discovered device's bucket entry is either one of the four generic,
+// type-less canonical buckets (see canonicalSourceInfo/migrateSourceType),
+// or PostNL's own Letters entity, folded into the same per-device grouping
+// above for display purposes only -- Letters keeps its original, typed
+// `{ type: 'postnl_canonical_letters', entity }` config shape, since it's
+// still collected through the registry, not canonicalSourceInfo.
+function sourceForBucket(bucket, entity) {
+  return bucket === 'letters' ? { type: 'postnl_canonical_letters', entity } : { entity };
+}
+
+// With no sources configured at all, show everything this card recognizes
+// instead of an empty card -- the Filter tab's own carrier/direction/state
+// filters exist to narrow this down per card instance if needed (direct
+// user feedback, 2026-07-30). Mirrors discoverCanonicalSources's own
+// exclusions (Parcel Aggregator's re-exposed entities are never picked up
+// as if they were a distinct carrier, see its own comment).
+function autoDetectedEntities(hass) {
+  if (!hass?.entities) return [];
+  const result = [];
+  for (const [, devices] of discoverCanonicalSources(hass)) {
+    for (const [, { buckets }] of devices) {
+      for (const [bucket, entity] of buckets) result.push(sourceForBucket(bucket, entity));
+    }
+  }
+  for (const [type, def] of Object.entries(INTEGRATIONS)) {
+    // Canonical family members and PostNL Letters are already covered by
+    // discoverCanonicalSources above (Letters is folded into the same
+    // per-device grouping there); only a genuinely separate, still
+    // registry-driven type (currently just the plain "parcel" integration)
+    // needs its own scan here.
+    if (def.canonical || type === 'postnl_canonical_letters') continue;
+    for (const entity of candidatesForType(type, hass)) result.push({ type, entity });
+  }
+  return result;
+}
+
+// Single point deciding what a card instance actually shows: the user's own
+// configured sources when there are any, or a full live auto-scan when the
+// list is empty/absent. Every render/collection path should read sources
+// through this, not `config.sources` directly, so "empty means auto" stays
+// consistent everywhere.
+function effectiveSources(config, hass) {
+  const configured = config?.sources || [];
+  return configured.length ? configured : autoDetectedEntities(hass);
+}
+
+// Shared by _collectItems and _availableCarriers -- the only two places that
+// turn a type-less (generically-detected) source's raw `parcels` attribute
+// into normalized items. Kept as one function specifically so a future fix
+// to this mapping (carrierGroup, brandIcon, or anything else) can't land in
+// only one of the two call sites and quietly drift, like brandIcon already
+// had before this was unified. Returns `null` when the entity isn't (or is
+// no longer) identifiable as a canonical source, e.g. removed/renamed since
+// this source was added -- callers treat that the same as a typed source
+// whose registry entry is missing.
+function collectGenericSourceItems(entityId, attrs, tr, hass) {
+  const info = canonicalSourceInfo(entityId, hass);
+  if (!info) return null;
+  const direction = BUCKET_DIRECTION[info.bucket];
+  return attrs.parcels.map(p => ({
+    ...mapCanonicalParcel(p, tr, { carrierGroup: info.carrierGroup, carrierCode: info.carrier, direction }),
+    // mapCanonicalParcel's own getBrandIcon(carrierGroup, carrierCode) call
+    // still misses here (carrierCode is a display name, not a curated code)
+    // -- see genericCarrierIcon's own comment for why this needs its own,
+    // name-based lookup instead.
+    brandIcon: genericCarrierIcon(info.carrier),
+  }));
 }
 
 // Shared by candidatesForType/isPlatformInstalled below: entities whose
@@ -1867,12 +1911,12 @@ function isPlatformInstalled(type, hass) {
   const def = INTEGRATIONS[type];
   if (!def) return false;
   for (const [entityId] of platformMatchingEntities(type, hass)) {
-    // Some integrations share a platform/domain with another (e.g. a fork
-    // that kept the same domain, like peternijssen/ha-postnl vs the standard
-    // arjenbos/ha-postnl) but expose a structurally different attrs shape.
-    // Since the two can never both be installed at once (same domain), a
-    // platform match alone would wrongly mark BOTH as "installed". When we
-    // have the actual sensor data, require the shape to match too.
+    // Two integrations can in principle share a platform/domain (e.g. a fork
+    // that kept the original domain) while exposing a structurally different
+    // attrs shape. Since the two could never both be installed at once
+    // (same domain), a platform match alone would wrongly mark BOTH as
+    // "installed". When we have the actual sensor data, require the shape
+    // to match too.
     const attrs = hass.states?.[entityId]?.attributes;
     if (!attrs) return true; // no data to check shape against yet; platform match is the best we have
     try { if (def.hasAttrs(attrs)) return true; } catch { /* keep looking */ }
@@ -2032,6 +2076,32 @@ function deepEqual(a, b) {
   return a === b;
 }
 
+// Migrates a legacy `{ type, entity }` source into the new, type-less
+// `{ entity }` shape once canonicalSourceInfo (above) can derive carrier and
+// bucket live instead -- silent, automatic, and lossless, so an existing
+// dashboard config never needs manual editing. Only applies to sources whose
+// `type` was built via mkCanonicalEntry as a *real per-carrier* entry, never
+// to anything hand-built (the plain `parcel` integration, PostNL's own
+// Letters): `canonical` is the reliable signal for that distinction (see
+// mergeWithCardDefaults's own comment for why, and why
+// `carrierGroup`/`carrierCode` would have been wrong). A source that's
+// already type-less, or whose type doesn't match, passes through untouched.
+function migrateSourceType(source) {
+  if (!source?.type || !INTEGRATIONS[source.type]?.canonical) return source;
+  return { entity: source.entity };
+}
+
+// v2.0.0 dropped Parcel Aggregator and the arjenbos/ha-postnl fork entirely
+// (see CHANGELOG). A source still configured against one of their old
+// `type` values would otherwise silently show nothing forever -- drop it
+// from the saved config instead, so a re-save cleans up the cruft rather
+// than leaving a dead entry the user has to notice and remove by hand.
+const REMOVED_SOURCE_TYPES = new Set([
+  'postnl_incoming', 'postnl_outgoing',
+  'parcel_aggregator_incoming', 'parcel_aggregator_outgoing',
+  'parcel_aggregator_delivered', 'parcel_aggregator_outgoing_delivered',
+]);
+
 // Shared by PackageTrackerCard.setConfig and PackageTrackerCardEditor._normalize
 // -- both need the same two-level-deep merge (top-level fields, plus a
 // separate merge for the nested show/filter objects so an incoming config
@@ -2043,6 +2113,13 @@ function mergeWithCardDefaults(config, base = {}) {
     ...base,
     ...CARD_DEFAULTS,
     ...config,
+    // migrateSourceType: see its own comment. Runs on every load, not just
+    // once, same as any other normalize step -- no separate one-time
+    // migration flag needed, since re-migrating an already-migrated
+    // (type-less) source is a harmless no-op.
+    sources: (config.sources || [])
+      .filter((s) => !REMOVED_SOURCE_TYPES.has(s?.type))
+      .map(migrateSourceType),
     show:   { ...CARD_DEFAULTS.show,   ...(config.show   || {}) },
     filter: { ...CARD_DEFAULTS.filter, ...(config.filter || {}) },
   };
@@ -2560,7 +2637,13 @@ class PackageTrackerCard extends HTMLElement {
 
   setConfig(config) {
     if (!config) throw new Error('package-tracker-card: missing config');
-    if (!Array.isArray(config.sources)) throw new Error('package-tracker-card: sources must be an array');
+    // sources is optional now (see effectiveSources/autoDetectedEntities):
+    // omitting it entirely, e.g. `type: custom:package-tracker-card` with
+    // nothing else, is exactly the auto-detect flow the README describes.
+    // Only reject it if it's present but the wrong shape.
+    if (config.sources !== undefined && !Array.isArray(config.sources)) {
+      throw new Error('package-tracker-card: sources must be an array');
+    }
     this._config = mergeWithCardDefaults(config);
     this._lastHashes = {};
     this._cachedItems = [];
@@ -2579,7 +2662,12 @@ class PackageTrackerCard extends HTMLElement {
       // in, so a language switch must force every source to re-collect.
       this._sourceItemsCache.clear();
     }
-    for (const { entity } of this._config.sources) {
+    // effectiveSources, not this._config.sources directly: with no sources
+    // configured at all, the card auto-detects everything it recognizes
+    // (see effectiveSources's own comment), so change-watching needs to
+    // cover that same live set too, or an auto-shown package would never
+    // trigger a re-render once its status actually changes.
+    for (const { entity } of effectiveSources(this._config, hass)) {
       if (!entity) continue;
       // Compare last_updated (not last_changed; that only fires on state-value
       // changes, missing attribute-only updates like a package status changing
@@ -2594,12 +2682,16 @@ class PackageTrackerCard extends HTMLElement {
     const lang = this._hass.language || 'en';
     const ctx   = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
     const items = [];
-    for (const source of this._config.sources) {
-      const def = INTEGRATIONS[source.type];
-      if (!def || !source.entity) continue;
+    for (const source of effectiveSources(this._config, this._hass)) {
+      if (!source.entity) continue;
       const state = this._hass.states[source.entity];
       const attrs = state?.attributes;
       if (!attrs) continue;
+      // A typed source (source.type set) needs its registry entry to exist;
+      // a type-less one (see migrateSourceType/canonicalSourceInfo) needs no
+      // registry lookup at all, but still can't be collected until it's
+      // actually confirmed canonical-shaped below.
+      if (source.type && !INTEGRATIONS[source.type]) continue;
       // Skip re-running collect() for sources whose entity hasn't changed
       // since the last collection; def.collect() (image-map building, event
       // parsing, etc.) is the expensive part here, not the dedup/merge below.
@@ -2613,11 +2705,22 @@ class PackageTrackerCard extends HTMLElement {
       // source's already-working packages -- same guard the editor's own
       // _availableCarriers() already uses for this identical call.
       try {
-        const sourceItems = def.collect(attrs, ctx);
+        let sourceItems;
+        if (source.type) {
+          sourceItems = INTEGRATIONS[source.type].collect(attrs, ctx);
+        } else {
+          // Type-less: a generically-detected ha-parcel-integrations family
+          // member (see collectGenericSourceItems's own comment). Not
+          // identifiable (null) -- e.g. the entity was removed/renamed since
+          // this source was migrated/added -- silently yields no items,
+          // same as a typed source whose def is missing.
+          sourceItems = collectGenericSourceItems(source.entity, attrs, ctx.tr, this._hass);
+          if (!sourceItems) continue;
+        }
         this._sourceItemsCache.set(source.entity, { ts: state.last_updated, items: sourceItems });
         items.push(...sourceItems);
       } catch (err) {
-        console.error(`package-tracker-card: source "${source.type}" (${source.entity}) failed to collect`, err);
+        console.error(`package-tracker-card: source "${source.type || source.entity}" (${source.entity}) failed to collect`, err);
       }
     }
     // Dedup-merge helpers (PARCEL_WINS_FOR/ENRICHMENT_FIELDS/backfill/
@@ -2829,7 +2932,6 @@ const EDITOR_CSS = `
   .source-group { border: 1px solid var(--divider-color); border-radius: 8px; overflow: hidden; }
   .row-action { min-width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .add-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
-  .install-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--primary-color); }
   .delete-btn { --mdc-icon-button-size: 36px; --mdc-icon-size: 18px; color: var(--secondary-text-color); }
   .delete-btn:hover { color: var(--error-color, #db4437); }
   .body-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary-text-color); margin: 14px 0 4px; }
@@ -2863,7 +2965,6 @@ class PackageTrackerCardEditor extends HTMLElement {
     this._lastFiredConfig = null;
     this._tab            = 'sources';
     this._filterAdvOpen = false;
-    this._sourcesMoreOpen = false;
   }
 
   // Distinct {value, label} carrier options currently present across configured
@@ -2881,13 +2982,23 @@ class PackageTrackerCardEditor extends HTMLElement {
     // is a comma-joined list of every code that maps to that label, so
     // selecting it matches all of them.
     const byLabel = new Map(); // label -> Set of codes
-    for (const source of this._config.sources || []) {
-      const def = INTEGRATIONS[source.type];
-      if (!def || !source.entity) continue;
+    for (const source of effectiveSources(this._config, this._hass)) {
+      if (!source.entity) continue;
       const attrs = this._hass.states[source.entity]?.attributes;
       if (!attrs) continue;
       let items;
-      try { items = def.collect(attrs, ctx); } catch { continue; }
+      try {
+        if (source.type) {
+          const def = INTEGRATIONS[source.type];
+          if (!def) continue;
+          items = def.collect(attrs, ctx);
+        } else {
+          // Type-less: same generic canonical-family path _collectItems
+          // uses, see collectGenericSourceItems's own comment.
+          items = collectGenericSourceItems(source.entity, attrs, ctx.tr, this._hass);
+          if (!items) continue;
+        }
+      } catch { continue; }
       for (const item of items) {
         if (!item.carrierCode) continue;
         const label = item.carrier || item.carrierCode;
@@ -2993,7 +3104,13 @@ class PackageTrackerCardEditor extends HTMLElement {
 
     const notice = document.createElement('p');
     notice.style.cssText = 'margin:0 0 16px;font-size:13px;color:var(--secondary-text-color);line-height:1.4;';
-    notice.textContent = uiTr.sources_auto_detect_notice;
+    // With nothing added below yet, the card itself is already showing
+    // everything it recognizes (see effectiveSources) -- say so here too,
+    // since every row below still shows its normal "+" (not yet added)
+    // state, which would otherwise read as "nothing is being tracked".
+    notice.textContent = sources.length
+      ? uiTr.sources_auto_detect_notice
+      : uiTr.sources_auto_detect_notice + ' ' + uiTr.sources_none_configured_notice;
     root.appendChild(notice);
 
     const groups = new Map();
@@ -3001,7 +3118,7 @@ class PackageTrackerCardEditor extends HTMLElement {
       const g = def.group || type;
       if (!groups.has(g)) groups.set(g, { label: def.groupLabel || g, url: def.url, types: [] });
       groups.get(g).types.push(type);
-      if (def.aggregatedBy) groups.get(g).aggregatedBy = def.aggregatedBy;
+      if (def.canonical) groups.get(g).canonical = true;
     }
     // Compute each group's installed/active status once; used for both
     // the sort order below and the row rendering further down.
@@ -3010,57 +3127,225 @@ class PackageTrackerCardEditor extends HTMLElement {
       group.groupActive = group.types.some(t => sources.some(s => s.type === t));
     }
 
-    // Sort by installed status only (not active/configured); that stays
-    // stable regardless of what the user does in this editor, so adding or
-    // removing a source doesn't make the list jump around under them.
-    // Alphabetical by label within each tier.
-    const tier = (g) => g.platformOk ? 0 : 1;
-    const sortedGroups = [...groups.entries()].sort(([, a], [, b]) => {
-      const tierDiff = tier(a) - tier(b);
-      return tierDiff !== 0 ? tierDiff : a.label.localeCompare(b.label);
-    });
+    // A group that's neither installed nor already configured has nothing
+    // to show: no "not yet installed, click to install" tile anymore (direct
+    // user feedback, 2026-07-30 -- the canonical family already dropped this
+    // for the same reason, and by now this registry only has one remaining
+    // group that could ever hit it, jmdevita/parcel-ha, not worth a whole
+    // separate "more integrations" toggle mechanism just for that one case).
+    // Simple alphabetical sort is enough once only real, present groups
+    // reach the list below.
+    const sortedGroups = [...groups.entries()]
+      .filter(([, g]) => g.platformOk || g.groupActive)
+      .sort(([, a], [, b]) => a.label.localeCompare(b.label));
 
     const list = document.createElement('div'); list.className = 'item-list';
-    // Once at least one supported integration is actually installed, a
-    // not-installed group is no longer onboarding-critical (the user has
-    // clearly already found and installed things from this family) --
-    // collapse those "go install this" prompts behind a toggle instead of
-    // always listing every supported integration, which only gets more
-    // cluttered as the ha-parcel-integrations family grows. Gated on
-    // installed, not configured: even before adding a single source, having
-    // any real integration detected is enough to stop needing the full
-    // discovery list. A card with nothing installed at all still shows the
-    // full list, so there's still something to discover on first open.
-    const anyIntegrationInstalled = [...groups.values()].some(g => g.platformOk);
-    const moreList = document.createElement('div'); moreList.className = 'item-list';
-    moreList.style.marginTop = '8px'; // matches .advanced-content's own spacing below its toggle
+
+    // ── Generic canonical discovery ─────────────────────────────────────
+    // Any ha-parcel-integrations family member with no INTEGRATIONS entry of
+    // its own -- present or future -- rendered from live hass.entities data
+    // instead of a hand-written registry, so a brand-new carrier repo needs
+    // zero changes here. Always "installed" by construction (it was found on
+    // the live entities), so there's no not-installed prompt to show;
+    // rendered ahead of the registry-driven groups below since it's always
+    // real/active.
+    const canonicalList = document.createElement('div'); canonicalList.className = 'item-list';
+    const discovered = this._hass ? discoverCanonicalSources(this._hass) : new Map();
+    const sortedCarriers = [...discovered.entries()].sort(([a], [b]) => a.localeCompare(b));
+
+    for (const [carrier, devices] of sortedCarriers) {
+      const deviceEntries = [...devices.values()];
+      const allEntityIds  = deviceEntries.flatMap(d => [...d.buckets.values()]);
+      const groupActive   = allEntityIds.some(e => sources.some(s => s.entity === e));
+
+      const groupEl = document.createElement('div'); groupEl.className = 'source-group';
+      const header = document.createElement('div');
+      header.style.cssText = 'display:flex;align-items:center;padding:0 8px 0 14px;min-height:52px;';
+      header.appendChild(Object.assign(document.createElement('div'), {
+        textContent: carrier,
+        style: 'flex-shrink:0;font-size:14px;font-weight:500;color:var(--primary-text-color);',
+      }));
+      header.appendChild(Object.assign(document.createElement('div'), { style: 'flex:1;min-width:8px;' }));
+
+      // No registry entry exists for a generically-detected carrier to read
+      // its specific repo URL from, and guessing one from the platform name
+      // risks linking to a repo that doesn't actually exist (direct user
+      // feedback, 2026-07-30) -- link to the organization page instead,
+      // always correct, letting the user find the exact repo from there.
+      const orgLink = document.createElement('a');
+      orgLink.className = 'repo-link';
+      orgLink.href = 'https://github.com/ha-parcel-integrations'; orgLink.target = '_blank'; orgLink.rel = 'noopener';
+      orgLink.title = uiTr.source_repo_link_desc;
+      orgLink.textContent = 'ha-parcel-integrations';
+      header.appendChild(orgLink);
+
+      const mkBucketSection = (entityId, bucket, dividerStyle) => {
+        const stored = sources.some(s => s.entity === entityId) ? entityId : null;
+        const section = document.createElement('div');
+        section.style.cssText = dividerStyle;
+        section.appendChild(Object.assign(document.createElement('div'), {
+          className: 'body-label', textContent: uiTr[BUCKET_ROW_LABEL_KEY[bucket]], style: 'margin-top:0;',
+        }));
+        const entityForm = document.createElement('ha-form');
+        entityForm.schema = [{ name: 'entity', selector: { entity: { include_entities: [entityId] } } }];
+        entityForm.data         = { entity: stored };
+        entityForm.computeLabel = () => '';
+        if (this._hass) entityForm.hass = this._hass;
+        entityForm.addEventListener('value-changed', (e) => {
+          const entity = e.detail.value.entity ?? null;
+          const without = sources.filter(s => s.entity !== entityId);
+          this._fireAndRender({ ...this._config, sources: entity ? [...without, sourceForBucket(bucket, entity)] : without });
+        });
+        section.appendChild(entityForm);
+        return section;
+      };
+
+      // Only split into per-device sub-rows once there are at least two
+      // genuinely distinguishable devices (same threshold as
+      // deviceCandidatesForGroup above); otherwise render this carrier's
+      // buckets directly under its own header, one flat section per bucket.
+      // Devices are keyed by their own device_id in discoverCanonicalSources
+      // (not by name), so they stay genuinely distinguishable even when one
+      // is unnamed -- requiring every device to have a name here used to
+      // fall back to the flat/merged branch below instead, which keys by
+      // bucket only and would then silently overwrite one device's entity
+      // with another's sharing the same bucket (e.g. two accounts both
+      // having "incoming_parcels"). Give an unnamed device a numbered
+      // fallback label instead of dropping per-device rows altogether.
+      const useDeviceRows = deviceEntries.length >= 2;
+
+      if (useDeviceRows) {
+        groupEl.appendChild(header);
+        deviceEntries.forEach(({ deviceName, buckets }, deviceIdx) => {
+          const label        = deviceName || `${uiTr.source_unnamed_device} ${deviceIdx + 1}`;
+          const entityIds    = [...buckets.values()];
+          const deviceActive = entityIds.some(e => sources.some(s => s.entity === e));
+
+          const deviceBlock = document.createElement('div'); deviceBlock.className = 'device-block';
+          deviceBlock.style.cssText = 'border-top:1px solid var(--divider-color);';
+
+          const nameRow = document.createElement('div');
+          nameRow.style.cssText = 'display:flex;align-items:center;padding:8px 8px 8px 14px;min-height:40px;';
+          nameRow.appendChild(Object.assign(document.createElement('div'), {
+            textContent: label, style: 'flex:1;font-size:13px;color:var(--secondary-text-color);',
+          }));
+          const deviceBtnWrap = document.createElement('div'); deviceBtnWrap.className = 'row-action';
+          if (deviceActive) {
+            deviceBtnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
+              this._fireAndRender({ ...this._config, sources: sources.filter(s => !entityIds.includes(s.entity)) });
+            }));
+          } else {
+            deviceBtnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
+              const toAdd = sortedBucketEntries(buckets).map(([bucket, entity]) => sourceForBucket(bucket, entity));
+              this._fireAndRender({ ...this._config, sources: [...sources, ...toAdd] });
+            }));
+          }
+          nameRow.appendChild(deviceBtnWrap);
+          deviceBlock.appendChild(nameRow);
+
+          if (deviceActive) {
+            for (const [bucket, entityId] of sortedBucketEntries(buckets)) {
+              deviceBlock.appendChild(mkBucketSection(entityId, bucket, 'padding:0 12px 10px 14px;'));
+            }
+          }
+          groupEl.appendChild(deviceBlock);
+        });
+      } else {
+        const mergedBuckets = new Map();
+        for (const d of deviceEntries) for (const [bucket, entityId] of d.buckets) mergedBuckets.set(bucket, entityId);
+
+        const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
+        if (groupActive) {
+          btnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
+            this._fireAndRender({ ...this._config, sources: sources.filter(s => !allEntityIds.includes(s.entity)) });
+          }));
+        } else {
+          btnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
+            const toAdd = [...mergedBuckets.entries()].map(([bucket, entity]) => sourceForBucket(bucket, entity));
+            this._fireAndRender({ ...this._config, sources: [...sources, ...toAdd] });
+          }));
+        }
+        header.appendChild(btnWrap);
+        groupEl.appendChild(header);
+
+        if (groupActive) {
+          const body = document.createElement('div');
+          body.style.cssText = 'border-top:1px solid var(--divider-color);';
+          let bi = 0;
+          for (const [bucket, entityId] of mergedBuckets) {
+            body.appendChild(mkBucketSection(entityId, bucket, 'padding:10px 12px 12px;' + (bi > 0 ? 'border-top:1px solid var(--divider-color);' : '')));
+            bi++;
+          }
+          groupEl.appendChild(body);
+        }
+      }
+
+      canonicalList.appendChild(groupEl);
+    }
+
+    // A configured canonical source (or postnl_canonical_letters, folded
+    // into the same discovery display above) whose entity was later renamed
+    // or removed drops out of `discovered` entirely -- it only ever scans
+    // live hass.entities -- and has no `type` of its own for the
+    // registry-driven groups below to still recognize it by. Without this,
+    // such a source would become permanently invisible in this editor,
+    // fixable only by hand-editing the saved YAML.
+    const discoveredEntityIds = new Set();
+    for (const devices of discovered.values()) {
+      for (const { buckets } of devices.values()) {
+        for (const entityId of buckets.values()) discoveredEntityIds.add(entityId);
+      }
+    }
+    const orphanedSources = sources.filter(s =>
+      s.entity && (!s.type || s.type === 'postnl_canonical_letters') && !discoveredEntityIds.has(s.entity)
+    );
+    if (orphanedSources.length) {
+      const orphanGroup = document.createElement('div'); orphanGroup.className = 'source-group';
+      const notice = document.createElement('p');
+      notice.style.cssText = 'margin:10px 14px 8px;font-size:12px;color:var(--secondary-text-color);line-height:1.4;';
+      notice.textContent = uiTr.sources_orphaned_notice;
+      orphanGroup.appendChild(notice);
+      const body = document.createElement('div');
+      body.style.cssText = 'border-top:1px solid var(--divider-color);';
+      orphanedSources.forEach((s, i) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;padding:8px 8px 8px 14px;min-height:40px;' + (i > 0 ? 'border-top:1px solid var(--divider-color);' : '');
+        row.appendChild(Object.assign(document.createElement('div'), {
+          textContent: s.entity, style: 'flex:1;font-size:13px;font-family:monospace;color:var(--secondary-text-color);',
+        }));
+        const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
+        btnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
+          this._fireAndRender({ ...this._config, sources: sources.filter(x => x !== s) });
+        }));
+        row.appendChild(btnWrap);
+        body.appendChild(row);
+      });
+      orphanGroup.appendChild(body);
+      canonicalList.appendChild(orphanGroup);
+    }
 
     for (const [groupKey, group] of sortedGroups) {
       const platformOk  = group.platformOk;
       const groupActive = group.groupActive;
-      const deferToMore = anyIntegrationInstalled && !platformOk && !groupActive;
 
-      // arjenbos/ha-postnl and peternijssen/ha-postnl share the same HA
-      // domain and can therefore never both be installed at once. Default
-      // to showing only the peternijssen-based group ('postnl_canonical')
-      // unless we're certain the standard arjenbos integration is what's
-      // actually installed; but never hide a group that already has a
-      // configured source, so an existing setup stays manageable.
-      if (groupKey === 'postnl' && !groupActive) {
-        const peterGroup = groups.get('postnl_canonical');
-        if (!platformOk || peterGroup?.platformOk) continue;
-      }
+      // postnl_canonical_letters isn't a mkCanonicalEntry entry (no
+      // `canonical` flag -- see its own comment on why it's structurally
+      // different) so it wouldn't otherwise be caught by the check below,
+      // but discoverCanonicalSources now folds it into the same per-account
+      // rows as that account's own canonical parcel buckets (direct user
+      // feedback, 2026-07-30: with two PostNL accounts, each account's own
+      // Letters entity is expected under that same account). Rendering it
+      // here too would show it twice.
+      if (groupKey === 'postnl_letters') continue;
 
-      // A group declaring `aggregatedBy` (see mkCanonicalEntry) has its data
-      // re-exposed under that other group's own sensors, so offering both
-      // is redundant (and double-counts if a user adds both for the same
-      // carrier). Once the aggregator is detected, hide the individual
-      // carrier in favor of it — but never hide one that's already
-      // configured, so an existing setup stays manageable.
-      if (group.aggregatedBy && !groupActive) {
-        const aggregatorGroup = groups.get(group.aggregatedBy);
-        if (aggregatorGroup?.platformOk) continue;
-      }
+      // Every group declaring `canonical` (see mkCanonicalEntry) is a real
+      // per-carrier canonical family member, now handled by the generic
+      // discovery section below instead of this registry-driven one --
+      // config for these already migrates to the type-less `{ entity }`
+      // shape (see migrateSourceType), so groupActive here is always false
+      // for them post-migration; this registry path simply no longer
+      // renders them, drop entirely rather than duplicate.
+      if (group.canonical) continue;
 
       const groupEl = document.createElement('div'); groupEl.className = 'source-group';
 
@@ -3182,14 +3467,6 @@ class PackageTrackerCardEditor extends HTMLElement {
           }
           saveGroup(group.types, toAdd);
         }));
-      } else if (group.url) {
-        // Not installed: distinct icon (not the "+" used for adding a
-        // source) so the visual shape alone signals "install this first".
-        const installBtn = document.createElement('ha-icon-button'); installBtn.className = 'install-btn';
-        installBtn.title = uiTr.install_integration;
-        installBtn.appendChild(mkIcon('mdi:download-outline'));
-        installBtn.addEventListener('click', () => window.open(group.url, '_blank', 'noopener'));
-        btnWrap.appendChild(installBtn);
       }
 
       header.appendChild(btnWrap);
@@ -3266,24 +3543,31 @@ class PackageTrackerCardEditor extends HTMLElement {
         groupEl.appendChild(body);
       }
 
-      (deferToMore ? moreList : list).appendChild(groupEl);
+      list.appendChild(groupEl);
     }
 
+    // Two separate .item-list flex containers, so the 16px gap that
+    // separates .source-group rows within each of them doesn't apply
+    // between them -- add it explicitly, only when there's actually a
+    // discovery section above the registry-driven one to separate from.
+    if (canonicalList.children.length) list.style.marginTop = '16px';
+    root.appendChild(canonicalList);
     root.appendChild(list);
 
-    if (moreList.children.length) {
-      const moreBtn = document.createElement('button');
-      moreBtn.className = 'advanced-toggle' + (this._sourcesMoreOpen ? ' open' : '');
-      moreBtn.appendChild(mkIcon('mdi:chevron-down'));
-      moreBtn.appendChild(document.createTextNode(' ' + uiTr.sources_more_integrations));
-      moreList.style.display = this._sourcesMoreOpen ? '' : 'none';
-      moreBtn.addEventListener('click', () => {
-        this._sourcesMoreOpen = !this._sourcesMoreOpen;
-        moreBtn.classList.toggle('open', this._sourcesMoreOpen);
-        moreList.style.display = this._sourcesMoreOpen ? '' : 'none';
-      });
-      root.appendChild(moreBtn);
-      root.appendChild(moreList);
+    // Nothing detected or configured at all: no per-integration install
+    // prompts anymore (see above), so say so plainly and point at the
+    // README's own list of what this card supports, instead of leaving an
+    // empty tab with no explanation.
+    if (!canonicalList.children.length && !list.children.length) {
+      const empty = document.createElement('p');
+      empty.style.cssText = 'margin:8px 0 0;font-size:13px;color:var(--secondary-text-color);line-height:1.4;';
+      empty.textContent = uiTr.sources_empty_notice + ' ';
+      const link = document.createElement('a');
+      link.href = 'https://github.com/klaptafel/ha-package-tracker-card#sources';
+      link.target = '_blank'; link.rel = 'noopener';
+      link.textContent = uiTr.sources_empty_link;
+      empty.appendChild(link);
+      root.appendChild(empty);
     }
   }
 
@@ -3320,10 +3604,18 @@ class PackageTrackerCardEditor extends HTMLElement {
     ));
     root.appendChild(statusGroup);
 
-    // Direction filter: only show when both incoming and outgoing are configured
-    const activeTypes    = (this._config.sources || []).map(s => s.type).filter(Boolean);
-    const hasIncoming    = activeTypes.some(t => INTEGRATIONS[t]?.direction === 'incoming');
-    const hasOutgoing    = activeTypes.some(t => INTEGRATIONS[t]?.direction === 'outgoing');
+    // Direction filter: only show when both incoming and outgoing are
+    // configured -- checked across both typed sources (registry's own
+    // direction field) and type-less ones (canonicalSourceInfo's own
+    // bucket, resolved through BUCKET_DIRECTION, never compared to
+    // 'incoming'/'outgoing' directly -- a bucket of 'delivered' still means
+    // direction 'incoming', see BUCKET_DIRECTION's own comment).
+    const sourceDirection = (s) => s.type
+      ? INTEGRATIONS[s.type]?.direction
+      : BUCKET_DIRECTION[canonicalSourceInfo(s.entity, this._hass)?.bucket];
+    const sourceDirections = effectiveSources(this._config, this._hass).map(sourceDirection);
+    const hasIncoming    = sourceDirections.includes('incoming');
+    const hasOutgoing    = sourceDirections.includes('outgoing');
     if (hasIncoming && hasOutgoing) {
       root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_direction }));
       const dirGroup = document.createElement('div'); dirGroup.className = 'settings-group';
@@ -3546,7 +3838,7 @@ window.customCards = window.customCards || [];
 if (!window.customCards.some((c) => c.type === 'package-tracker-card')) {
   window.customCards.push({
     type: 'package-tracker-card', name: 'Package Tracker Card',
-    description: 'Track packages from PostNL, Parcel, DHL NL, DPD, GLS, Dragonfly, and Parcel Aggregator integrations.',
+    description: 'Track packages from PostNL, Parcel, DHL NL, DPD, GLS, Dragonfly, and other ha-parcel-integrations family integrations.',
     preview: true,
     documentationURL: 'https://github.com/klaptafel/ha-package-tracker-card',
     version: CARD_VERSION,
@@ -3558,8 +3850,16 @@ if (!window.customCards.some((c) => c.type === 'package-tracker-card')) {
       // excluded here too, instead of duplicating ad-hoc detection logic.
       const type = detectTypeFromHass(entityId, hass);
       const def  = type && INTEGRATIONS[type];
-      if (!def || !def.hasAttrs(attrs)) return null;
-      return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
+      if (def && def.hasAttrs(attrs)) {
+        return { config: { type: 'custom:package-tracker-card', sources: [{ type, entity: entityId }] } };
+      }
+      // Not a registry-known type -- still offer the card for any generic
+      // ha-parcel-integrations family member (see canonicalSourceInfo), so a
+      // brand-new carrier repo gets suggested here too with zero changes.
+      if (canonicalSourceInfo(entityId, hass)) {
+        return { config: { type: 'custom:package-tracker-card', sources: [{ entity: entityId }] } };
+      }
+      return null;
     },
   });
 }

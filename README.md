@@ -14,9 +14,10 @@ A Home Assistant Lovelace card that shows your packages from multiple carrier in
 
 ## Features
 
+- **Works out of the box**: add the card with no configuration at all and it shows every package it recognizes automatically, no `sources` list required.
 - **One card, multiple sources**: combine integrations from multiple carriers side by side, deduplicated automatically when the same parcel shows up through more than one source.
 - **Expandable detail per package**: tracking code (tap to copy), full event timeline, and package size/weight when the carrier provides it.
-- **Auto-detecting editor**: open the editor, click **+** next to a detected integration, done. Multiple accounts of the same integration are detected and managed separately. No YAML required for normal use.
+- **Auto-detecting editor**: want to narrow the card down to specific integrations or accounts instead? Open the editor, click **+** next to a detected one, done. Multiple accounts of the same integration are detected and managed separately. No YAML required either way.
 - **Filter & layout options**: filter by carrier, status, direction, or delivery window; single combined card or split incoming/outgoing cards.
 
 ---
@@ -33,29 +34,18 @@ A Home Assistant Lovelace card that shows your packages from multiple carrier in
 
 ## Configuration
 
-The visual editor covers everything, organized the same way as the editor itself: **Sources**, **Filter**, **Appearance**.
+The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 
 ### Sources
 
-Auto-detected: open the editor's **Sources** tab and click **+** next to a detected integration to add it. Integrations you don't have installed show a download icon instead, linking straight to the repository. If you have multiple accounts of the same integration, each shows up as its own entry, addable/removable independently.
+`sources` is optional. Leave it empty (or omit it) and the card shows everything it recognizes automatically; use `filter` (below) to narrow that down per card instance. Add specific sources here instead to limit a card to just those.
 
-**[ha-parcel-integrations](https://github.com/ha-parcel-integrations)**: one integration per carrier, plus an aggregator covering all of them at once.
+- Any integration/carrier from [ha-parcel-integrations](https://github.com/ha-parcel-integrations) (e.g. PostNL, DHL, DPD) is detected automatically the moment it's installed.
+- [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha): a third-party aggregator covering several carriers generically; works alongside a carrier's own integration too, the card merges parcels automatically.
 
-- [ha-postnl](https://github.com/ha-parcel-integrations/ha-postnl)
-- [ha-dhl-nl](https://github.com/ha-parcel-integrations/ha-dhl-nl)
-- [ha-dpd](https://github.com/ha-parcel-integrations/ha-dpd)
-- [ha-gls](https://github.com/ha-parcel-integrations/ha-gls)
-- [ha-dragonfly](https://github.com/ha-parcel-integrations/ha-dragonfly)
-- [ha-parcel-aggregator](https://github.com/ha-parcel-integrations/ha-parcel-aggregator): once detected, the editor offers only the aggregator and hides the individual carriers it covers (any you'd already configured on their own stay put).
-
-**Other integrations:**
-
-- [arjenbos/ha-postnl](https://github.com/arjenbos/ha-postnl): the original PostNL integration; shares the same Home Assistant domain as ha-parcel-integrations/ha-postnl above, so only one of the two can be installed at a time, detected automatically.
-- [jmdevita/parcel-ha](https://github.com/jmdevita/parcel-ha): a third-party aggregator covering several carriers generically; works alongside a carrier's own integration too, the card merges event timelines per-moment rather than picking one source.
-
-| Option    | Default  | Description                                    |
-| --------- | -------- | ---------------------------------------------- |
-| `sources` | required | List of sources. Each has `type` and `entity`. |
+| Option    | Default  | Description                                                                                          |
+| --------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `sources` | `[]` | List of sources. An ha-parcel-integrations source just needs `entity`; others also need `type`. Empty or omitted shows everything auto-detected instead. |
 
 ### Filter
 
