@@ -4,7 +4,7 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ## [2.1.0] - 2026-08-07
 
-Sixteen carriers that previously showed a blank icon now get their real logo, now that custom-brand-icons has added them: Dragonfly, Cainiao, InPost, Vinted Go, An Post, Australia Post, Austrian Post, Bring, CTT, Japan Post, La Poste, New Zealand Post, Poczta Polska, Mondial Relay, Swiss Post, and SunYou. Also added three carriers this card's list was missing (J&T Express, Redur, Rincos) and a few missing postcode-tracking variants (Colis Privé, Mondial Relay, PostNL), catching the full carrier list up to Parcel's own current list.
+Sixteen carriers that previously showed a blank icon now get their real logo, now that custom-brand-icons has added them: Dragonfly, Cainiao, InPost, Vinted Go, An Post, Australia Post, Austrian Post, Bring, CTT, Japan Post, La Poste, New Zealand Post, Poczta Polska, Mondial Relay, Swiss Post, and SunYou. Also added three carriers this card's list was missing (J&T Express, Redur, Rincos) and a few missing postcode-tracking variants (Colis Privé, Mondial Relay, PostNL), catching the full carrier list up to the Parcel app's own current list.
 
 ### Added
 - Brand icons for 16 carriers that previously showed no logo, now that custom-brand-icons has added them (2026.07.2 through 2026.07.5): Dragonfly, Cainiao (ha-cainiao's own generically-detected carrier name, separate from the existing AliExpress/Cainiao entry), InPost, Vinted Go, An Post, Australia Post, Austrian Post, Bring, CTT, Japan Post, La Poste (Colissimo), New Zealand Post, Poczta Polska, Mondial Relay, Swiss Post, and SunYou (Sypost).
