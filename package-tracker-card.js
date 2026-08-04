@@ -1,4 +1,4 @@
-const CARD_VERSION = '2.0.0';
+const CARD_VERSION = '2.1.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -9,7 +9,7 @@ const CARD_VERSION = '2.0.0';
 const CARRIERS = [
   { id: "abf", name: "ABF Freight", icon: null, codes: { parcel: ["abf"] } },
   { id: "acs", name: "ACS Courier", icon: null, codes: { parcel: ["acs"] } },
-  { id: "adrexo", name: "Colis Privé", icon: null, codes: { parcel: ["adrexo"] } },
+  { id: "adrexo", name: "Colis Privé", icon: null, codes: { parcel: ["adrexo", "colispcode"] } },
   { id: "airroad", name: "AirRoad", icon: null, codes: { parcel: ["airroad"] } },
   { id: "aliex", name: "AliExpress Shipping (Cainiao)", icon: "phu:cainiao", codes: { parcel: ["aliex"] } },
   { id: "allegro", name: "Allegro One", icon: null, codes: { parcel: ["allegro"] } },
@@ -40,7 +40,7 @@ const CARRIERS = [
   { id: "amzluk", name: "Amazon UK", icon: null, codes: { parcel: ["amzluk"] } },
   { id: "amzlus", name: "Amazon US", icon: null, codes: { parcel: ["amzlus"] } },
   { id: "anc", name: "ANC Delivers", icon: null, codes: { parcel: ["anc"] } },
-  { id: "anpost", name: "An Post", icon: null, codes: { parcel: ["anpost"] } },
+  { id: "anpost", name: "An Post", icon: "phu:anpost", codes: { parcel: ["anpost"] } },
   { id: "apcpli", name: "APC-PLI", icon: null, codes: { parcel: ["apcpli"] } },
   { id: "apge", name: "APG eCommerce", icon: null, codes: { parcel: ["apge"] } },
   { id: "apple", name: "Apple Store Orders", icon: null, codes: { parcel: ["apple"] } },
@@ -52,8 +52,8 @@ const CARRIERS = [
   { id: "asendiag", name: "Asendia", icon: null, codes: { parcel: ["asendiag"] } },
   { id: "asl", name: "ASL", icon: null, codes: { parcel: ["asl"] } },
   { id: "asmred", name: "GLS Spain", icon: "phu:gls-group", codes: { parcel: ["asmred"] } },
-  { id: "at", name: "Austrian Post", icon: null, codes: { parcel: ["at"] } },
-  { id: "au", name: "Australia Post", icon: null, codes: { parcel: ["au"] } },
+  { id: "at", name: "Austrian Post", icon: "phu:austrianpost", codes: { parcel: ["at"] } },
+  { id: "au", name: "Australia Post", icon: "phu:australiapost", codes: { parcel: ["au"] } },
   { id: "azer", name: "Azerpost", icon: null, codes: { parcel: ["azer"] } },
   { id: "bartol", name: "Bartolini", icon: null, codes: { parcel: ["bartol"] } },
   { id: "bettert", name: "Better Trucks", icon: null, codes: { parcel: ["bettert"] } },
@@ -63,8 +63,14 @@ const CARRIERS = [
   { id: "bolg", name: "Bulgarian Post", icon: null, codes: { parcel: ["bolg"] } },
   { id: "bonshaw", name: "Postmedia Parcel Services", icon: null, codes: { parcel: ["bonshaw"] } },
   { id: "bpost", name: "Bpost", icon: null, codes: { parcel: ["bpost"] } },
-  { id: "bring", name: "Bring", icon: null, codes: { parcel: ["bring"] } },
+  { id: "bring", name: "Bring", icon: "phu:bring", codes: { parcel: ["bring"] } },
   { id: "buylogic", name: "Buylogic", icon: null, codes: { parcel: ["buylogic"] } },
+  // Separate from "aliex" (AliExpress Shipping, which happens to reuse this
+  // same icon): this entry is for ha-cainiao's own generically-detected
+  // carrier name ("Cainiao"), not otherwise matched since "aliex"'s own
+  // name/short don't literally read "Cainiao" -- genericCarrierIcon matches
+  // by name text, not by group/code.
+  { id: "cainiao", name: "Cainiao", icon: "phu:cainiao", codes: { cainiao: ["cainiao"] } },
   { id: "canpar", name: "Canpar", icon: null, codes: { parcel: ["canpar"] } },
   { id: "cdl", name: "CDL Last Mile", icon: null, codes: { parcel: ["cdl"] } },
   { id: "celeritas", name: "Celeritas", icon: null, codes: { parcel: ["celeritas"] } },
@@ -91,7 +97,7 @@ const CARRIERS = [
   { id: "couple", name: "Couriers Please", icon: null, codes: { parcel: ["couple"] } },
   { id: "cp", name: "Canada Post", icon: null, codes: { parcel: ["cp"] } },
   { id: "cse", name: "CSE", icon: null, codes: { parcel: ["cse"] } },
-  { id: "ctt", name: "CTT", icon: null, codes: { parcel: ["ctt"] } },
+  { id: "ctt", name: "CTT", icon: "phu:ctt", codes: { parcel: ["ctt"] } },
   { id: "cyclpcode", name: "Cycloon", icon: null, codes: { parcel: ["cyclpcode"] } },
   { id: "cypr", name: "Cyprus Post", icon: null, codes: { parcel: ["cypr"] } },
   { id: "dachser", name: "Dachser", icon: null, codes: { parcel: ["dachser"] } },
@@ -123,9 +129,6 @@ const CARRIERS = [
   { id: "dpduk", name: "DPD UK", icon: "phu:dpd", codes: { parcel: ["dpduk"] } },
   { id: "dpexw", name: "DPEX Worldwide", icon: null, codes: { parcel: ["dpexw"] } },
   { id: "dpr", name: "Deutsche Post Brief", icon: null, codes: { parcel: ["dpr"] } },
-  // No "dragonfly" logo in custom-brand-icons (elax46) yet as of 2026-07;
-  // set here in advance so both entries pick it up automatically once it's
-  // added upstream, same as every other brand-icon reference in this list.
   { id: "dragonfly", name: "Dragonfly", icon: "phu:dragonfly", codes: { parcel: ["dragonfly"], dragonfly: ["dragonfly"] } },
   { id: "dragonnl", name: "Dragonfly Netherlands", icon: "phu:dragonfly", codes: { parcel: ["dragonnl"] } },
   { id: "dsv", name: "DSV", icon: null, codes: { parcel: ["dsv"] } },
@@ -188,7 +191,7 @@ const CARRIERS = [
   // -- "InPost Paczkomaty" is accurate for Parcel's PL-only code, but the
   // shorter "InPost" reads better as this card's own generic-discovery
   // fallback name, which also needs to cover the IT variant.
-  { id: "inpost", name: "InPost Paczkomaty", short: "InPost", icon: null, codes: { parcel: ["inpost"], inpost: ["inpost"] } },
+  { id: "inpost", name: "InPost Paczkomaty", short: "InPost", icon: "phu:inpost", codes: { parcel: ["inpost"], inpost: ["inpost"] } },
   { id: "inpostit", name: "InPost Italy", icon: null, codes: { parcel: ["inpostit"] } },
   { id: "inpostuk", name: "InPost UK", icon: null, codes: { parcel: ["inpostuk"] } },
   { id: "intelc", name: "Dragonfly - Intelcom", icon: null, codes: { parcel: ["intelc"] } },
@@ -200,7 +203,8 @@ const CARRIERS = [
   { id: "jitsu", name: "Jitsu", icon: null, codes: { parcel: ["jitsu"] } },
   { id: "joeyco", name: "JoeyCo", icon: null, codes: { parcel: ["joeyco"] } },
   { id: "jordan", name: "Jordan Post", icon: null, codes: { parcel: ["jordan"] } },
-  { id: "jp", name: "Japan Post", icon: null, codes: { parcel: ["jp"] } },
+  { id: "jp", name: "Japan Post", icon: "phu:japanpost", codes: { parcel: ["jp"] } },
+  { id: "jtexp", name: "J&T Express", icon: "phu:jtexpress", codes: { parcel: ["jtexp"] } },
   { id: "keavo", name: "Keavo", icon: null, codes: { parcel: ["keavo"] } },
   { id: "kerry", name: "Kerry Express", icon: null, codes: { parcel: ["kerry"] } },
   { id: "komon", name: "Komon Express", icon: null, codes: { parcel: ["komon"] } },
@@ -211,7 +215,7 @@ const CARRIERS = [
   { id: "laser", name: "OnTrac - Lasership", icon: null, codes: { parcel: ["laser"] } },
   { id: "litva", name: "Lietuvos paštas", icon: null, codes: { parcel: ["litva"] } },
   { id: "loom", name: "Loomis Express", icon: null, codes: { parcel: ["loom"] } },
-  { id: "lp", name: "La poste (Colissimo)", icon: null, codes: { parcel: ["lp"] } },
+  { id: "lp", name: "La poste (Colissimo)", icon: "phu:laposte", codes: { parcel: ["lp"] } },
   { id: "lso", name: "Lone Star Overnight", icon: null, codes: { parcel: ["lso"] } },
   { id: "lv", name: "Latvijas Pasts", icon: null, codes: { parcel: ["lv"] } },
   { id: "major", name: "Major Express", icon: null, codes: { parcel: ["major"] } },
@@ -230,7 +234,7 @@ const CARRIERS = [
   { id: "newp", name: "Nova Poshta", icon: null, codes: { parcel: ["newp"] } },
   { id: "nor", name: "Norway Post", icon: null, codes: { parcel: ["nor"] } },
   { id: "northline", name: "Northline", icon: null, codes: { parcel: ["northline"] } },
-  { id: "nzp", name: "New Zealand Post", icon: null, codes: { parcel: ["nzp"] } },
+  { id: "nzp", name: "New Zealand Post", icon: "phu:nzpost", codes: { parcel: ["nzp"] } },
   { id: "oca", name: "OCA Argentina", icon: null, codes: { parcel: ["oca"] } },
   { id: "ocs", name: "OCS Worldwide", icon: null, codes: { parcel: ["ocs"] } },
   { id: "ont", name: "OnTrac", icon: null, codes: { parcel: ["ont"] } },
@@ -251,7 +255,7 @@ const CARRIERS = [
   { id: "pilot", name: "Pilot Freight", icon: null, codes: { parcel: ["pilot"] } },
   { id: "pk", name: "Pakistan Post", icon: null, codes: { parcel: ["pk"] } },
   { id: "planzer", name: "Planzer", icon: null, codes: { parcel: ["planzer"] } },
-  { id: "poland", name: "Poczta Polska", icon: null, codes: { parcel: ["poland"] } },
+  { id: "poland", name: "Poczta Polska", icon: "phu:pocztapolska", codes: { parcel: ["poland"] } },
   { id: "posthas", name: "Post Haste", icon: null, codes: { parcel: ["posthas"] } },
   { id: "posti", name: "Posti Finland - Itella", icon: null, codes: { parcel: ["posti"] } },
   { id: "postnord", name: "Postnord Logistics", icon: null, codes: { parcel: ["postnord"] } },
@@ -267,9 +271,11 @@ const CARRIERS = [
   { id: "raven", name: "Raven Force Couriers", icon: null, codes: { parcel: ["raven"] } },
   { id: "redjep", name: "Instabox Red je pakketje", icon: null, codes: { parcel: ["redjep"] } },
   { id: "redpack", name: "Redpack", icon: null, codes: { parcel: ["redpack"] } },
+  { id: "redur", name: "Redur", icon: null, codes: { parcel: ["redur"] } },
   { id: "relais", name: "Relais Colis", icon: null, codes: { parcel: ["relais"] } },
-  { id: "relay", name: "Mondial Relay", icon: null, codes: { parcel: ["relay"] } },
+  { id: "relay", name: "Mondial Relay", icon: "phu:mondialrelay", codes: { parcel: ["relay", "mrelpcode"] } },
   { id: "relaypcode", name: "Relay UK", icon: null, codes: { parcel: ["relaypcode"] } },
+  { id: "rincos", name: "Rincos", icon: null, codes: { parcel: ["rincos"] } },
   { id: "rm", name: "Royal Mail", icon: "phu:royalmail", codes: { parcel: ["rm"] } },
   { id: "roadie", name: "Roadie", icon: null, codes: { parcel: ["roadie"] } },
   { id: "rp", name: "Russian Post", icon: null, codes: { parcel: ["rp"] } },
@@ -299,9 +305,9 @@ const CARRIERS = [
   { id: "star", name: "StarTrack Express", icon: null, codes: { parcel: ["star"] } },
   { id: "straight", name: "Straightship", icon: null, codes: { parcel: ["straight"] } },
   { id: "swiship", name: "Swiship", icon: null, codes: { parcel: ["swiship"] } },
-  { id: "swiss", name: "Swiss Post", icon: null, codes: { parcel: ["swiss"] } },
+  { id: "swiss", name: "Swiss Post", icon: "phu:swisspost", codes: { parcel: ["swiss"] } },
   { id: "syncreon", name: "Syncreon", icon: null, codes: { parcel: ["syncreon"] } },
-  { id: "sypost", name: "Sypost - SunYou Logistics", icon: null, codes: { parcel: ["sypost"] } },
+  { id: "sypost", name: "Sypost - SunYou Logistics", icon: "phu:sunyou", codes: { parcel: ["sypost"] } },
   { id: "thai", name: "Thailand Post", icon: null, codes: { parcel: ["thai"] } },
   { id: "tipsac", name: "Tipsa", icon: null, codes: { parcel: ["tipsac"] } },
   { id: "tkkit", name: "TK KIT", icon: null, codes: { parcel: ["tkkit"] } },
@@ -309,7 +315,7 @@ const CARRIERS = [
   { id: "tntau", name: "TNT Australia", icon: null, codes: { parcel: ["tntau"] } },
   { id: "tntfr", name: "TNT France", icon: null, codes: { parcel: ["tntfr"] } },
   { id: "tntit", name: "TNT Italy", icon: null, codes: { parcel: ["tntit"] } },
-  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp"], postnl: ["postnl"] } },
+  { id: "tntp", name: "PostNL", icon: "phu:postnl", codes: { parcel: ["tntp", "tntpitp"], postnl: ["postnl"] } },
   { id: "tntpit", name: "PostNL (International)", icon: "phu:postnl", codes: { parcel: ["tntpit"] } },
   { id: "tntuk", name: "TNT UK", icon: null, codes: { parcel: ["tntuk"] } },
   { id: "toll", name: "Toll - Team Global Express", icon: null, codes: { parcel: ["toll"] } },
@@ -331,7 +337,7 @@ const CARRIERS = [
   { id: "vasp", name: "Vasp Expresso", icon: null, codes: { parcel: ["vasp"] } },
   { id: "veho", name: "Veho", icon: null, codes: { parcel: ["veho"] } },
   { id: "venipak", name: "Venipak", icon: null, codes: { parcel: ["venipak"] } },
-  { id: "vinted", name: "Vinted Go", icon: null, codes: { parcel: ["vinted"] } },
+  { id: "vinted", name: "Vinted Go", icon: "phu:vinted", codes: { parcel: ["vinted"] } },
   { id: "walmart", name: "Walmart Shipping", icon: null, codes: { parcel: ["walmart"] } },
   { id: "wanb", name: "WANB Express", icon: null, codes: { parcel: ["wanb"] } },
   { id: "whistl", name: "Whistl", icon: null, codes: { parcel: ["whistl"] } },
