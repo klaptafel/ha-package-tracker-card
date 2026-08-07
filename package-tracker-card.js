@@ -1,4 +1,4 @@
-const CARD_VERSION = '2.1.0';
+const CARD_VERSION = '2.2.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -89,7 +89,7 @@ const CARRIERS = [
   { id: "colomb", name: "Colombia post (4-72)", icon: null, codes: { parcel: ["colomb"] } },
   { id: "colp", name: "Collect+", icon: null, codes: { parcel: ["colp"] } },
   { id: "cope", name: "COPE", icon: null, codes: { parcel: ["cope"] } },
-  { id: "cor", name: "Correos", icon: null, codes: { parcel: ["cor"] } },
+  { id: "cor", name: "Correos", icon: "phu:correos", codes: { parcel: ["cor"] } },
   { id: "corbra", name: "Correios", icon: null, codes: { parcel: ["corbra"] } },
   { id: "corm", name: "Correos de Mexico", icon: null, codes: { parcel: ["corm"] } },
   { id: "corurg", name: "Correo Uruguayo", icon: null, codes: { parcel: ["corurg"] } },
@@ -173,7 +173,7 @@ const CARRIERS = [
   { id: "gso", name: "GLS US", icon: "phu:gls-group", codes: { parcel: ["gso"] } },
   { id: "hawai", name: "Hawaiian Air Cargo", icon: null, codes: { parcel: ["hawai"] } },
   { id: "her2mann", name: "Hermes 2-Mann-Handling", icon: null, codes: { parcel: ["her2mann"] } },
-  { id: "hermes", name: "Hermes", icon: null, codes: { parcel: ["hermes"] } },
+  { id: "hermes", name: "Hermes", icon: "phu:hermes", codes: { parcel: ["hermes"] } },
   { id: "hk", name: "Hongkong Post", icon: null, codes: { parcel: ["hk"] } },
   { id: "hr", name: "Hrvatska pošta", icon: null, codes: { parcel: ["hr"] } },
   { id: "hrpar", name: "HR Parcel", icon: null, codes: { parcel: ["hrpar"] } },
@@ -242,7 +242,7 @@ const CARRIERS = [
   { id: "p2g", name: "Parcel2Go", icon: null, codes: { parcel: ["p2g"] } },
   { id: "p4d", name: "P4D", icon: null, codes: { parcel: ["p4d"] } },
   { id: "paack", name: "Paack", icon: null, codes: { parcel: ["paack"] } },
-  { id: "packeta", name: "Packeta", icon: null, codes: { parcel: ["packeta"] } },
+  { id: "packeta", name: "Packeta", icon: "phu:packeta", codes: { parcel: ["packeta"] } },
   { id: "paczka", name: "OrlenPaczka", icon: null, codes: { parcel: ["paczka"] } },
   { id: "pandion", name: "Pandion", icon: null, codes: { parcel: ["pandion"] } },
   { id: "paquet", name: "Paquetexpress", icon: null, codes: { parcel: ["paquet"] } },
