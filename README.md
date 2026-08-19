@@ -52,14 +52,14 @@ The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 
 Sharing one card between several people? Some carriers (confirmed for PostNL 4.1.0+ and DPD; not yet confirmed either way for DHL NL/GLS) already report who an incoming package is addressed to, and the card shows it automatically as a chip next to the carrier name, e.g. `👤 Ron  ·  PostNL`. For everything else, give an account a **Recipient** in the editor and its name is used instead. The field sits under the account in the **Sources** tab, right where you pick its entities; it applies to all of that account's sensors at once (incoming, delivered, outgoing, letters). Leave it empty to keep whatever the carrier itself already reports, or to show nothing where it doesn't.
 
-Since the name is stored on the source itself, the account has to be added first (the **+** next to it) — with nothing added the card auto-detects everything and there's no entry to attach a name to. In YAML:
+Since the name is stored on the source itself, the account has to be added first (the **+** next to it), since with nothing added the card auto-detects everything and there's no entry to attach a name to. In YAML:
 
 ```yaml
 sources:
   - entity: sensor.rononline_gmail_com_postnl_incoming_parcels
-    label: Ron
+    recipient: Ron
   - entity: sensor.mirelladejong17_gmail_com_postnl_incoming_parcels
-    label: Mirella
+    recipient: Mirella
 ```
 
 Turn the names off again without removing them under **Appearance** → **Recipient**.

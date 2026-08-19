@@ -753,8 +753,8 @@ function mkItem(overrides) {
     tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, packageSize: null, packageSizeIcon: null,
     // Who this item is for: either a carrier-reported name (see
     // mapCanonicalParcel's own detectRecipient) or a source's own
-    // GUI-configured `label`, applied on top afterward (see labelItems).
-    // null by default, since most items have neither.
+    // GUI-configured `recipient`, applied on top afterward (see
+    // applySourceRecipient). null by default, since most items have neither.
     recipient: null,
     dedupKey: undefined,
     ...overrides,
@@ -957,9 +957,9 @@ function resolveCanonicalName(p, direction) {
 // Only for incoming: for outgoing, receiver is already the item's own name
 // (resolveCanonicalName above), and showing it again here would just
 // repeat that same name as its own recipient chip. null wherever a carrier
-// doesn't expose it, yet or ever; a source's own GUI-configured label (see
-// labelItems) is the fallback for those, applied on top of whatever this
-// returns.
+// doesn't expose it, yet or ever; a source's own GUI-configured
+// `recipient` (see applySourceRecipient) is the fallback for those,
+// applied on top of whatever this returns.
 function detectRecipient(p, direction) {
   return (direction === 'incoming' && typeof p.receiver === 'string' && p.receiver.trim()) || null;
 }
@@ -1822,32 +1822,32 @@ function discoverCanonicalSources(hass) {
 // above for display purposes only -- Letters keeps its original, typed
 // `{ type: 'postnl_canonical_letters', entity }` config shape, since it's
 // still collected through the registry, not canonicalSourceInfo.
-function sourceForBucket(bucket, entity, label) {
+function sourceForBucket(bucket, entity, recipient) {
   const source = bucket === 'letters' ? { type: 'postnl_canonical_letters', entity } : { entity };
-  return label ? { ...source, label } : source;
+  return recipient ? { ...source, recipient } : source;
 }
 
-// A source's recipient name (its optional `label`), normalized: anything
-// blank, whitespace-only or not a string counts as "no label", so no row ever
-// ends up prefixed with an empty name and a stray separator.
-function sourceLabel(source) {
-  const label = typeof source?.label === 'string' ? source.label.trim() : '';
-  return label || null;
+// A source's own configured recipient name, normalized: anything blank,
+// whitespace-only or not a string counts as "not set", so no row ever ends
+// up prefixed with an empty name and a stray separator.
+function sourceRecipient(source) {
+  const recipient = typeof source?.recipient === 'string' ? source.recipient.trim() : '';
+  return recipient || null;
 }
 
 // Overrides a source's items with that source's own GUI-configured
 // recipient name, when set, on top of whatever `item.recipient` already is
 // (a carrier-detected name, e.g. mapCanonicalParcel's own detectRecipient,
-// or null); never the other way around, since a manually-typed label is
+// or null); never the other way around, since a manually-typed value is
 // always the more deliberate, trusted answer. Deliberately applied outside
 // the per-source item cache in _collectItems (which stores the unstamped
-// items): editing a label then takes effect on the next render with no
-// cache invalidation, and unlabeled sources keep pushing their cached
-// items through untouched, no copying needed. Their own already-detected
-// recipient, if any, travels with them either way, since that was set
-// once, at collect time, not here.
-function labelItems(items, label) {
-  return label ? items.map(item => ({ ...item, recipient: label })) : items;
+// items): editing it then takes effect on the next render with no cache
+// invalidation, and sources with nothing configured keep pushing their
+// cached items through untouched, no copying needed. Their own
+// already-detected recipient, if any, travels with them either way, since
+// that was set once, at collect time, not here.
+function applySourceRecipient(items, recipient) {
+  return recipient ? items.map(item => ({ ...item, recipient })) : items;
 }
 
 // With no sources configured at all, show everything this card recognizes
@@ -2159,10 +2159,11 @@ function deepEqual(a, b) {
 // already type-less, or whose type doesn't match, passes through untouched.
 function migrateSourceType(source) {
   if (!source?.type || !INTEGRATIONS[source.type]?.canonical) return source;
-  // `label` (the recipient name, see sourceLabel) is the user's own data, not
-  // part of the type -> type-less shape change; carry it over, or migrating a
-  // labeled source would silently drop that name on the next config load.
-  return sourceLabel(source) ? { entity: source.entity, label: source.label } : { entity: source.entity };
+  // `recipient` (see sourceRecipient) is the user's own data, not part of
+  // the type to type-less shape change; carry it over, or migrating a
+  // source with one set would silently drop that name on the next config
+  // load.
+  return sourceRecipient(source) ? { entity: source.entity, recipient: source.recipient } : { entity: source.entity };
 }
 
 // v2.0.0 dropped Parcel Aggregator and the arjenbos/ha-postnl fork entirely
@@ -2470,11 +2471,11 @@ function renderRow(item, show, tr, openItems) {
     // you actually scan for first ("is this mine?"), so it leads the row
     // rather than trailing after carrier/letterbox/etc. Same chip shape as
     // those (icon plus text, dimmed, separated by the same '·'), not a
-    // name-line prefix. It shows a source's own `label` (see sourceLabel)
-    // or, for the canonical parcel family, the carrier's own reported
-    // addressee (see mapCanonicalParcel's own detectRecipient), whichever
-    // the source's own recipient resolution already settled on (see
-    // labelItems).
+    // name-line prefix. It shows a source's own `recipient` config (see
+    // sourceRecipient) or, for the canonical parcel family, the carrier's
+    // own reported addressee (see mapCanonicalParcel's own
+    // detectRecipient), whichever the source's own recipient resolution
+    // already settled on (see applySourceRecipient).
     if (showRecipient) {
       addSeparator();
       carrier.appendChild(mkIcon('mdi:account', { size: '13px' }));
@@ -2656,12 +2657,12 @@ const PARCEL_WINS_FOR = new Set(
 // first) silently drops the letter's scan photo entirely.
 // recipient: only the source it came from knows whose account a parcel is
 // in, whether that's a carrier-detected name (mapCanonicalParcel's own
-// detectRecipient) or a source's own GUI-configured label (see
-// labelItems). A parcel reported by both a "knows" source and one that
-// doesn't (e.g. an unlabeled aggregator with no receiver field of its own)
-// must keep that name whichever of the two wins the dedup, otherwise the
-// same package shows a recipient or not depending on which
-// source happened to be collected first.
+// detectRecipient) or a source's own GUI-configured value (see
+// applySourceRecipient). A parcel reported by both a "knows" source and
+// one that doesn't (e.g. an aggregator with no receiver field of its own
+// and nothing configured) must keep that name whichever of the two wins
+// the dedup, otherwise the same package shows a recipient or not
+// depending on which source happened to be collected first.
 const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl', 'recipient'];
 function backfill(target, fallback) {
   for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
@@ -2792,10 +2793,10 @@ class PackageTrackerCard extends HTMLElement {
       // Skip re-running collect() for sources whose entity hasn't changed
       // since the last collection; def.collect() (image-map building, event
       // parsing, etc.) is the expensive part here, not the dedup/merge below.
-      const label = sourceLabel(source);
+      const recipient = sourceRecipient(source);
       const cached = this._sourceItemsCache.get(source.entity);
       if (cached && cached.ts === state.last_updated) {
-        items.push(...labelItems(cached.items, label));
+        items.push(...applySourceRecipient(cached.items, recipient));
         continue;
       }
       // One source's collect() throwing (e.g. an integration ships an
@@ -2816,7 +2817,7 @@ class PackageTrackerCard extends HTMLElement {
           if (!sourceItems) continue;
         }
         this._sourceItemsCache.set(source.entity, { ts: state.last_updated, items: sourceItems });
-        items.push(...labelItems(sourceItems, label));
+        items.push(...applySourceRecipient(sourceItems, recipient));
       } catch (err) {
         console.error(`package-tracker-card: source "${source.type || source.entity}" (${source.entity}) failed to collect`, err);
       }
@@ -3209,7 +3210,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     };
 
     // Recipient name for one account, written onto every source entry that
-    // belongs to it -- a device's incoming/delivered/outgoing/letters buckets
+    // belongs to it. A device's incoming/delivered/outgoing/letters buckets
     // are four separate entries but one and the same person. Only rendered
     // for accounts that are actually added: with nothing configured the card
     // auto-detects everything (see effectiveSources) and there are no entries
@@ -3217,10 +3218,10 @@ class PackageTrackerCardEditor extends HTMLElement {
     // entity pickers already work.
     // _fire, not _fireAndRender: this is free text, and re-rendering the tab
     // on every keystroke takes the focus out of the field after each
-    // character (the same reason the number rows elsewhere in this editor
-    // already avoid it).
+    // character, the same reason the number rows elsewhere in this editor
+    // already avoid it.
     const mkRecipientField = (entityIds, styleCss) => {
-      const current = liveSources().find(s => entityIds.includes(s.entity) && sourceLabel(s));
+      const current = liveSources().find(s => entityIds.includes(s.entity) && sourceRecipient(s));
       const section = document.createElement('div');
       section.style.cssText = styleCss;
       section.appendChild(Object.assign(document.createElement('div'), {
@@ -3231,23 +3232,23 @@ class PackageTrackerCardEditor extends HTMLElement {
       }));
       // Its own ha-form rather than _mkForm: HA's text selector reports a
       // cleared, non-required field as `undefined`, which _mkForm treats as
-      // "no value, don't call onChange" -- a name could then be typed but
+      // "no value, don't call onChange", so a name could then be typed but
       // never removed again.
       const form = document.createElement('ha-form');
-      form.schema = [{ name: 'label', selector: { text: {} } }];
-      form.data = { label: current ? sourceLabel(current) : '' };
+      form.schema = [{ name: 'recipient', selector: { text: {} } }];
+      form.data = { recipient: current ? sourceRecipient(current) : '' };
       form.computeLabel = () => '';
       if (this._hass) form.hass = this._hass;
       form.addEventListener('value-changed', (e) => {
-        const raw = e.detail.value?.label;
-        const label = typeof raw === 'string' ? raw.trim() : '';
+        const raw = e.detail.value?.recipient;
+        const recipient = typeof raw === 'string' ? raw.trim() : '';
         const updated = liveSources().map(s => {
           if (!entityIds.includes(s.entity)) return s;
           // Drop the key entirely when cleared, rather than storing an empty
           // string: stripDefaults only prunes top-level defaults, so a
-          // `label: ''` would otherwise linger in the saved YAML forever.
-          const { label: _cleared, ...rest } = s;
-          return label ? { ...rest, label } : rest;
+          // `recipient: ''` would otherwise linger in the saved YAML forever.
+          const { recipient: _cleared, ...rest } = s;
+          return recipient ? { ...rest, recipient } : rest;
         });
         this._fire({ ...this._config, sources: updated });
       });
@@ -3349,9 +3350,9 @@ class PackageTrackerCardEditor extends HTMLElement {
           const live = liveSources();
           // Re-picking rebuilds this entry from scratch, so its recipient
           // name has to be carried over explicitly or it's lost.
-          const label = sourceLabel(live.find(s => s.entity === entityId));
+          const recipient = sourceRecipient(live.find(s => s.entity === entityId));
           const without = live.filter(s => s.entity !== entityId);
-          this._fireAndRender({ ...this._config, sources: entity ? [...without, sourceForBucket(bucket, entity, label)] : without });
+          this._fireAndRender({ ...this._config, sources: entity ? [...without, sourceForBucket(bucket, entity, recipient)] : without });
         });
         section.appendChild(entityForm);
         return section;
@@ -3599,9 +3600,9 @@ class PackageTrackerCardEditor extends HTMLElement {
                 const live = liveSources();
                 // Same as the canonical bucket picker above: the entry is
                 // rebuilt here, so its recipient name needs carrying over.
-                const label = sourceLabel(live.find(s => s.type === type && s.entity === deviceEntity));
+                const recipient = sourceRecipient(live.find(s => s.type === type && s.entity === deviceEntity));
                 const without = live.filter(s => !(s.type === type && s.entity === deviceEntity));
-                const replacement = label ? { type, entity, label } : { type, entity };
+                const replacement = recipient ? { type, entity, recipient } : { type, entity };
                 this._fireAndRender({ ...this._config, sources: entity ? [...without, replacement] : without });
               });
               section.appendChild(entityForm);
@@ -3698,8 +3699,8 @@ class PackageTrackerCardEditor extends HTMLElement {
                 if (!entity) return null;
                 // Recipient name survives a re-pick here too (see the
                 // canonical bucket picker above).
-                const label = sourceLabel(live.find(s => s.type === t));
-                return label ? { type: t, entity, label } : { type: t, entity };
+                const recipient = sourceRecipient(live.find(s => s.type === t));
+                return recipient ? { type: t, entity, recipient } : { type: t, entity };
               }
               const ex = live.find(s => s.type === t);
               return ex || null;
