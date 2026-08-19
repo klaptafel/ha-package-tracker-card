@@ -744,7 +744,7 @@ function mkItem(overrides) {
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
-    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, packageSize: null, packageSizeIcon: null,
+    tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, imageEntityId: null, packageSize: null, packageSizeIcon: null,
     dedupKey: undefined,
     ...overrides,
   };
@@ -1077,7 +1077,10 @@ function buildPostnlImageMap(hass) {
   if (!hass?.states) return map;
   for (const [entityId, state] of Object.entries(hass.states)) {
     if (entityId.startsWith('image.') && state.attributes?.id !== undefined) {
-      map.set(state.attributes.id, state.attributes.entity_picture || null);
+      // entityId kept alongside the URL (not just the URL itself) so a
+      // failed <img> load can later re-read entity_picture fresh off
+      // hass.states directly -- see attachImageRetry's own comment for why.
+      map.set(state.attributes.id, { entityId, url: state.attributes.entity_picture || null });
     }
   }
   return map;
@@ -1103,7 +1106,12 @@ function mapPostnlLetter(letter, tr, imageMap) {
   // to look back at what a piece of mail actually was. Only the small row
   // icon switches to a checkmark once delivered (handled in renderRow); the
   // detail view and click-to-expand keep working off this imageUrl either way.
-  const imageUrl = findPostnlLetterImage(letter, imageMap) || letter.image_url || null;
+  const foundImage = findPostnlLetterImage(letter, imageMap);
+  const imageUrl = foundImage?.url || letter.image_url || null;
+  // Only set when a real image.* entity was actually matched (never for
+  // the raw, unauthenticated letter.image_url fallback) -- see
+  // attachImageRetry's own comment for what this is for.
+  const imageEntityId = foundImage?.entityId || null;
   // `title` is a free-form string (in every example we've seen it happens
   // to read like a date, e.g. "17 juni", but nothing guarantees that stays
   // true; it's not the same field as `date`). Build the displayed date
@@ -1125,6 +1133,7 @@ function mapPostnlLetter(letter, tr, imageMap) {
     integration: 'postnl',
     letterbox: true, // mail always fits through the mailbox by definition
     imageUrl,
+    imageEntityId,
     // No tracking code worth showing, but `id` is a real, stable unique
     // identifier (also used to match the per-letter image entity); use it
     // to dedupe instead. Confirmed against real PostNL data: a
@@ -2325,7 +2334,50 @@ function mkIconButton(cls, icon, onClick) {
   return btn;
 }
 
-function renderRow(item, show, tr, openItems) {
+// A Home Assistant restart destroys and recreates every image.* entity with
+// an entirely new, unrelated access-token set (confirmed against
+// home-assistant/core's own image/__init__.py: ImageEntity.__init__ reseeds
+// its own token deque from scratch, sharing nothing with whatever a browser
+// already has displayed/cached from before the restart) -- direct user
+// feedback, a kiosk display logging "invalid authentication" against a
+// letter's image_proxy URL right after a restart, showing up in HA's own
+// http.ban log. The exact same class of bug slideshow-card's own
+// _sharedSignUrl fix already addressed there (a stale/failed auth attempt
+// against a resource that just needed a moment to reconnect, logged as a
+// failed login by http.ban, risking that device eventually being banned
+// outright): same fix shape here too, adapted to this card's own data flow
+// (no signing RPC to retry -- entity_picture is just read straight off
+// hass.states). One retry after a short delay, reading entity_picture fresh
+// off hass.states rather than trusting the (possibly still-stale) URL the
+// row was first built with; gives up exactly the same way as before
+// (swap to the plain icon) if that also fails or nothing fresher is
+// available yet -- never retries more than once, so a genuine, lasting
+// failure still only ever logs a single attempt, same bounded-retry
+// reasoning as slideshow-card's own fix.
+function attachImageRetry(img, hass, entityId, originalUrl, onGiveUp) {
+  img.addEventListener(
+    'error',
+    () => {
+      // No image.* entity to re-check at all (e.g. the raw, unauthenticated
+      // letter.image_url fallback, which was already known not to load) --
+      // nothing will look different a moment from now, so skip the delay
+      // and give up right away instead of waiting for nothing.
+      if (!entityId) { onGiveUp(); return; }
+      setTimeout(() => {
+        const freshUrl = hass?.states?.[entityId]?.attributes?.entity_picture;
+        // No fresher URL to try (or it's the exact same one that just
+        // failed) -- retrying would just repeat the identical doomed
+        // request, so give up now instead of trying again.
+        if (!freshUrl || freshUrl === originalUrl) { onGiveUp(); return; }
+        img.addEventListener('error', onGiveUp, { once: true });
+        img.src = freshUrl;
+      }, 1500);
+    },
+    { once: true }
+  );
+}
+
+function renderRow(item, show, tr, openItems, hass) {
   const hex  = item.color || 'grey';
   const days = (!item.delivered && item.deliveryDate) ? daysUntil(item.deliveryDate) : null;
 
@@ -2361,8 +2413,9 @@ function renderRow(item, show, tr, openItems) {
     img.alt = '';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
     // If the scan URL fails to load (expired token, network issue, etc.),
-    // swap in the same icon used when there's no image_url at all.
-    img.addEventListener('error', () => {
+    // retry once with a fresh token (see attachImageRetry), then swap in
+    // the same icon used when there's no image_url at all.
+    attachImageRetry(img, hass, item.imageEntityId, item.imageUrl, () => {
       img.remove();
       iconWrap.appendChild(mkIcon(item.icon, { color: hex }));
       hideChevronIfImageWasTheOnlyReason();
@@ -2459,9 +2512,13 @@ function renderRow(item, show, tr, openItems) {
       // timeline, tracking code, package size) sits right against the image
       // with only its own small top padding/margin, reading as cramped.
       bigImg.style.cssText = 'max-width:100%;max-height:320px;display:block;border-radius:8px;object-fit:contain;margin-bottom:10px;';
-      // If the scan fails to load here too, just drop it; any other detail
-      // content (tracking code, events) below it is still useful on its own.
-      bigImg.addEventListener('error', () => { bigImg.remove(); hideChevronIfImageWasTheOnlyReason(); });
+      // If the scan fails to load here too, retry once (see
+      // attachImageRetry), then just drop it; any other detail content
+      // (tracking code, events) below it is still useful on its own.
+      attachImageRetry(bigImg, hass, item.imageEntityId, item.imageUrl, () => {
+        bigImg.remove();
+        hideChevronIfImageWasTheOnlyReason();
+      });
       detail.appendChild(bigImg);
     }
     if (hasEvents) dedupEvents(item.events).forEach(e => {
@@ -2571,7 +2628,7 @@ const PARCEL_WINS_FOR = new Set(
 // this, whichever side wins the dedup (normally the parcel, since
 // sources are processed in config order and packages typically come
 // first) silently drops the letter's scan photo entirely.
-const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl'];
+const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl', 'imageEntityId'];
 function backfill(target, fallback) {
   for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
 }
@@ -2827,10 +2884,12 @@ class PackageTrackerCard extends HTMLElement {
     this._built = true;
     if (!items.length && show.hide_when_empty) {
       this.classList.add('hidden');
+      this._updateHiddenHostCard(true);
       this._root.innerHTML = '';
       return;
     }
     this.classList.remove('hidden');
+    this._updateHiddenHostCard(false);
     this._root.innerHTML = '';
 
     if (!items.length) {
@@ -2853,7 +2912,7 @@ class PackageTrackerCard extends HTMLElement {
     }
 
     const buildRow = (item) => {
-      const row = renderRow(item, show, tr, this._openItems);
+      const row = renderRow(item, show, tr, this._openItems, this._hass);
       const clickableIcon = row.querySelector('.icon-wrap.clickable');
       if (clickableIcon) {
         const chevronBtn = row.querySelector('.chevron-btn');
@@ -2889,6 +2948,36 @@ class PackageTrackerCard extends HTMLElement {
       for (const item of items) single.appendChild(buildRow(item));
       card.appendChild(single);
       this._root.appendChild(card);
+    }
+  }
+
+  // :host(.hidden) already collapses this card's own element to nothing,
+  // and getCardSize() below already tells the masonry algorithm this card
+  // is weight 0. Neither reaches the real <hui-card> HA itself wraps this
+  // element in, though, which stays a normal, present grid item
+  // regardless (confirmed against hui-card.ts's own real source:
+  // _setElementVisibility only ever reacts to the dashboard author's own
+  // `visibility` config, never to anything this card decides on its own).
+  // A present-but-empty grid item still leaves a small masonry gap behind
+  // it, found live, 2026-08-15, after
+  // https://github.com/Clooos/Bubble-Card/pull/2535 fixed the exact same
+  // class of bug for their own popup host. Their fix collapses the real
+  // host element itself too, not just their own component's root, which
+  // this mirrors. Previous inline display value saved and restored
+  // (not just blindly cleared) in case a dashboard author's own
+  // `visibility` config is also managing this same property -- idempotent
+  // either way, safe to call on every render regardless of whether hidden
+  // actually changed since the last one.
+  _updateHiddenHostCard(hidden) {
+    const hostCard = this.closest('hui-card');
+    if (!hostCard) return;
+    const hasPrevious = Object.prototype.hasOwnProperty.call(this, '_hostCardPreviousDisplay');
+    if (hidden) {
+      if (!hasPrevious) this._hostCardPreviousDisplay = hostCard.style.display ?? '';
+      hostCard.style.display = 'none';
+    } else if (hasPrevious) {
+      hostCard.style.display = this._hostCardPreviousDisplay;
+      delete this._hostCardPreviousDisplay;
     }
   }
 
