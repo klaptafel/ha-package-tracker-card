@@ -18,6 +18,7 @@ A Home Assistant Lovelace card that shows your packages from multiple carrier in
 - **One card, multiple sources**: combine integrations from multiple carriers side by side, deduplicated automatically when the same parcel shows up through more than one source.
 - **Expandable detail per package**: tracking code (tap to copy), full event timeline, and package size/weight when the carrier provides it.
 - **Auto-detecting editor**: want to narrow the card down to specific integrations or accounts instead? Open the editor, click **+** next to a detected one, done. Multiple accounts of the same integration are detected and managed separately. No YAML required either way.
+- **Recipient per account**: give each account a name and every package from it shows whose it is, so one card works for a whole household.
 - **Filter & layout options**: filter by carrier, status, direction, or delivery window; single combined card or split incoming/outgoing cards.
 
 ---
@@ -47,6 +48,22 @@ The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
 | `sources` | `[]` | List of sources. An ha-parcel-integrations source just needs `entity`; others also need `type`. Empty or omitted shows everything auto-detected instead. |
 
+#### Recipient per account
+
+Sharing one card between several people? Give each account a **Recipient** in the editor and its name appears in front of every package from that account, e.g. `Mirella · Silky Smooth Underwear`. The field sits under the account in the **Sources** tab, right where you pick its entities; it applies to all of that account's sensors at once (incoming, delivered, outgoing, letters). Leave it empty and nothing is shown, exactly as before.
+
+Since the name is stored on the source itself, the account has to be added first (the **+** next to it) — with nothing added the card auto-detects everything and there's no entry to attach a name to. In YAML:
+
+```yaml
+sources:
+  - entity: sensor.rononline_gmail_com_postnl_incoming_parcels
+    label: Ron
+  - entity: sensor.mirelladejong17_gmail_com_postnl_incoming_parcels
+    label: Mirella
+```
+
+Turn the names off again without removing them under **Appearance** → **Recipient**.
+
 ### Filter
 
 | Option        | Default | Description                                                                                  |
@@ -70,6 +87,7 @@ The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 
 | Option            | Default | Description                                                                                   |
 | ----------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `recipient`       | `true`  | Recipient name in front of the package name, for accounts that have a `label` (see [Recipient per account](#recipient-per-account)). |
 | `status`          | `true`  | Status line.                                                                                     |
 | `carrier`         | `true`  | Carrier name.                                                                                    |
 | `brand_icon`      | `true`  | Carrier logo. Requires [custom-brand-icons](https://github.com/elax46/custom-brand-icons).        |
