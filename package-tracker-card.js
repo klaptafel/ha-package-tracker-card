@@ -2161,7 +2161,11 @@ const CARD_CSS = `
     font-family: var(--ha-font-family-body, inherit);
     -webkit-font-smoothing: var(--ha-font-smoothing, auto);
   }
-  :host(.hidden) { display: none !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
+  /* hide_when_empty sets the real hidden property (see _render), not a
+     class, so hui-card's own visibility logic can see it too (see
+     getCardSize's own comment). This rule just makes our own element
+     collapse the same aggressive way the old class-based one did. */
+  :host([hidden]) { display: none !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
   /* ha-card doesn't clip its own children by default; needed so the
      negative-margin edge-alignment trick below (ha-card > .row etc.) never
      pokes 1px past ha-card's own rounded corners. Same rule already exists
@@ -2672,6 +2676,14 @@ class PackageTrackerCard extends HTMLElement {
     this._cachedItems    = [];
     this._openItems      = new Set();
     this._sourceItemsCache = new Map();
+    // A real, documented LovelaceCard interface property (confirmed
+    // against home-assistant/frontend's own types.ts and hui-card.ts):
+    // without it, hui-card's own _setElementVisibility removes this card
+    // from its DOM entirely the moment it goes hidden, which would also
+    // stop hass from ever being pushed to it again, leaving it hidden
+    // forever with no way to notice items becoming available again and
+    // show itself once more.
+    this.connectedWhileHidden = true;
   }
 
   connectedCallback() {
@@ -2883,13 +2895,11 @@ class PackageTrackerCard extends HTMLElement {
 
     this._built = true;
     if (!items.length && show.hide_when_empty) {
-      this.classList.add('hidden');
-      this._updateHiddenHostCard(true);
+      this.hidden = true;
       this._root.innerHTML = '';
       return;
     }
-    this.classList.remove('hidden');
-    this._updateHiddenHostCard(false);
+    this.hidden = false;
     this._root.innerHTML = '';
 
     if (!items.length) {
@@ -2951,38 +2961,24 @@ class PackageTrackerCard extends HTMLElement {
     }
   }
 
-  // :host(.hidden) already collapses this card's own element to nothing,
-  // and getCardSize() below already tells the masonry algorithm this card
-  // is weight 0. Neither reaches the real <hui-card> HA itself wraps this
-  // element in, though, which stays a normal, present grid item
-  // regardless (confirmed against hui-card.ts's own real source:
-  // _setElementVisibility only ever reacts to the dashboard author's own
-  // `visibility` config, never to anything this card decides on its own).
-  // A present-but-empty grid item still leaves a small masonry gap behind
-  // it, found live, 2026-08-15, after
-  // https://github.com/Clooos/Bubble-Card/pull/2535 fixed the exact same
-  // class of bug for their own popup host. Their fix collapses the real
-  // host element itself too, not just their own component's root, which
-  // this mirrors. Previous inline display value saved and restored
-  // (not just blindly cleared) in case a dashboard author's own
-  // `visibility` config is also managing this same property -- idempotent
-  // either way, safe to call on every render regardless of whether hidden
-  // actually changed since the last one.
-  _updateHiddenHostCard(hidden) {
-    const hostCard = this.closest('hui-card');
-    if (!hostCard) return;
-    const hasPrevious = Object.prototype.hasOwnProperty.call(this, '_hostCardPreviousDisplay');
-    if (hidden) {
-      if (!hasPrevious) this._hostCardPreviousDisplay = hostCard.style.display ?? '';
-      hostCard.style.display = 'none';
-    } else if (hasPrevious) {
-      hostCard.style.display = this._hostCardPreviousDisplay;
-      delete this._hostCardPreviousDisplay;
-    }
-  }
-
+  // The real <hui-card> HA wraps this element in already collapses itself
+  // to nothing whenever this.hidden is true (confirmed against
+  // hui-card.ts's own real source, _updateVisibility/_setElementVisibility:
+  // it checks this._element.hidden on every hass push and sets its own
+  // style.display accordingly), so setting the actual DOM property in
+  // _render above is enough on its own. A first attempt instead reached
+  // into hui-card directly and set its style.display by hand, the same
+  // shape https://github.com/Clooos/Bubble-Card/pull/2535 uses for their
+  // own popup host, but that fought a losing battle against hui-card's
+  // own _updateVisibility, which re-derives its own style.display from
+  // this.hidden on every single hass push and would silently undo a
+  // manual override moments later, since it had no idea we ever hidden
+  // ourselves. connectedWhileHidden (see the constructor) is what keeps
+  // hass pushes coming at all once hidden, otherwise hui-card removes
+  // this element outright and it could never notice items becoming
+  // available again.
   getCardSize() {
-    if (this._config?.show?.hide_when_empty && this.classList.contains('hidden')) return 0;
+    if (this._config?.show?.hide_when_empty && this.hidden) return 0;
     return 3;
   }
 
