@@ -436,7 +436,7 @@ const TRANSLATIONS = {
     source_repo_link: 'View integration', source_repo_link_desc: 'Open the GitHub page for this integration',
     status: 'Status', status_desc: 'Status line below the name',
     carrier: 'Carrier', carrier_desc: 'Name of the carrier',
-    recipient: 'Recipient', recipient_desc: 'Recipient chip on every package row; auto-detected when the carrier reports it, or set per account on the Sources tab',
+    recipient: 'Recipient', recipient_desc: 'Recipient chip next to the carrier name',
     carrier_logo: 'Carrier logo', carrier_logo_desc: 'Carrier logo next to the name.', carrier_logo_link: 'Requires custom-brand-icons',
     carrier_logo_requires_carrier: 'Enable Carrier to use this setting.',
     badge: 'Badge', badge_desc: 'Days until delivery, shown on the icon',
@@ -491,7 +491,7 @@ const TRANSLATIONS = {
     sources_empty_link: 'See what this card supports',
     source_unnamed_device: 'Account',
     source_recipient: 'Recipient',
-    source_recipient_desc: "Optional. Overrides the recipient chip on every package from this account, e.g. the name of whoever it belongs to. Some carriers already report this automatically; leave empty to keep that, or to show nothing where they don't.",
+    source_recipient_desc: "Optional. Overrides the auto-detected recipient for this account's own packages.",
     sources_orphaned_notice: "These were configured, but their entity no longer exists (removed or renamed). Remove them, or add the entity back under its original name to keep using them.",
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
@@ -519,7 +519,7 @@ const TRANSLATIONS = {
     source_repo_link: 'Bekijk integratie', source_repo_link_desc: 'Open de GitHub-pagina van deze integratie',
     status: 'Status', status_desc: 'Statusregel onder de naam',
     carrier: 'Bezorgdienst', carrier_desc: 'Naam van de bezorgdienst',
-    recipient: 'Ontvanger', recipient_desc: 'Ontvanger-chip bij elk pakket; automatisch gedetecteerd als de bezorgdienst dit meldt, of zelf instellen per account op het tabblad Bronnen',
+    recipient: 'Ontvanger', recipient_desc: 'Ontvanger-chip naast de bezorgdienstnaam',
     carrier_logo: 'Bezorgdienst logo', carrier_logo_desc: 'Logo van de bezorgdienst naast de naam.', carrier_logo_link: 'Vereist custom-brand-icons',
     carrier_logo_requires_carrier: 'Zet Bezorgdienst aan om deze instelling te gebruiken.',
     badge: 'Badge', badge_desc: 'Dagen tot levering, weergegeven op het icoon',
@@ -574,7 +574,7 @@ const TRANSLATIONS = {
     sources_empty_link: 'Bekijk wat deze kaart ondersteunt',
     source_unnamed_device: 'Account',
     source_recipient: 'Ontvanger',
-    source_recipient_desc: 'Optioneel. Overschrijft de ontvanger-chip bij elk pakket van dit account, bijvoorbeeld de naam van degene voor wie het is. Sommige bezorgdiensten melden dit al automatisch; laat leeg om dat te gebruiken, of om niets te tonen als dat niet zo is.',
+    source_recipient_desc: 'Optioneel. Overschrijft de automatisch gedetecteerde ontvanger voor de pakketten van dit account.',
     sources_orphaned_notice: 'Deze waren toegevoegd, maar hun entity bestaat niet meer (verwijderd of hernoemd). Verwijder ze, of voeg de entity terug toe onder de oorspronkelijke naam om ze te blijven gebruiken.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
@@ -751,10 +751,10 @@ function mkItem(overrides) {
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
     tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, packageSize: null, packageSizeIcon: null,
-    // Who this item is for -- either a carrier-reported name (see
+    // Who this item is for: either a carrier-reported name (see
     // mapCanonicalParcel's own detectRecipient) or a source's own
     // GUI-configured `label`, applied on top afterward (see labelItems).
-    // null by default: most items have neither.
+    // null by default, since most items have neither.
     recipient: null,
     dedupKey: undefined,
     ...overrides,
@@ -930,7 +930,10 @@ function rawStatusLine(p) {
 // just the account holder, i.e. yourself); DHL NL 2.1.0+ exposes a
 // top-level `receiver` field with the actual addressee, which is what you
 // actually want to see on something you sent. Falls back to the sender
-// chain for carriers/versions that don't have `receiver` yet (e.g. DPD).
+// chain for carriers/versions whose *outgoing* sensor doesn't have
+// `receiver` yet, confirmed missing on DPD's outgoing sensor specifically
+// (see dpd_outgoing's own comment; DPD's incoming/delivered data does have
+// it, see detectRecipient below, a different question).
 function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
@@ -938,17 +941,25 @@ function resolveCanonicalName(p, direction) {
 }
 
 // Same `receiver` field resolveCanonicalName already reads for an outgoing
-// parcel's own name -- but for an *incoming* one, `receiver` is the actual
-// answer to "who in the household is this for" (confirmed against real
-// PostNL 4.1.0+ data: a delivered parcel's own top-level `receiver`, e.g.
-// "Wendel Felius", distinct from `sender`/raw.name, which for incoming stays
-// the webshop). Only for incoming: for outgoing, receiver is already the
-// item's own name (resolveCanonicalName above), showing it again here would
-// just repeat that same name as its own recipient chip. null wherever the
-// carrier/version doesn't expose it yet (confirmed missing for DPD, per
-// resolveCanonicalName's own comment) -- a source's own GUI-configured
-// label (see labelItems) is the fallback for those, applied on top of
-// whatever this returns.
+// parcel's own name. For an *incoming* one, though, `receiver` is the
+// actual answer to "who in the household is this for". Confirmed present
+// on incoming/delivered data for PostNL 4.1.0+ (real data: a delivered
+// parcel's own top-level `receiver`, e.g. "Ron", distinct from
+// `sender`/raw.name, which for incoming stays the webshop) and DPD (see
+// dpd_outgoing's own comment: confirmed on DPD's incoming/delivered
+// sensors specifically, unlike its outgoing one, which resolveCanonicalName
+// above still can't rely on). Not yet confirmed either way for DHL NL/GLS's
+// own incoming sensors. This is carrier-agnostic by construction (it reads
+// the one shared canonical field mapCanonicalParcel already normalizes for
+// the whole family), so it'll simply start working there too the moment
+// real data confirms it, same as the letterbox/rerouted chips already
+// gracefully no-op for a carrier that doesn't expose their own field.
+// Only for incoming: for outgoing, receiver is already the item's own name
+// (resolveCanonicalName above), and showing it again here would just
+// repeat that same name as its own recipient chip. null wherever a carrier
+// doesn't expose it, yet or ever; a source's own GUI-configured label (see
+// labelItems) is the fallback for those, applied on top of whatever this
+// returns.
 function detectRecipient(p, direction) {
   return (direction === 'incoming' && typeof p.receiver === 'string' && p.receiver.trim()) || null;
 }
@@ -1825,16 +1836,16 @@ function sourceLabel(source) {
 }
 
 // Overrides a source's items with that source's own GUI-configured
-// recipient name, when set -- on top of whatever `item.recipient` already
-// is (a carrier-detected name, e.g. mapCanonicalParcel's own
-// detectRecipient, or null), never the other way around: a manually-typed
-// label is always the more deliberate, trusted answer. Deliberately applied
-// outside the per-source item cache in _collectItems (which stores the
-// unstamped items): editing a label then takes effect on the next render
-// with no cache invalidation, and unlabeled sources keep pushing their
-// cached items through untouched, no copying -- their own already-detected
-// recipient (if any) travels with them either way, since that was set once,
-// at collect time, not here.
+// recipient name, when set, on top of whatever `item.recipient` already is
+// (a carrier-detected name, e.g. mapCanonicalParcel's own detectRecipient,
+// or null); never the other way around, since a manually-typed label is
+// always the more deliberate, trusted answer. Deliberately applied outside
+// the per-source item cache in _collectItems (which stores the unstamped
+// items): editing a label then takes effect on the next render with no
+// cache invalidation, and unlabeled sources keep pushing their cached
+// items through untouched, no copying needed. Their own already-detected
+// recipient, if any, travels with them either way, since that was set
+// once, at collect time, not here.
 function labelItems(items, label) {
   return label ? items.map(item => ({ ...item, recipient: label })) : items;
 }
@@ -2455,15 +2466,15 @@ function renderRow(item, show, tr, openItems) {
     let chipShown = false;
     const addSeparator = () => { if (chipShown) carrier.appendChild(mk('span', 'carrier-sep', '·')); chipShown = true; };
 
-    // Recipient first -- direct user feedback, 2026-08-19: on a shared,
-    // multi-account card this is the fact you actually scan for first ("is
-    // this mine?"), so it leads the row rather than trailing after carrier/
-    // letterbox/etc. Same chip shape as those (icon + text, dimmed,
-    // separated by the same '·'), not a name-line prefix: a source's own
-    // `label` (see sourceLabel) or, for the canonical parcel family, the
-    // carrier's own reported addressee (see mapCanonicalParcel's own
-    // detectRecipient) -- either way, whichever the source's own recipient
-    // resolution already settled on (see labelItems).
+    // Recipient first: on a shared, multi-account card this is the fact
+    // you actually scan for first ("is this mine?"), so it leads the row
+    // rather than trailing after carrier/letterbox/etc. Same chip shape as
+    // those (icon plus text, dimmed, separated by the same '·'), not a
+    // name-line prefix. It shows a source's own `label` (see sourceLabel)
+    // or, for the canonical parcel family, the carrier's own reported
+    // addressee (see mapCanonicalParcel's own detectRecipient), whichever
+    // the source's own recipient resolution already settled on (see
+    // labelItems).
     if (showRecipient) {
       addSeparator();
       carrier.appendChild(mkIcon('mdi:account', { size: '13px' }));
@@ -2644,12 +2655,12 @@ const PARCEL_WINS_FOR = new Set(
 // sources are processed in config order and packages typically come
 // first) silently drops the letter's scan photo entirely.
 // recipient: only the source it came from knows whose account a parcel is
-// in -- whether that's a carrier-detected name (mapCanonicalParcel's own
+// in, whether that's a carrier-detected name (mapCanonicalParcel's own
 // detectRecipient) or a source's own GUI-configured label (see
-// labelItems) -- so a parcel reported by both a "knows" source and one
-// that doesn't (e.g. an unlabeled aggregator with no receiver field of its
-// own) must keep that name whichever of the two wins the dedup --
-// otherwise the same package shows a recipient or not depending on which
+// labelItems). A parcel reported by both a "knows" source and one that
+// doesn't (e.g. an unlabeled aggregator with no receiver field of its own)
+// must keep that name whichever of the two wins the dedup, otherwise the
+// same package shows a recipient or not depending on which
 // source happened to be collected first.
 const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl', 'recipient'];
 function backfill(target, fallback) {
@@ -3884,8 +3895,8 @@ class PackageTrackerCardEditor extends HTMLElement {
     const mkShow = (label, key, desc) => this._mkToggleRow(label, show[key] !== false, desc,
       (val) => this._fireAndRender({ ...c, show: { ...show, [key]: val } })
     );
+    showGroup.appendChild(mkShow(uiTr.status,    'status',    uiTr.status_desc));
     showGroup.appendChild(mkShow(uiTr.recipient, 'recipient', uiTr.recipient_desc));
-    showGroup.appendChild(mkShow(uiTr.status,   'status',   uiTr.status_desc));
     showGroup.appendChild(mkShow(uiTr.carrier,  'carrier',  uiTr.carrier_desc));
     const carrierOff = show.carrier === false;
     const brandRow = this._mkToggleRow(uiTr.carrier_logo, show.brand_icon !== false, carrierOff ? null : uiTr.carrier_logo_desc,
