@@ -18,6 +18,7 @@ A Home Assistant Lovelace card that shows your packages from multiple carrier in
 - **One card, multiple sources**: combine integrations from multiple carriers side by side, deduplicated automatically when the same parcel shows up through more than one source.
 - **Expandable detail per package**: tracking code (tap to copy), full event timeline, and package size/weight when the carrier provides it.
 - **Auto-detecting editor**: want to narrow the card down to specific integrations or accounts instead? Open the editor, click **+** next to a detected one, done. Multiple accounts of the same integration are detected and managed separately. No YAML required either way.
+- **Recipient chip**: see whose package is whose on a shared, household card, auto-detected from the carrier where it reports one, or a name you set per account.
 - **Filter & layout options**: filter by carrier, status, direction, or delivery window; single combined card or split incoming/outgoing cards.
 
 ---
@@ -47,6 +48,8 @@ The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
 | `sources` | `[]` | List of sources. An ha-parcel-integrations source just needs `entity`; others also need `type`. Empty or omitted shows everything auto-detected instead. |
 
+Sharing one card between several people? Some carriers already report who a package is addressed to, shown automatically as a chip. Set a **Recipient** per account in the editor's **Sources** tab to override that, or to add a name where the carrier doesn't provide one.
+
 ### Filter
 
 | Option        | Default | Description                                                                                  |
@@ -70,6 +73,7 @@ The visual editor covers everything: **Sources**, **Filter**, **Appearance**.
 
 | Option            | Default | Description                                                                                   |
 | ----------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `recipient`       | `true`  | Recipient chip next to the carrier name, auto-detected or set per account (see the Sources section above). |
 | `status`          | `true`  | Status line.                                                                                     |
 | `carrier`         | `true`  | Carrier name.                                                                                    |
 | `brand_icon`      | `true`  | Carrier logo. Requires [custom-brand-icons](https://github.com/elax46/custom-brand-icons).        |

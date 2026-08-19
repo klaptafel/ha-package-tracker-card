@@ -436,6 +436,7 @@ const TRANSLATIONS = {
     source_repo_link: 'View integration', source_repo_link_desc: 'Open the GitHub page for this integration',
     status: 'Status', status_desc: 'Status line below the name',
     carrier: 'Carrier', carrier_desc: 'Name of the carrier',
+    recipient: 'Recipient', recipient_desc: 'Recipient chip next to the carrier name',
     carrier_logo: 'Carrier logo', carrier_logo_desc: 'Carrier logo next to the name.', carrier_logo_link: 'Requires custom-brand-icons',
     carrier_logo_requires_carrier: 'Enable Carrier to use this setting.',
     badge: 'Badge', badge_desc: 'Days until delivery, shown on the icon',
@@ -489,6 +490,8 @@ const TRANSLATIONS = {
     sources_empty_notice: 'No supported integrations detected yet.',
     sources_empty_link: 'See what this card supports',
     source_unnamed_device: 'Account',
+    source_recipient: 'Recipient',
+    source_recipient_desc: "Optional. Overrides the auto-detected recipient for this account's own packages.",
     sources_orphaned_notice: "These were configured, but their entity no longer exists (removed or renamed). Remove them, or add the entity back under its original name to keep using them.",
     sources_tab: 'Sources', filter_tab: 'Filter', display_tab: 'Appearance',
   },
@@ -516,6 +519,7 @@ const TRANSLATIONS = {
     source_repo_link: 'Bekijk integratie', source_repo_link_desc: 'Open de GitHub-pagina van deze integratie',
     status: 'Status', status_desc: 'Statusregel onder de naam',
     carrier: 'Bezorgdienst', carrier_desc: 'Naam van de bezorgdienst',
+    recipient: 'Ontvanger', recipient_desc: 'Ontvanger-chip naast de bezorgdienstnaam',
     carrier_logo: 'Bezorgdienst logo', carrier_logo_desc: 'Logo van de bezorgdienst naast de naam.', carrier_logo_link: 'Vereist custom-brand-icons',
     carrier_logo_requires_carrier: 'Zet Bezorgdienst aan om deze instelling te gebruiken.',
     badge: 'Badge', badge_desc: 'Dagen tot levering, weergegeven op het icoon',
@@ -569,6 +573,8 @@ const TRANSLATIONS = {
     sources_empty_notice: 'Nog geen ondersteunde integraties gedetecteerd.',
     sources_empty_link: 'Bekijk wat deze kaart ondersteunt',
     source_unnamed_device: 'Account',
+    source_recipient: 'Ontvanger',
+    source_recipient_desc: 'Optioneel. Overschrijft de automatisch gedetecteerde ontvanger voor de pakketten van dit account.',
     sources_orphaned_notice: 'Deze waren toegevoegd, maar hun entity bestaat niet meer (verwijderd of hernoemd). Verwijder ze, of voeg de entity terug toe onder de oorspronkelijke naam om ze te blijven gebruiken.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
@@ -745,6 +751,11 @@ function mkItem(overrides) {
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
     tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, imageEntityId: null, packageSize: null, packageSizeIcon: null,
+    // Who this item is for: either a carrier-reported name (see
+    // mapCanonicalParcel's own detectRecipient) or a source's own
+    // GUI-configured `recipient`, applied on top afterward (see
+    // applySourceRecipient). null by default, since most items have neither.
+    recipient: null,
     dedupKey: undefined,
     ...overrides,
   };
@@ -919,11 +930,38 @@ function rawStatusLine(p) {
 // just the account holder, i.e. yourself); DHL NL 2.1.0+ exposes a
 // top-level `receiver` field with the actual addressee, which is what you
 // actually want to see on something you sent. Falls back to the sender
-// chain for carriers/versions that don't have `receiver` yet (e.g. DPD).
+// chain for carriers/versions whose *outgoing* sensor doesn't have
+// `receiver` yet, confirmed missing on DPD's outgoing sensor specifically
+// (see dpd_outgoing's own comment; DPD's incoming/delivered data does have
+// it, see detectRecipient below, a different question).
 function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
     : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || '').trim();
+}
+
+// Same `receiver` field resolveCanonicalName already reads for an outgoing
+// parcel's own name. For an *incoming* one, though, `receiver` is the
+// actual answer to "who in the household is this for". Confirmed present
+// on incoming/delivered data for PostNL 4.1.0+ (real data: a delivered
+// parcel's own top-level `receiver`, e.g. "Ron", distinct from
+// `sender`/raw.name, which for incoming stays the webshop) and DPD (see
+// dpd_outgoing's own comment: confirmed on DPD's incoming/delivered
+// sensors specifically, unlike its outgoing one, which resolveCanonicalName
+// above still can't rely on). Not yet confirmed either way for DHL NL/GLS's
+// own incoming sensors. This is carrier-agnostic by construction (it reads
+// the one shared canonical field mapCanonicalParcel already normalizes for
+// the whole family), so it'll simply start working there too the moment
+// real data confirms it, same as the letterbox/rerouted chips already
+// gracefully no-op for a carrier that doesn't expose their own field.
+// Only for incoming: for outgoing, receiver is already the item's own name
+// (resolveCanonicalName above), and showing it again here would just
+// repeat that same name as its own recipient chip. null wherever a carrier
+// doesn't expose it, yet or ever; a source's own GUI-configured
+// `recipient` (see applySourceRecipient) is the fallback for those,
+// applied on top of whatever this returns.
+function detectRecipient(p, direction) {
+  return (direction === 'incoming' && typeof p.receiver === 'string' && p.receiver.trim()) || null;
 }
 
 // Confirmed via real DPD data: both canonical (top-level, not just raw)
@@ -1027,6 +1065,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     resolveCanonicalDeliverySlot(p, tr);
 
   const name = resolveCanonicalName(p, direction);
+  const recipient = detectRecipient(p, direction);
 
   // Same principle for the letterbox/rerouted/pickup-point chips: read from
   // raw when the carrier exposes that detail (confirmed for PostNL's
@@ -1044,6 +1083,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     carrierCode, carrier: carrierName(carrierGroup, carrierCode), brandIcon: getBrandIcon(carrierGroup, carrierCode),
     tapUrl: p.url || null, direction,
     integration: carrierGroup,
+    recipient,
     letterbox:    shipmentType === 'LetterboxParcel',
     rerouted:     addressType === 'Rerouted',
     servicePoint: addressType === 'ServicePoint' || !!p.pickup,
@@ -1791,8 +1831,32 @@ function discoverCanonicalSources(hass) {
 // above for display purposes only -- Letters keeps its original, typed
 // `{ type: 'postnl_canonical_letters', entity }` config shape, since it's
 // still collected through the registry, not canonicalSourceInfo.
-function sourceForBucket(bucket, entity) {
-  return bucket === 'letters' ? { type: 'postnl_canonical_letters', entity } : { entity };
+function sourceForBucket(bucket, entity, recipient) {
+  const source = bucket === 'letters' ? { type: 'postnl_canonical_letters', entity } : { entity };
+  return recipient ? { ...source, recipient } : source;
+}
+
+// A source's own configured recipient name, normalized: anything blank,
+// whitespace-only or not a string counts as "not set", so no row ever ends
+// up prefixed with an empty name and a stray separator.
+function sourceRecipient(source) {
+  const recipient = typeof source?.recipient === 'string' ? source.recipient.trim() : '';
+  return recipient || null;
+}
+
+// Overrides a source's items with that source's own GUI-configured
+// recipient name, when set, on top of whatever `item.recipient` already is
+// (a carrier-detected name, e.g. mapCanonicalParcel's own detectRecipient,
+// or null); never the other way around, since a manually-typed value is
+// always the more deliberate, trusted answer. Deliberately applied outside
+// the per-source item cache in _collectItems (which stores the unstamped
+// items): editing it then takes effect on the next render with no cache
+// invalidation, and sources with nothing configured keep pushing their
+// cached items through untouched, no copying needed. Their own
+// already-detected recipient, if any, travels with them either way, since
+// that was set once, at collect time, not here.
+function applySourceRecipient(items, recipient) {
+  return recipient ? items.map(item => ({ ...item, recipient })) : items;
 }
 
 // With no sources configured at all, show everything this card recognizes
@@ -2067,6 +2131,7 @@ const CARD_DEFAULTS = {
   layout: 'single',
   show: {
     carrier:        true,
+    recipient:      true,
     status:         true,
     badge:          true,
     dim_delivered:  true,
@@ -2103,7 +2168,11 @@ function deepEqual(a, b) {
 // already type-less, or whose type doesn't match, passes through untouched.
 function migrateSourceType(source) {
   if (!source?.type || !INTEGRATIONS[source.type]?.canonical) return source;
-  return { entity: source.entity };
+  // `recipient` (see sourceRecipient) is the user's own data, not part of
+  // the type to type-less shape change; carry it over, or migrating a
+  // source with one set would silently drop that name on the next config
+  // load.
+  return sourceRecipient(source) ? { entity: source.entity, recipient: source.recipient } : { entity: source.entity };
 }
 
 // v2.0.0 dropped Parcel Aggregator and the arjenbos/ha-postnl fork entirely
@@ -2449,15 +2518,30 @@ function renderRow(item, show, tr, openItems, hass) {
   // is only useful before you've received it (you don't need to wait home),
   // whether that's a package or mail.
   const showLetterbox = item.letterbox && !item.delivered;
-  if ((show.carrier && item.carrier) || showLetterbox || item.rerouted || item.servicePoint) {
+  const showRecipient = show.recipient !== false && !!item.recipient;
+  if (showRecipient || (show.carrier && item.carrier) || showLetterbox || item.rerouted || item.servicePoint) {
     const carrier = mk('div', 'carrier');
     let chipShown = false;
     const addSeparator = () => { if (chipShown) carrier.appendChild(mk('span', 'carrier-sep', '·')); chipShown = true; };
 
+    // Recipient first: on a shared, multi-account card this is the fact
+    // you actually scan for first ("is this mine?"), so it leads the row
+    // rather than trailing after carrier/letterbox/etc. Same chip shape as
+    // those (icon plus text, dimmed, separated by the same '·'), not a
+    // name-line prefix. It shows a source's own `recipient` config (see
+    // sourceRecipient) or, for the canonical parcel family, the carrier's
+    // own reported addressee (see mapCanonicalParcel's own
+    // detectRecipient), whichever the source's own recipient resolution
+    // already settled on (see applySourceRecipient).
+    if (showRecipient) {
+      addSeparator();
+      carrier.appendChild(mkIcon('mdi:account', { size: '13px' }));
+      carrier.appendChild(document.createTextNode(item.recipient));
+    }
     if (show.carrier && item.carrier) {
+      addSeparator();
       if (show.brand_icon !== false && item.brandIcon) carrier.appendChild(mkIcon(item.brandIcon, { size: '14px' }));
       carrier.appendChild(document.createTextNode(item.carrier));
-      chipShown = true;
     }
     if (showLetterbox) {
       addSeparator();
@@ -2632,7 +2716,15 @@ const PARCEL_WINS_FOR = new Set(
 // this, whichever side wins the dedup (normally the parcel, since
 // sources are processed in config order and packages typically come
 // first) silently drops the letter's scan photo entirely.
-const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl', 'imageEntityId'];
+// recipient: only the source it came from knows whose account a parcel is
+// in, whether that's a carrier-detected name (mapCanonicalParcel's own
+// detectRecipient) or a source's own GUI-configured value (see
+// applySourceRecipient). A parcel reported by both a "knows" source and
+// one that doesn't (e.g. an aggregator with no receiver field of its own
+// and nothing configured) must keep that name whichever of the two wins
+// the dedup, otherwise the same package shows a recipient or not
+// depending on which source happened to be collected first.
+const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted', 'servicePoint', 'imageUrl', 'imageEntityId', 'recipient'];
 function backfill(target, fallback) {
   for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
 }
@@ -2770,9 +2862,10 @@ class PackageTrackerCard extends HTMLElement {
       // Skip re-running collect() for sources whose entity hasn't changed
       // since the last collection; def.collect() (image-map building, event
       // parsing, etc.) is the expensive part here, not the dedup/merge below.
+      const recipient = sourceRecipient(source);
       const cached = this._sourceItemsCache.get(source.entity);
       if (cached && cached.ts === state.last_updated) {
-        items.push(...cached.items);
+        items.push(...applySourceRecipient(cached.items, recipient));
         continue;
       }
       // One source's collect() throwing (e.g. an integration ships an
@@ -2793,7 +2886,7 @@ class PackageTrackerCard extends HTMLElement {
           if (!sourceItems) continue;
         }
         this._sourceItemsCache.set(source.entity, { ts: state.last_updated, items: sourceItems });
-        items.push(...sourceItems);
+        items.push(...applySourceRecipient(sourceItems, recipient));
       } catch (err) {
         console.error(`package-tracker-card: source "${source.type || source.entity}" (${source.entity}) failed to collect`, err);
       }
@@ -3188,9 +3281,64 @@ class PackageTrackerCardEditor extends HTMLElement {
     const sources = this._config.sources || [];
     const uiTr    = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
 
+    // `sources` above is a render-time snapshot, fine for deciding what this
+    // tab draws. Every *handler* below must read the live list instead: the
+    // recipient fields (see mkRecipientField) save without re-rendering the
+    // tab, so a snapshot goes stale the moment a name is typed, and an
+    // add/remove click built on that stale copy would silently throw the
+    // just-typed name away again.
+    const liveSources = () => this._config.sources || [];
+
     const saveGroup = (groupTypes, updatedForGroup) => {
-      const others = sources.filter(s => !groupTypes.includes(s.type));
+      const others = liveSources().filter(s => !groupTypes.includes(s.type));
       this._fireAndRender({ ...this._config, sources: [...others, ...updatedForGroup] });
+    };
+
+    // Recipient name for one account, written onto every source entry that
+    // belongs to it. A device's incoming/delivered/outgoing/letters buckets
+    // are four separate entries but one and the same person. Only rendered
+    // for accounts that are actually added: with nothing configured the card
+    // auto-detects everything (see effectiveSources) and there are no entries
+    // to hang a name on, so the "+" comes first, exactly like the per-bucket
+    // entity pickers already work.
+    // _fire, not _fireAndRender: this is free text, and re-rendering the tab
+    // on every keystroke takes the focus out of the field after each
+    // character, the same reason the number rows elsewhere in this editor
+    // already avoid it.
+    const mkRecipientField = (entityIds, styleCss) => {
+      const current = liveSources().find(s => entityIds.includes(s.entity) && sourceRecipient(s));
+      const section = document.createElement('div');
+      section.style.cssText = styleCss;
+      section.appendChild(Object.assign(document.createElement('div'), {
+        className: 'body-label', textContent: uiTr.source_recipient, style: 'margin-top:0;',
+      }));
+      section.appendChild(Object.assign(document.createElement('div'), {
+        className: 'body-label-sub', textContent: uiTr.source_recipient_desc,
+      }));
+      // Its own ha-form rather than _mkForm: HA's text selector reports a
+      // cleared, non-required field as `undefined`, which _mkForm treats as
+      // "no value, don't call onChange", so a name could then be typed but
+      // never removed again.
+      const form = document.createElement('ha-form');
+      form.schema = [{ name: 'recipient', selector: { text: {} } }];
+      form.data = { recipient: current ? sourceRecipient(current) : '' };
+      form.computeLabel = () => '';
+      if (this._hass) form.hass = this._hass;
+      form.addEventListener('value-changed', (e) => {
+        const raw = e.detail.value?.recipient;
+        const recipient = typeof raw === 'string' ? raw.trim() : '';
+        const updated = liveSources().map(s => {
+          if (!entityIds.includes(s.entity)) return s;
+          // Drop the key entirely when cleared, rather than storing an empty
+          // string: stripDefaults only prunes top-level defaults, so a
+          // `recipient: ''` would otherwise linger in the saved YAML forever.
+          const { recipient: _cleared, ...rest } = s;
+          return recipient ? { ...rest, recipient } : rest;
+        });
+        this._fire({ ...this._config, sources: updated });
+      });
+      section.appendChild(form);
+      return section;
     };
 
     const notice = document.createElement('p');
@@ -3284,8 +3432,12 @@ class PackageTrackerCardEditor extends HTMLElement {
         if (this._hass) entityForm.hass = this._hass;
         entityForm.addEventListener('value-changed', (e) => {
           const entity = e.detail.value.entity ?? null;
-          const without = sources.filter(s => s.entity !== entityId);
-          this._fireAndRender({ ...this._config, sources: entity ? [...without, sourceForBucket(bucket, entity)] : without });
+          const live = liveSources();
+          // Re-picking rebuilds this entry from scratch, so its recipient
+          // name has to be carried over explicitly or it's lost.
+          const recipient = sourceRecipient(live.find(s => s.entity === entityId));
+          const without = live.filter(s => s.entity !== entityId);
+          this._fireAndRender({ ...this._config, sources: entity ? [...without, sourceForBucket(bucket, entity, recipient)] : without });
         });
         section.appendChild(entityForm);
         return section;
@@ -3323,18 +3475,19 @@ class PackageTrackerCardEditor extends HTMLElement {
           const deviceBtnWrap = document.createElement('div'); deviceBtnWrap.className = 'row-action';
           if (deviceActive) {
             deviceBtnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
-              this._fireAndRender({ ...this._config, sources: sources.filter(s => !entityIds.includes(s.entity)) });
+              this._fireAndRender({ ...this._config, sources: liveSources().filter(s => !entityIds.includes(s.entity)) });
             }));
           } else {
             deviceBtnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
               const toAdd = sortedBucketEntries(buckets).map(([bucket, entity]) => sourceForBucket(bucket, entity));
-              this._fireAndRender({ ...this._config, sources: [...sources, ...toAdd] });
+              this._fireAndRender({ ...this._config, sources: [...liveSources(), ...toAdd] });
             }));
           }
           nameRow.appendChild(deviceBtnWrap);
           deviceBlock.appendChild(nameRow);
 
           if (deviceActive) {
+            deviceBlock.appendChild(mkRecipientField(entityIds, 'padding:0 12px 10px 14px;'));
             for (const [bucket, entityId] of sortedBucketEntries(buckets)) {
               deviceBlock.appendChild(mkBucketSection(entityId, bucket, 'padding:0 12px 10px 14px;'));
             }
@@ -3348,12 +3501,12 @@ class PackageTrackerCardEditor extends HTMLElement {
         const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
         if (groupActive) {
           btnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
-            this._fireAndRender({ ...this._config, sources: sources.filter(s => !allEntityIds.includes(s.entity)) });
+            this._fireAndRender({ ...this._config, sources: liveSources().filter(s => !allEntityIds.includes(s.entity)) });
           }));
         } else {
           btnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
             const toAdd = [...mergedBuckets.entries()].map(([bucket, entity]) => sourceForBucket(bucket, entity));
-            this._fireAndRender({ ...this._config, sources: [...sources, ...toAdd] });
+            this._fireAndRender({ ...this._config, sources: [...liveSources(), ...toAdd] });
           }));
         }
         header.appendChild(btnWrap);
@@ -3362,10 +3515,9 @@ class PackageTrackerCardEditor extends HTMLElement {
         if (groupActive) {
           const body = document.createElement('div');
           body.style.cssText = 'border-top:1px solid var(--divider-color);';
-          let bi = 0;
+          body.appendChild(mkRecipientField(allEntityIds, 'padding:10px 12px 12px;'));
           for (const [bucket, entityId] of mergedBuckets) {
-            body.appendChild(mkBucketSection(entityId, bucket, 'padding:10px 12px 12px;' + (bi > 0 ? 'border-top:1px solid var(--divider-color);' : '')));
-            bi++;
+            body.appendChild(mkBucketSection(entityId, bucket, 'padding:10px 12px 12px;border-top:1px solid var(--divider-color);'));
           }
           groupEl.appendChild(body);
         }
@@ -3406,7 +3558,7 @@ class PackageTrackerCardEditor extends HTMLElement {
         }));
         const btnWrap = document.createElement('div'); btnWrap.className = 'row-action';
         btnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
-          this._fireAndRender({ ...this._config, sources: sources.filter(x => x !== s) });
+          this._fireAndRender({ ...this._config, sources: liveSources().filter(x => x !== s) });
         }));
         row.appendChild(btnWrap);
         body.appendChild(row);
@@ -3491,11 +3643,11 @@ class PackageTrackerCardEditor extends HTMLElement {
           const deviceBtnWrap = document.createElement('div'); deviceBtnWrap.className = 'row-action';
           if (deviceActive) {
             deviceBtnWrap.appendChild(mkIconButton('delete-btn', 'mdi:delete-outline', () => {
-              this._fireAndRender({ ...this._config, sources: sources.filter(s => !entityIds.includes(s.entity)) });
+              this._fireAndRender({ ...this._config, sources: liveSources().filter(s => !entityIds.includes(s.entity)) });
             }));
           } else {
             deviceBtnWrap.appendChild(mkIconButton('add-btn', 'mdi:plus', () => {
-              const newSources = [...sources];
+              const newSources = [...liveSources()];
               for (const [type, entityId] of entityMap) newSources.push({ type, entity: entityId });
               this._fireAndRender({ ...this._config, sources: newSources });
             }));
@@ -3509,6 +3661,7 @@ class PackageTrackerCardEditor extends HTMLElement {
           // device's own entity) but visible the same way. Same 14px left
           // edge as the name row above and the group title.
           if (deviceActive) {
+            deviceBlock.appendChild(mkRecipientField(entityIds, 'padding:0 12px 10px 14px;'));
             group.types.forEach((type) => {
               const deviceEntity = entityMap.get(type);
               if (!deviceEntity) return; // this device doesn't offer this type (e.g. no letters sensor)
@@ -3529,8 +3682,13 @@ class PackageTrackerCardEditor extends HTMLElement {
               if (this._hass) entityForm.hass = this._hass;
               entityForm.addEventListener('value-changed', (e) => {
                 const entity = e.detail.value.entity ?? null;
-                const without = sources.filter(s => !(s.type === type && s.entity === deviceEntity));
-                this._fireAndRender({ ...this._config, sources: entity ? [...without, { type, entity }] : without });
+                const live = liveSources();
+                // Same as the canonical bucket picker above: the entry is
+                // rebuilt here, so its recipient name needs carrying over.
+                const recipient = sourceRecipient(live.find(s => s.type === type && s.entity === deviceEntity));
+                const without = live.filter(s => !(s.type === type && s.entity === deviceEntity));
+                const replacement = recipient ? { type, entity, recipient } : { type, entity };
+                this._fireAndRender({ ...this._config, sources: entity ? [...without, replacement] : without });
               });
               section.appendChild(entityForm);
               deviceBlock.appendChild(section);
@@ -3550,7 +3708,7 @@ class PackageTrackerCardEditor extends HTMLElement {
           const toAdd = [];
           for (const type of group.types) {
             const candidates = this._hass ? candidatesForType(type, this._hass) : [];
-            const usedByOthers = sources.filter(s => s.type !== type).map(s => s.entity).filter(Boolean);
+            const usedByOthers = liveSources().filter(s => s.type !== type).map(s => s.entity).filter(Boolean);
             const available = candidates.filter(e =>
               detectTypeFromHass(e, this._hass) === type && !usedByOthers.includes(e)
             );
@@ -3619,10 +3777,17 @@ class PackageTrackerCardEditor extends HTMLElement {
           if (this._hass) entityForm.hass = this._hass;
           entityForm.addEventListener('value-changed', (e) => {
             const entity = e.detail.value.entity ?? null;
+            const live = liveSources();
             // Rebuild all types in this group
             const groupSources = group.types.map(t => {
-              if (t === type) return entity ? { type: t, entity } : null;
-              const ex = sources.find(s => s.type === t);
+              if (t === type) {
+                if (!entity) return null;
+                // Recipient name survives a re-pick here too (see the
+                // canonical bucket picker above).
+                const recipient = sourceRecipient(live.find(s => s.type === t));
+                return recipient ? { type: t, entity, recipient } : { type: t, entity };
+              }
+              const ex = live.find(s => s.type === t);
               return ex || null;
             }).filter(Boolean);
             saveGroup(group.types, groupSources);
@@ -3630,6 +3795,11 @@ class PackageTrackerCardEditor extends HTMLElement {
           section.appendChild(entityForm);
           body.appendChild(section);
         });
+
+        const groupEntityIds = sources.filter(s => group.types.includes(s.type)).map(s => s.entity).filter(Boolean);
+        if (groupEntityIds.length) {
+          body.appendChild(mkRecipientField(groupEntityIds, 'padding:10px 12px 12px;border-top:1px solid var(--divider-color);'));
+        }
 
         groupEl.appendChild(body);
       }
@@ -3811,7 +3981,8 @@ class PackageTrackerCardEditor extends HTMLElement {
     const mkShow = (label, key, desc) => this._mkToggleRow(label, show[key] !== false, desc,
       (val) => this._fireAndRender({ ...c, show: { ...show, [key]: val } })
     );
-    showGroup.appendChild(mkShow(uiTr.status,   'status',   uiTr.status_desc));
+    showGroup.appendChild(mkShow(uiTr.status,    'status',    uiTr.status_desc));
+    showGroup.appendChild(mkShow(uiTr.recipient, 'recipient', uiTr.recipient_desc));
     showGroup.appendChild(mkShow(uiTr.carrier,  'carrier',  uiTr.carrier_desc));
     const carrierOff = show.carrier === false;
     const brandRow = this._mkToggleRow(uiTr.carrier_logo, show.brand_icon !== false, carrierOff ? null : uiTr.carrier_logo_desc,
