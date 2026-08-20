@@ -583,6 +583,90 @@ const TRANSLATIONS = {
     sources_orphaned_notice: 'Deze waren toegevoegd, maar hun entity bestaat niet meer (verwijderd of hernoemd). Verwijder ze, of voeg de entity terug toe onder de oorspronkelijke naam om ze te blijven gebruiken.',
     sources_tab: 'Bronnen', filter_tab: 'Filter', display_tab: 'Weergave',
   },
+  cs: {
+    lang: 'cs',
+    days: ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'],
+    months: ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'],
+    day_num_suffix: '.',
+    today: 'dnes', tomorrow: 'zítra', yesterday: 'včera', at_time: 'v',
+    days_ago: (n) => n === 1 ? 'před 1 dnem' : 'před ' + n + ' dny',
+    delivered_today: 'Doručeno dnes.',
+    letter_name_prefix: 'Dopis od ',
+    delivered_yesterday: 'Doručeno včera.',
+    delivered_on: (day) => 'Doručeno ' + dayCs(day) + '.',
+    slot_any_moment: 'Doručení se očekává každou chvíli.',
+    slot_all_day: (day) => 'Doručení očekáváno ' + dayCs(day) + '.',
+    slot_late: (day, time) => 'Doručení bylo očekáváno ' + (day === 'dnes' ? '' : dayCs(day) + ' ') + 'do ' + time + '.',
+    slot_within_minutes: (m) => 'Doručení očekáváno za ' + m + ' ' + plCs(m, 'minutu', 'minuty', 'minut') + '.',
+    slot_within_hour: (h) => 'Doručení očekáváno za ' + h + ' ' + plCs(h, 'hodinu', 'hodiny', 'hodin') + '.',
+    slot_within: (h, m) => 'Doručení očekáváno za ' + h + ' ' + plCs(h, 'hodinu', 'hodiny', 'hodin') + ' a ' + m + ' ' + plCs(m, 'minutu', 'minuty', 'minut') + '.',
+    delivery_between: (day, from, to) => 'Doručení ' + dayCs(day) + ' mezi ' + from + ' - ' + to + '.',
+    delivery_before: (day, to) => 'Doručení ' + dayCs(day) + ' do ' + to + '.',
+    delivery_on: (day) => 'Doručení ' + dayCs(day) + '.',
+    no_packages: 'Žádné zásilky',
+    not_found: ': nenalezeno',
+    source_repo_link: 'Zobrazit integraci', source_repo_link_desc: 'Otevřít stránku GitHub pro tuto integraci',
+    status: 'Stav', status_desc: 'Řádek stavu pod jménem',
+    carrier: 'Dopravce', carrier_desc: 'Název dopravce',
+    recipient: 'Příjemce', recipient_desc: 'Štítek příjemce vedle jména dopravce',
+    carrier_logo: 'Logo dopravce', carrier_logo_desc: 'Logo dopravce vedle jména.', carrier_logo_link: 'Vyžaduje custom-brand-icons',
+    carrier_logo_requires_carrier: 'Pro použití tohoto nastavení zapněte Dopravce.',
+    badge: 'Odznak', badge_desc: 'Počet dnů do doručení, zobrazeno na ikoně',
+    details: 'Rozbalitelné podrobnosti', details_desc: 'Zobrazit šipku s dalšími informacemi o zásilce: časová osa událostí, sledovací kód, velikost zásilky nebo sken dopisu',
+    dim_delivered: 'Ztlumit doručené zásilky', dim_delivered_desc: 'Zobrazit doručené zásilky se sníženou průhledností',
+    location: 'Poloha', location_desc: 'Poslední známá poloha, pokud je k dispozici',
+    layout: 'Karta', single_card: 'Jedna karta', split_cards: 'Samostatné karty',
+    max_packages: 'Maximální počet zásilek',
+    show: 'Pole',
+    behaviour: 'Chování',
+    filter_status: 'Stav', enroute: 'Na cestě', delivered: 'Doručeno', all: 'Vše',
+    filter_direction: 'Směr', incoming: 'Příchozí', outgoing: 'Odchozí',
+    filter_date_label: 'Konkrétní den', filter_date: 'Datum', filter_date_desc: '0 = dnes  ·  -1 = včera  ·  1 = zítra  ·  Prázdné = bez filtru',
+    filter_slot: 'Časové okno', filter_slot_active: 'Pouze aktivní doručovací okno', filter_slot_desc: 'Zobrazit pouze zásilky, jejichž doručovací okno je právě aktivní', filter_slot_requires_enroute: 'Pro povolení nastavte filtr Stav na „Na cestě".',
+    filter_carrier: 'Dopravce', carrier_code: 'Dopravci', carrier_code_desc: 'Zobrazit pouze zásilky od vybraných dopravců',
+    carrier_code_empty: 'Zatím nebyli zjištěni žádní dopravci; nejprve přidejte zdroj',
+    hide_when_empty: 'Skrýt, když je prázdná', hide_when_empty_desc: 'Skrýt kartu, pokud nejsou žádné zásilky k zobrazení',
+    parcel_row_label: 'Surová data',
+    letterbox: 'Vejde se do poštovní schránky',
+    rerouted: 'Doručení na výdejní místo.',
+    service_point: (carrier) => 'Doručení na výdejní místo' + (carrier ? ' ' + carrier : '') + '.',
+    entity_hint_postnl_canonical_incoming: 'Najděte senzor s atributem parcels nazvaným incoming_parcels.',
+    entity_hint_postnl_canonical_delivered: 'Najděte senzor s atributem parcels nazvaným delivered_parcels. Volitelné: přidává nedávnou historii doručení.',
+    entity_hint_postnl_canonical_outgoing: 'Najděte senzor s atributem parcels nazvaným outgoing_parcels.',
+    entity_hint_postnl_canonical_outgoing_delivered: 'Najděte senzor s atributem parcels nazvaným outgoing_delivered_parcels. Volitelné: zobrazuje dokončené vratné zásilky.',
+    postnl_canonical_incoming_label: 'Na cestě (aktivní)', postnl_canonical_delivered_label: 'Doručeno (historie)', postnl_canonical_outgoing_label: 'Odchozí',
+    postnl_canonical_outgoing_delivered_label: 'Odchozí (doručeno)',
+    postnl_canonical_letters_label: 'Dopisy', entity_hint_postnl_canonical_letters: 'Najděte senzor s atributem letters nazvaným postnl_letters.',
+    entity_hint_parcel: 'Najděte senzor s atributem deliveries. Obvykle nazvaný parcel_raw_shipment_data.',
+    entity_hint_dhl_nl_incoming: 'Najděte senzor s atributem parcels nazvaným incoming_parcels. Ten už zahrnuje zásilky směřující na DHL ServicePoint.',
+    entity_hint_dhl_nl_delivered: 'Najděte senzor s atributem parcels nazvaným delivered_parcels. Volitelné: přidává nedávnou historii doručení.',
+    entity_hint_dhl_nl_outgoing: 'Najděte senzor s atributem parcels nazvaným outgoing_parcels.',
+    entity_hint_dhl_nl_outgoing_delivered: 'Najděte senzor s atributem parcels nazvaným outgoing_delivered_parcels. Volitelné: zobrazuje dokončené vratné zásilky.',
+    dhl_nl_incoming_label: 'Na cestě (aktivní)', dhl_nl_delivered_label: 'Doručeno (historie)', dhl_nl_outgoing_label: 'Odchozí',
+    dhl_nl_outgoing_delivered_label: 'Odchozí (doručeno)',
+    entity_hint_dpd_incoming: 'Najděte senzor s atributem parcels nazvaným incoming_parcels.',
+    entity_hint_dpd_delivered: 'Najděte senzor s atributem parcels nazvaným delivered_parcels. Volitelné: přidává nedávnou historii doručení.',
+    entity_hint_dpd_outgoing: 'Najděte senzor s atributem parcels nazvaným outgoing_parcels.',
+    entity_hint_dpd_outgoing_delivered: 'Najděte senzor s atributem parcels nazvaným outgoing_delivered_parcels. Volitelné: zobrazuje dokončené vratné zásilky.',
+    dpd_incoming_label: 'Na cestě (aktivní)', dpd_delivered_label: 'Doručeno (historie)', dpd_outgoing_label: 'Odchozí',
+    dpd_outgoing_delivered_label: 'Odchozí (doručeno)',
+    entity_hint_gls_incoming: 'Najděte senzor s atributem parcels nazvaným incoming_parcels.',
+    entity_hint_gls_delivered: 'Najděte senzor s atributem parcels nazvaným delivered_parcels. Volitelné: přidává nedávnou historii doručení.',
+    gls_incoming_label: 'Na cestě (aktivní)', gls_delivered_label: 'Doručeno (historie)',
+    entity_hint_dragonfly_incoming: 'Najděte senzor s atributem parcels nazvaným incoming_parcels.',
+    entity_hint_dragonfly_delivered: 'Najděte senzor s atributem parcels nazvaným delivered_parcels. Volitelné: přidává nedávnou historii doručení.',
+    dragonfly_incoming_label: 'Na cestě (aktivní)', dragonfly_delivered_label: 'Doručeno (historie)',
+    advanced: 'Pokročilé',
+    sources_auto_detect_notice: 'Zdroje jsou automaticky zjištěny z vašich integrací Home Assistant. Přidejte ty, které chcete sledovat.',
+    sources_none_configured_notice: 'Pokud níže nic nepřidáte, karta sama zobrazí vše, co rozpozná; pomocí záložky Filtr to zúžíte, nebo zde přidejte konkrétní zdroje, aby se karta omezila jen na ně.',
+    sources_empty_notice: 'Zatím nebyly zjištěny žádné podporované integrace.',
+    sources_empty_link: 'Zjistit, co tato karta podporuje',
+    source_unnamed_device: 'Účet',
+    source_recipient: 'Příjemce',
+    source_recipient_desc: 'Volitelné. Přepíše automaticky zjištěného příjemce pro zásilky tohoto účtu.',
+    sources_orphaned_notice: 'Tyto byly nakonfigurovány, ale jejich entita už neexistuje (byla odstraněna nebo přejmenována). Odstraňte je, nebo entitu přidejte zpět pod původním názvem, abyste je mohli dál používat.',
+    sources_tab: 'Zdroje', filter_tab: 'Filtr', display_tab: 'Vzhled',
+  },
 };
 
 // resolveTr(lang): the active translation object, with English filling in
@@ -606,6 +690,23 @@ function resolveTr(lang) {
 
 // pl(n, one, other): minimal pluralisation helper (EN only needs it)
 function pl(n, one, other) { return n === 1 ? one : other; }
+// plCs(n, one, few, many): Czech 3-way pluralisation (1 / 2-4 / 5+), used by
+// the cs locale's minute/hour phrasing above.
+function plCs(n, one, few, many) { return n === 1 ? one : (n >= 2 && n <= 4 ? few : many); }
+// dayCs(day): prefixes Czech weekday names with the correct preposition
+// ("v pondělí", "ve středu"), also when the label carries a date suffix
+// ("pondělí 20. srpna"); passes dnes/zítra/včera through unchanged.
+function dayCs(day) {
+  const map = {
+    'neděle': 'v neděli', 'pondělí': 'v pondělí', 'úterý': 'v úterý',
+    'středa': 've středu', 'čtvrtek': 've čtvrtek',
+    'pátek': 'v pátek', 'sobota': 'v sobotu',
+  };
+  const i = day.indexOf(' ');
+  const head = i === -1 ? day : day.slice(0, i);
+  if (!map[head]) return day;
+  return map[head] + (i === -1 ? '' : day.slice(i));
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -622,7 +723,7 @@ function formatDay(date, tr) {
   if (diff === -1) return tr.yesterday;
   if (diff > 1 && diff < 7) return tr.days[d.getDay()];
   if (diff < 0) return tr.days_ago(Math.abs(diff));
-  return tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
+  return tr.days[d.getDay()] + ' ' + d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
 }
 
 // Always a fixed calendar date ("17 juni"), never "today"/"X days ago";
@@ -630,7 +731,7 @@ function formatDay(date, tr) {
 // row (e.g. a letter's delivered-state line), so the two don't repeat.
 function formatAbsoluteDate(date, tr) {
   const d = new Date(date);
-  return d.getDate() + ' ' + tr.months[d.getMonth()];
+  return d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
 }
 
 function formatTime(d) {
@@ -868,14 +969,14 @@ function canonicalParcelStatus(status) {
 
 function canonicalParcelStatusLine(status, tr) {
   return ({
-    registered:       tr.lang === 'nl' ? 'Zending aangemeld.'         : 'Shipment registered.',
-    in_transit:       tr.lang === 'nl' ? 'Onderweg.'                  : 'In transit.',
-    out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : 'Out for delivery today.',
-    at_pickup_point:  tr.lang === 'nl' ? 'Klaar om af te halen.'      : 'Ready for pickup.',
-    delivered:        tr.lang === 'nl' ? 'Bezorgd.'                   : 'Delivered.',
-    returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : 'Returning to sender.',
-    problem:          tr.lang === 'nl' ? 'Probleem met bezorging.'    : 'Delivery problem.',
-  })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : 'Status unknown'));
+    registered:       tr.lang === 'nl' ? 'Zending aangemeld.'         : tr.lang === 'cs' ? 'Zásilka zaregistrována.'  : 'Shipment registered.',
+    in_transit:       tr.lang === 'nl' ? 'Onderweg.'                  : tr.lang === 'cs' ? 'Na cestě.'                : 'In transit.',
+    out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : tr.lang === 'cs' ? 'Na rozvozu.'              : 'Out for delivery today.',
+    at_pickup_point:  tr.lang === 'nl' ? 'Klaar om af te halen.'      : tr.lang === 'cs' ? 'Připraveno k vyzvednutí.' : 'Ready for pickup.',
+    delivered:        tr.lang === 'nl' ? 'Bezorgd.'                   : tr.lang === 'cs' ? 'Doručeno.'                : 'Delivered.',
+    returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : tr.lang === 'cs' ? 'Vrací se k odesílateli.'  : 'Returning to sender.',
+    problem:          tr.lang === 'nl' ? 'Probleem met bezorging.'    : tr.lang === 'cs' ? 'Problém s doručením.'    : 'Delivery problem.',
+  })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : tr.lang === 'cs' ? 'Stav neznámý' : 'Status unknown'));
 }
 
 // Prefer raw_status as the primary line whenever it's actually human-readable
@@ -2645,7 +2746,7 @@ function renderRow(item, show, tr, openItems, hass) {
         else if (diff  >  -7) dayLabel = tr.days[e.date.getDay()]; // within the past week: day name only
         else {
           const d = e.date;
-          dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + ' ' + tr.months[d.getMonth()];
+          dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
         }
         const cap = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
         metaParts.push(cap + ' ' + tr.at_time + ' ' + formatTime(e.date));
