@@ -952,10 +952,10 @@ function canonicalParcelStatusLine(status, tr) {
   return ({
     registered:       tr.lang === 'nl' ? 'Zending aangemeld.'         : tr.lang === 'cs' ? 'Zásilka zaregistrována.'  : 'Shipment registered.',
     in_transit:       tr.lang === 'nl' ? 'Onderweg.'                  : tr.lang === 'cs' ? 'Na cestě.'                : 'In transit.',
-    out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : tr.lang === 'cs' ? 'Doručení dnes.'           : 'Out for delivery today.',
+    out_for_delivery: tr.lang === 'nl' ? 'Bezorging vandaag.'         : tr.lang === 'cs' ? 'Na rozvozu.'              : 'Out for delivery today.',
     at_pickup_point:  tr.lang === 'nl' ? 'Klaar om af te halen.'      : tr.lang === 'cs' ? 'Připraveno k vyzvednutí.' : 'Ready for pickup.',
     delivered:        tr.lang === 'nl' ? 'Bezorgd.'                   : tr.lang === 'cs' ? 'Doručeno.'                : 'Delivered.',
-    returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : tr.lang === 'cs' ? 'Vrací se odesílateli.'    : 'Returning to sender.',
+    returning:        tr.lang === 'nl' ? 'Retour naar afzender.'      : tr.lang === 'cs' ? 'Vrací se k odesílateli.'  : 'Returning to sender.',
     problem:          tr.lang === 'nl' ? 'Probleem met bezorging.'    : tr.lang === 'cs' ? 'Problém s doručením.'    : 'Delivery problem.',
   })[status] || ensurePeriod(status || (tr.lang === 'nl' ? 'Status onbekend' : tr.lang === 'cs' ? 'Stav neznámý' : 'Status unknown'));
 }
