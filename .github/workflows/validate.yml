@@ -19,3 +19,12 @@ jobs:
           category: "plugin"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  validate-js:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: node --check package-tracker-card.js
+      - name: Translation completeness report
+        run: node scripts/check-translations.js
