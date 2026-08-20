@@ -13,7 +13,14 @@
 // this check, it's just reported for visibility. A key that exists in a
 // locale but not in English at all is almost always a typo of the real key
 // name, silently wasting whatever text a translator wrote for it since
-// nothing will ever read that key, so that does fail the check.
+// nothing will ever read that key, so that does fail the check, unless it's
+// listed below: a deliberate, opt-in, locale-specific key that other
+// locales read with a fallback (e.g. `tr.day_num_suffix || ''`) rather than
+// requiring, so it's intentionally absent from English.
+const LOCALE_SPECIFIC_KEYS = new Set([
+  'day_num_suffix', // ordinal-dot suffix after a day number, e.g. Czech "20. srpna"
+]);
+
 const fs = require('fs');
 const path = require('path');
 
@@ -35,7 +42,7 @@ for (const lang of Object.keys(TRANSLATIONS).sort()) {
   if (lang === 'en') continue;
   const keys = new Set(Object.keys(TRANSLATIONS[lang]));
   const missing = [...baseKeys].filter((k) => !keys.has(k));
-  const unknown = [...keys].filter((k) => !baseKeys.has(k));
+  const unknown = [...keys].filter((k) => !baseKeys.has(k) && !LOCALE_SPECIFIC_KEYS.has(k));
 
   const total = baseKeys.size;
   const have = total - missing.length;
