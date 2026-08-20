@@ -585,6 +585,25 @@ const TRANSLATIONS = {
   },
 };
 
+// resolveTr(lang): the active translation object, with English filling in
+// any key a less-complete locale doesn't have yet, instead of that one key
+// silently rendering as undefined. English itself is always complete (every
+// other locale is written by hand against its own key list, but nothing
+// enforces that it stays that way as new keys get added later), so it's the
+// correct universal fallback base regardless of which locale is active.
+// Memoized per lang: TRANSLATIONS never changes at runtime, so the merged
+// object only needs to be built once per language, not on every call.
+const _resolvedTr = new Map();
+function resolveTr(lang) {
+  const key = lang || 'en';
+  let tr = _resolvedTr.get(key);
+  if (!tr) {
+    tr = TRANSLATIONS[key] ? { ...TRANSLATIONS.en, ...TRANSLATIONS[key] } : TRANSLATIONS.en;
+    _resolvedTr.set(key, tr);
+  }
+  return tr;
+}
+
 // pl(n, one, other): minimal pluralisation helper (EN only needs it)
 function pl(n, one, other) { return n === 1 ? one : other; }
 
@@ -2852,7 +2871,7 @@ class PackageTrackerCard extends HTMLElement {
 
   _collectItems() {
     const lang = this._hass.language || 'en';
-    const ctx   = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
+    const ctx   = { tr: resolveTr(lang), hass: this._hass };
     const items = [];
     for (const source of effectiveSources(this._config, this._hass)) {
       if (!source.entity) continue;
@@ -2989,7 +3008,7 @@ class PackageTrackerCard extends HTMLElement {
     if (this._config.max > 0) items = items.slice(0, this._config.max);
     const show   = this._config.show;
     const layout = this._config.layout || 'single';
-    const tr     = TRANSLATIONS[this._hass.language] || TRANSLATIONS['en'];
+    const tr     = resolveTr(this._hass.language);
 
     this._built = true;
     if (!items.length && show.hide_when_empty) {
@@ -3162,7 +3181,7 @@ class PackageTrackerCardEditor extends HTMLElement {
   _availableCarriers() {
     if (!this._hass || !this._config) return [];
     const lang = this._hass.language || 'en';
-    const ctx  = { tr: TRANSLATIONS[lang] || TRANSLATIONS['en'], hass: this._hass };
+    const ctx  = { tr: resolveTr(lang), hass: this._hass };
     // Group by display label, not by code; the same real-world carrier can
     // be reported under different codes depending on the source (e.g.
     // PostNL's own integrations use 'postnl', but Parcel reports PostNL
@@ -3243,7 +3262,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     const card   = document.createElement('div'); card.className   = 'editor-card';
     const tabBar = document.createElement('div'); tabBar.className = 'tab-bar';
 
-    const uiTr = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
+    const uiTr = resolveTr(this._hass?.language);
     [['sources', uiTr.sources_tab], ['filter', uiTr.filter_tab], ['appearance', uiTr.display_tab]].forEach(([id, label]) => {
       const btn = Object.assign(document.createElement('button'), {
         className: 'tab-btn' + (id === this._tab ? ' active' : ''), textContent: label,
@@ -3284,7 +3303,7 @@ class PackageTrackerCardEditor extends HTMLElement {
   _renderSources() {
     const root    = this._content;
     const sources = this._config.sources || [];
-    const uiTr    = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
+    const uiTr    = resolveTr(this._hass?.language);
 
     // `sources` above is a render-time snapshot, fine for deciding what this
     // tab draws. Every *handler* below must read the live list instead: the
@@ -3855,7 +3874,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     // and recreate the input (which would steal focus after every keystroke).
     const saveNoRender = (f) => this._fire({ ...this._config, filter: f });
     const updNoRender  = (key, val) => saveNoRender(buildUpdatedFilter(key, val));
-    const uiTr   = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
+    const uiTr   = resolveTr(this._hass?.language);
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.filter_status }));
     const statusGroup = document.createElement('div'); statusGroup.className = 'settings-group';
@@ -3966,7 +3985,7 @@ class PackageTrackerCardEditor extends HTMLElement {
     const root  = this._content;
     const c     = this._config;
     const show  = c.show || {};
-    const uiTr  = TRANSLATIONS[this._hass?.language] || TRANSLATIONS['en'];
+    const uiTr  = resolveTr(this._hass?.language);
 
     root.appendChild(Object.assign(document.createElement('div'), { className: 'section-label', textContent: uiTr.layout }));
     const layoutGroup = document.createElement('div'); layoutGroup.className = 'settings-group';
