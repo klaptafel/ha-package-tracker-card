@@ -447,6 +447,7 @@ const TRANSLATIONS = {
     badge: 'Badge', badge_desc: 'Days until delivery, shown on the icon',
     details: 'Expandable details', details_desc: 'Show the chevron with extra info per package: event timeline, tracking code, package size, or letter scan',
     dim_delivered: 'Dim delivered packages', dim_delivered_desc: 'Show delivered packages at reduced opacity',
+    translate_events: 'Translate carrier text (experimental feature)', translate_events_desc: 'Experimental feature: machine translation of carrier text (the main status line and the carrier event texts) into the language set in Home Assistant. Text is sent as soon as the card renders, whether or not the timeline is expanded. Uses a public, free Google Translate endpoint; sends that text to Google.',
     location: 'Location', location_desc: 'Last known location, if available',
     layout: 'Card', single_card: 'Single card', split_cards: 'Separate cards',
     max_packages: 'Maximum amount of packages',
@@ -530,6 +531,7 @@ const TRANSLATIONS = {
     badge: 'Badge', badge_desc: 'Dagen tot levering, weergegeven op het icoon',
     details: 'Uitklapbare details', details_desc: 'Toon de chevron met extra info per pakket: tijdlijn, tracking code, pakketformaat, of brief-scan',
     dim_delivered: 'Dim bezorgde pakketten', dim_delivered_desc: 'Bezorgde pakketten met verminderde helderheid weergeven',
+    translate_events: 'Vertaal bezorgdienst-tekst (experimentele functie)', translate_events_desc: 'Experimentele functie: automatische vertaling van bezorgdienst-tekst (de hoofdstatusregel en de gebeurtenisteksten van de bezorgdienst) naar de taal die in Home Assistant is ingesteld. De tekst wordt verzonden zodra de kaart wordt weergegeven, of de tijdlijn nu uitgeklapt is of niet. Gebruikt een publieke, gratis Google Translate-endpoint; stuurt die tekst naar Google.',
     location: 'Locatie', location_desc: 'Laatste bekende locatie, indien beschikbaar',
     layout: 'Kaart', single_card: 'Enkele kaart', split_cards: 'Losse kaarten',
     max_packages: 'Maximum aantal pakketjes',
@@ -614,6 +616,7 @@ const TRANSLATIONS = {
     badge: 'Odznak', badge_desc: 'Počet dnů do doručení, zobrazeno na ikoně',
     details: 'Rozbalitelné podrobnosti', details_desc: 'Zobrazit šipku s dalšími informacemi o zásilce: časová osa událostí, sledovací kód, velikost zásilky nebo sken dopisu',
     dim_delivered: 'Ztlumit doručené zásilky', dim_delivered_desc: 'Zobrazit doručené zásilky se sníženou průhledností',
+    translate_events: 'Přeložit text dopravce (experimentální funkce)', translate_events_desc: 'Experimentální funkce: strojový překlad textu dopravce (hlavní řádek stavu a texty událostí dopravce) do jazyka nastaveného v Home Assistantu. Text se odesílá už při vykreslení karty, bez ohledu na to, jestli je časová osa rozbalená. Používá veřejný, bezplatný endpoint Google Translate; odesílá tento text Googlu.',
     location: 'Poloha', location_desc: 'Poslední známá poloha, pokud je k dispozici',
     layout: 'Karta', single_card: 'Jedna karta', split_cards: 'Samostatné karty',
     max_packages: 'Maximální počet zásilek',
@@ -706,6 +709,201 @@ function dayCs(day) {
   const head = i === -1 ? day : day.slice(0, i);
   if (!map[head]) return day;
   return map[head] + (i === -1 ? '' : day.slice(i));
+}
+
+// Opt-in (show.translate_events, off by default) machine translation of
+// per-event timeline text (resolveCanonicalEvents' `text`): unlike the
+// canonical status lines above, that text is the carrier's own free-form
+// sentence, and can't be run through TRANSLATIONS. Its actual source
+// language isn't fixed across carriers -- DPD's and the `parcel`
+// integration's (Packeta etc.) raw sentences are English, but PostNL's are
+// already Dutch (see rawStatusLine's own comment) -- so this can't hardcode
+// a source language; see the sl='auto' + retry handling below for why.
+// Uses Google's public, unofficial (no key, no quota guarantee) translate
+// endpoint. `items` is every {el, text} pair for one shipment's timeline;
+// each `el` already has the original text (set by the caller before calling
+// this), and only gets overwritten once/if a translation actually comes
+// back for it -- any failure (offline, blocked, bad response) leaves the
+// original text in place, never breaks the card.
+//
+// Two caches, both keyed identically (`lang:sourceText`):
+// - translateCache (module-scope object, mirrored to localStorage under
+//   TRANSLATE_CACHE_KEY): resolved translations, so they survive a refresh
+//   or full HA restart instead of re-hitting the endpoint for the same
+//   event text again. Kept as a single in-memory object rather than
+//   re-parsing localStorage on every call/write: two translation batches
+//   that finish around the same time both mutate this same object, so
+//   neither write can silently drop the other's entries the way two
+//   independent read-modify-write round-trips through localStorage could.
+//   Capped at TRANSLATE_CACHE_LIMIT entries (oldest evicted first) so it
+//   can't grow unbounded over a long-running dashboard.
+// - translateInFlight (module-scope Map): requests currently in progress,
+//   so a re-render while one is still pending (two shipments sharing the
+//   same event text, or hass pushing a state update mid-request) awaits
+//   that request instead of firing a duplicate one.
+//
+// The endpoint's own `q` parameter turns out not to batch the way its shape
+// suggests: observed behaviour is that a second/third repeated `q=` is just
+// silently dropped, not an extra result in the response. What does work is
+// joining several texts into a *single* `q` with '\n' separators -- the
+// endpoint translates them together as one request and, in observed
+// responses, keeps the newlines at the same positions in its output, so the
+// translated result can normally be split back into one line per input text
+// afterwards (guarded below in case that ever doesn't hold). That's what
+// this does: one request per shipment's timeline instead of one per event.
+const TRANSLATE_CACHE_KEY = 'package-tracker-card-translate-cache';
+const TRANSLATE_CACHE_LIMIT = 500;
+const TRANSLATE_TIMEOUT_MS = 8000;
+const translateInFlight = new Map();
+let translateCache = null;
+
+function normalizeTranslateLang(lang) {
+  return (lang || '').slice(0, 2).toLowerCase();
+}
+
+function loadTranslateCache() {
+  if (!translateCache) {
+    try { translateCache = JSON.parse(localStorage.getItem(TRANSLATE_CACHE_KEY)) || {}; }
+    catch (e) { translateCache = {}; }
+  }
+  return translateCache;
+}
+
+// Merges `entries` into the shared in-memory cache and persists the whole
+// thing, evicting the oldest entries first once past the cap (plain objects
+// preserve string-key insertion order, so the first N keys are simply the
+// oldest).
+function persistTranslateCacheEntries(entries) {
+  const cache = loadTranslateCache();
+  Object.assign(cache, entries);
+  const keys = Object.keys(cache);
+  if (keys.length > TRANSLATE_CACHE_LIMIT) {
+    for (const k of keys.slice(0, keys.length - TRANSLATE_CACHE_LIMIT)) delete cache[k];
+  }
+  try { localStorage.setItem(TRANSLATE_CACHE_KEY, JSON.stringify(cache)); }
+  catch (e) { /* localStorage unavailable/full -- translations still applied this render, just not persisted */ }
+}
+
+function translateEventTexts(items, lang) {
+  const targetLang = normalizeTranslateLang(lang);
+  if (!targetLang || targetLang === 'en' || !items.length) return;
+
+  const cache = loadTranslateCache();
+
+  const toFetch = []; // { el, text, cacheKey }, only what's neither cached nor already in flight
+  for (const { el, text } of items) {
+    if (!text) continue;
+    const cacheKey = targetLang + ':' + text;
+    if (cache[cacheKey]) { el.textContent = cache[cacheKey]; continue; }
+    const inFlight = translateInFlight.get(cacheKey);
+    if (inFlight) { inFlight.then((translated) => { if (translated) el.textContent = translated; }); continue; }
+    toFetch.push({ el, text, cacheKey });
+  }
+  if (!toFetch.length) return;
+
+  // A literal newline inside a carrier's own event text would break the
+  // line-per-entry alignment below; not seen in practice (these are single
+  // short sentences), flattened to a space just in case.
+  const q = toFetch.map((p) => p.text.replace(/\n/g, ' ')).join('\n');
+  const flattenedTexts = toFetch.map((p) => p.text.replace(/\n/g, ' ').trim());
+
+  // Split out into a promise-returning helper so it can be fired twice: the
+  // normal sl='auto' request, and -- only in the narrow case handled below
+  // -- a retry that forces sl='en'. Each call gets its own timeout/abort so
+  // the retry isn't starved of budget by whatever the first request used.
+  function fetchTranslateBatch(sourceLang) {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
+      encodeURIComponent(sourceLang) + '&dt=t&tl=' + encodeURIComponent(targetLang) +
+      '&q=' + encodeURIComponent(q);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TRANSLATE_TIMEOUT_MS);
+    return fetch(url, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .finally(() => clearTimeout(timeoutId));
+  }
+
+  // Every chunk's translated text is concatenated first (a single input
+  // line can itself come back split into several chunks, e.g. on sentence
+  // boundaries), *then* split back apart on '\n', since in observed
+  // responses the endpoint only places '\n' at the boundaries that came
+  // from the input, never inside a chunk. Returns null (not an array) when
+  // the line count doesn't match what was sent -- assigning by index
+  // anyway would silently attach the wrong translation to the wrong event,
+  // and cache it there permanently, which is worse than no translation.
+  // `data` is explicitly required to already carry a real entries array
+  // (not defaulted to `[]` and then measured): a failed request resolves
+  // `fetchTranslateBatch` to `data === null` (see below), and for a
+  // one-event batch, an *empty* entries array would otherwise split into
+  // `['']` -- one element, same length as a one-item toFetch -- and pass
+  // this check by coincidence instead of being correctly rejected as a
+  // failure.
+  function extractLines(data) {
+    const entries = Array.isArray(data?.[0]) ? data[0] : null;
+    if (!entries) return null;
+    const joined = entries.map((chunk) => chunk[0]).join('');
+    const lines = joined.split('\n').map((l) => l.trim());
+    return lines.length === toFetch.length ? lines : null;
+  }
+
+  const requestPromise = fetchTranslateBatch('auto')
+    .then((data) => {
+      const lines = extractLines(data);
+      if (!lines) return toFetch.map(() => null);
+      // data[2] is Google's own detected source language for the whole
+      // batch. The one confirmed failure mode (a Czech address embedded in
+      // an otherwise-English Packeta sentence) always looks like this:
+      // auto-detection lands on the *target* language and hands the input
+      // straight back unchanged, since as far as Google's concerned there's
+      // nothing to translate. Retried once, forcing sl='en', only when both
+      // signs line up -- everything else (including PostNL's raw_status,
+      // which really is already in the carrier's own language, not
+      // English) is trusted as correctly translated the first time, so
+      // this doesn't fire on the vast majority of requests.
+      //
+      // This condition can't tell that case apart from a text that's
+      // genuinely already in the target language (confirmed by hand: a
+      // Dutch PostNL sentence with hass.language='nl' detects as
+      // 'nl'===target and comes back unchanged too, exactly the same
+      // signature) -- there's no reliable way to distinguish "Google
+      // misdetected this" from "this really doesn't need translating"
+      // using only the response, without inventing our own language
+      // detection. So the retry below still fires for both; what matters
+      // is that either way its result gets cached (see below), so this
+      // ambiguity only ever costs one extra request per distinct text, not
+      // one on every render.
+      const detected = typeof data?.[2] === 'string' ? data[2].toLowerCase() : null;
+      const looksUntranslated = detected === targetLang &&
+        lines.every((line, i) => line === flattenedTexts[i]);
+      if (!looksUntranslated) return toFetch.map((_, i) => lines[i] || null);
+      return fetchTranslateBatch('en').then((data2) => {
+        const lines2 = extractLines(data2);
+        // A genuine failure here (network/alignment) skips caching, so a
+        // transient problem gets a fair retry on the next render -- but
+        // once we have *any* valid response, whatever it says is the final
+        // answer, translated or (for text that really was already in the
+        // target language) unchanged, so it gets cached either way. Without
+        // this, a same-language text would never get cached at all (it
+        // never actually "translates" to anything different) and would
+        // silently repeat this same two-request round trip on every single
+        // render forever.
+        return lines2 ? toFetch.map((p, i) => lines2[i] || p.text) : toFetch.map(() => null);
+      });
+    })
+    .catch(() => toFetch.map(() => null));
+
+  toFetch.forEach((p, i) => {
+    translateInFlight.set(p.cacheKey, requestPromise.then((results) => results[i]));
+  });
+
+  requestPromise.then((results) => {
+    const cacheEntries = {};
+    toFetch.forEach((p, i) => {
+      translateInFlight.delete(p.cacheKey);
+      const translated = results[i];
+      if (translated) { p.el.textContent = translated; cacheEntries[p.cacheKey] = translated; }
+    });
+    if (Object.keys(cacheEntries).length) persistTranslateCacheEntries(cacheEntries);
+  });
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -872,6 +1070,10 @@ function parseExpected(ts, fallback) {
 function mkItem(overrides) {
   const item = {
     name: '', line1: null, line2: null, location: null,
+    // Opt-in machine translation may only touch line1 when it's the
+    // carrier's own untranslated sentence; false everywhere it's one of our
+    // own localized strings (see resolveCanonicalDeliverySlot).
+    line1Translatable: false,
     icon: null, color: 'grey',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
@@ -987,10 +1189,20 @@ function canonicalParcelStatusLine(status, tr) {
 // values. Machine-code raw_status never reaches here (same regex used by
 // rawStatusLine), so this can't show a raw enum value as the primary line.
 function bestStatusLine(status, rawStatus, tr) {
-  if (rawStatus && !isMachineCodeStatus(rawStatus)) {
+  if (isRawStatusLine(rawStatus)) {
     return ensurePeriod(rawStatus);
   }
   return canonicalParcelStatusLine(status, tr);
+}
+
+// The condition bestStatusLine branches on, named once so callers can ask the
+// same question without restating it: is this raw_status the carrier's own
+// sentence (and therefore what bestStatusLine will actually return)? That
+// matters beyond bestStatusLine itself, because such a line is the carrier's
+// own untranslated text -- the one kind of line1 that opt-in translation may
+// touch (see line1Translatable in resolveCanonicalDeliverySlot).
+function isRawStatusLine(rawStatus) {
+  return !!rawStatus && !isMachineCodeStatus(rawStatus);
 }
 
 // `raw_status` is always English (it's the carrier's own API vocabulary, no
@@ -1128,17 +1340,29 @@ function resolveCanonicalPackageSize(p) {
 function resolveCanonicalEvents(p, tr) {
   return Array.isArray(p.history) ? [...p.history].reverse().map(h => {
     const date = h.timestamp ? new Date(h.timestamp) : null;
-    let text;
+    let text, translatable;
     if (h.raw_status && !isMachineCodeStatus(h.raw_status)) {
+      // The carrier's own free-form sentence, used as-is -- this is what
+      // show.translate_events actually exists for (see translateEventTexts):
+      // real carrier text in the carrier's own language (DPD/PostNL raw
+      // sentences), never run through TRANSLATIONS, so opt-in translation
+      // is the only way to localize it.
       text = ensurePeriod(h.raw_status);
+      translatable = true;
     } else {
+      // Built from the canonical status enum, already localized via `tr`
+      // (canonicalParcelStatusLine) -- translating this again would feed
+      // already-target-language text back through Google as if it were
+      // English, garbling it. Never translatable, even with the English
+      // raw-status hint appended in parens below.
       text = canonicalParcelStatusLine(h.status, tr);
       if (h.raw_status && normalizeStatusForCompare(h.raw_status) !== normalizeStatusForCompare(h.status)) {
         const raw = humanizeRawStatus(h.raw_status);
         if (raw) text = text.replace(/\.$/, '') + ' (' + raw.replace(/\.$/, '').toLowerCase() + ').';
       }
+      translatable = false;
     }
-    return { date: date && !isNaN(date) ? date : null, text, location: null };
+    return { date: date && !isNaN(date) ? date : null, text, location: null, translatable };
   }) : [];
 }
 
@@ -1152,6 +1376,15 @@ function resolveCanonicalDeliverySlot(p, tr) {
   const delivered = status === 'delivered';
   const { icon, color } = canonicalParcelStatus(status);
   let deliveryDate = null, line1 = null, line2 = null, slotActive = false, slotEnd = null;
+  // Whether line1 ended up being the carrier's own raw sentence (via
+  // bestStatusLine's isRawStatusLine branch) rather than one of our own
+  // strings. Only that case may be machine-translated (see renderRow and
+  // translateEventTexts); everything else here -- canonicalParcelStatusLine,
+  // formatDeliveredText, anything computeDeliverySlot might substitute -- is
+  // already localized through TRANSLATIONS, and feeding it back through
+  // Google as if it were the carrier's English would garble it. Same
+  // reasoning as resolveCanonicalEvents' `translatable`.
+  let line1Translatable = false;
 
   if (delivered) {
     const dateStr = p.delivered_at || p.planned_from; // fallback covers the race condition above
@@ -1170,13 +1403,23 @@ function resolveCanonicalDeliverySlot(p, tr) {
       fromStr = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeFrom;
       toStr   = p.raw.deliveryDate + 'T' + p.raw.deliveryTimeTo;
     }
-    const slot = computeDeliverySlot(fromStr, toStr, tr, bestStatusLine(status, p.raw_status, tr));
-    if (slot) ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
+    const statusLine = bestStatusLine(status, p.raw_status, tr);
+    const slot = computeDeliverySlot(fromStr, toStr, tr, statusLine);
+    if (slot) {
+      ({ deliveryDate, slotActive, slotEnd, line1, line2 } = slot);
+      // Guarded on identity rather than just isRawStatusLine: the slot is
+      // handed the status line but owns the result, so if it ever answers
+      // with a line of its own instead, that line is ours and localized.
+      line1Translatable = line1 === statusLine && isRawStatusLine(p.raw_status);
+    }
   }
-  if (!line1) line1 = bestStatusLine(status, p.raw_status, tr);
+  if (!line1) {
+    line1 = bestStatusLine(status, p.raw_status, tr);
+    line1Translatable = isRawStatusLine(p.raw_status);
+  }
   if (!line2) line2 = rawStatusLine(p);
 
-  return { status, delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd };
+  return { status, delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd, line1Translatable };
 }
 
 // Shared mapper for both dhl_nl_incoming and dhl_nl_delivered: same normalised
@@ -1186,7 +1429,7 @@ function resolveCanonicalDeliverySlot(p, tr) {
 // the future PostNL 4.0.0), same normalised shape across all of them, only
 // the carrier identity and direction differ per source.
 function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
-  const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd } =
+  const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd, line1Translatable } =
     resolveCanonicalDeliverySlot(p, tr);
 
   const name = resolveCanonicalName(p, direction);
@@ -1203,7 +1446,7 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   const events = resolveCanonicalEvents(p, tr);
 
   return mkItem({
-    name, line1, line2, icon, color,
+    name, line1, line2, line1Translatable, icon, color,
     deliveryDate, slotActive, delivered, slotEnd,
     carrierCode, carrier: carrierName(carrierGroup, carrierCode), brandIcon: getBrandIcon(carrierGroup, carrierCode),
     tapUrl: p.url || null, direction,
@@ -1265,6 +1508,12 @@ function mapPostnlLetter(letter, tr, imageMap) {
   // time component); once that day has passed, describe it the same way a
   // delivered parcel is ("Delivered yesterday."); while still today, use the
   // same all-day-window phrasing a midnight-only parcel slot gets.
+  //
+  // Both phrasings are built from `tr`, so unlike the other two line1
+  // builders (resolveCanonicalDeliverySlot and INTEGRATIONS.parcel._map)
+  // this one never produces carrier text and never sets line1Translatable
+  // -- mkItem's `false` default is the right answer here. Worth re-checking
+  // if a letter ever grows a free-form carrier sentence of its own.
   let line1 = null;
   if (validDate) line1 = delivered ? formatDeliveredText(d, tr) : tr.delivery_on(formatDay(d, tr));
   // Always resolve the actual scan, even once delivered; it's still useful
@@ -1478,6 +1727,24 @@ const INTEGRATIONS = {
       const carrierCode = item.carrier_code ? item.carrier_code.toLowerCase() : null;
       const firstEvent  = Array.isArray(item.events) ? item.events[0] : null;
       let deliveryDate = null, line1 = null, line2 = null, slotActive = false;
+      // Deliberately a second, independent place that sets this flag -- the
+      // other is resolveCanonicalDeliverySlot. Not duplication to be tidied
+      // away later: these are two unrelated line1 builders over two
+      // unrelated carrier payloads, and neither can answer the question for
+      // the other. There, line1 comes from bestStatusLine and the flag keys
+      // off raw_status via isRawStatusLine; here, `parcel` has no raw_status
+      // at all and line1 is the newest event's own text, so the same
+      // question ("is this the carrier's own untranslated sentence?") has a
+      // completely different answer to compute. Unifying them means picking
+      // one payload shape and silently getting the other wrong.
+      //
+      // (mapPostnlLetter is the third line1 builder and needs no flag: its
+      // line1 is always ours, see its own note.)
+      //
+      // True only where line1 is that raw event sentence -- the very text
+      // this source's own events already mark translatable below -- and
+      // false for our localized delivered/slot phrasing.
+      let line1Translatable = false;
 
       // For delivered packages, prefer the actual delivery time from events over date_expected
       if (delivered && firstEvent?.date) {
@@ -1498,6 +1765,7 @@ const INTEGRATIONS = {
           } else {
             slotActive  = expectedEndStr ? isSlotActive(expectedStr, expectedEndStr) : false;
             line1 = ensurePeriod(firstEvent?.event || '');
+            line1Translatable = !!line1;
             const pastSlotP = expectedEndStr && !slotActive && new Date() > new Date(expectedEndStr);
             if      ((slotActive || pastSlotP) && expectedEndStr) line2 = formatTimeRemaining(expectedEndStr, tr, expectedStr);
             else if (start === '00:00' && end) line2 = tr.delivery_before(day, end);
@@ -1517,12 +1785,15 @@ const INTEGRATIONS = {
           }
         }
       }
-      if (!line1) line1 = ensurePeriod(firstEvent?.event || '');
+      if (!line1) {
+        line1 = ensurePeriod(firstEvent?.event || '');
+        line1Translatable = !!line1;
+      }
       if (!deliveryDate && carrierCode === 'gls' && firstEvent?.event?.toLowerCase().includes('expected to be delivered during the day')) {
         deliveryDate = new Date();
         line2 = tr.delivery_on(formatDay(deliveryDate, tr));
       }
-      return mkItem({ name: (item.description || '').trim(), line1, line2,
+      return mkItem({ name: (item.description || '').trim(), line1, line2, line1Translatable,
         location: firstEvent?.location || null,
         icon, color, deliveryDate, slotActive, delivered, carrierCode,
         carrier:   carrierName('parcel', carrierCode),
@@ -1536,6 +1807,10 @@ const INTEGRATIONS = {
           date: e.date ? parseDate(String(e.date)) : null,
           text: e.event || '',
           location: e.location || null,
+          // Always the carrier's own raw text via parcelapp.net's API,
+          // never localized -- same reasoning as resolveCanonicalEvents'
+          // raw-sentence branch above, see translateEventTexts.
+          translatable: true,
         })).filter(e => e.text) });
     },
   },
@@ -2264,6 +2539,7 @@ const CARD_DEFAULTS = {
     brand_icon:     true,
     hide_when_empty: false,
     details:        true,
+    translate_events: false,
   },
   filter: {
     state: 'all',
@@ -2637,7 +2913,14 @@ function renderRow(item, show, tr, openItems, hass) {
   const content = mk('div', 'content');
   content.appendChild(mk('div', 'name', item.name || '-'));
   if (show.location && item.location)  content.appendChild(mk('div', 'location', item.location));
-  if (show.status && item.line1)       content.appendChild(mk('div', 'line1',    item.line1));
+  // Held onto rather than appended inline: when opt-in translation is on and
+  // this line is the carrier's own sentence, it gets handed to
+  // translateEventTexts at the end of the row (see below).
+  let line1El = null;
+  if (show.status && item.line1) {
+    line1El = mk('div', 'line1', item.line1);
+    content.appendChild(line1El);
+  }
   if (item.line2)                      content.appendChild(mk('div', 'line2',    item.line2));
   // Letterbox is hidden once delivered: "this fits through your letterbox"
   // is only useful before you've received it (you don't need to wait home),
@@ -2734,28 +3017,41 @@ function renderRow(item, show, tr, openItems, hass) {
       });
       detail.appendChild(bigImg);
     }
-    if (hasEvents) dedupEvents(item.events).forEach(e => {
-      const ei = mk('div', 'event-item');
-      // Meta: date + location
-      const metaParts = [];
-      if (e.date && !isNaN(e.date)) {
-        const diff = daysUntil(e.date);
-        let dayLabel;
-        if      (diff ===  0) dayLabel = tr.today;
-        else if (diff === -1) dayLabel = tr.yesterday;
-        else if (diff  >  -7) dayLabel = tr.days[e.date.getDay()]; // within the past week: day name only
-        else {
-          const d = e.date;
-          dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
+    if (hasEvents) {
+      // Collected up front and translated in one batched request below
+      // (translateEventTexts), instead of one request per event.
+      const toTranslate = [];
+      dedupEvents(item.events).forEach(e => {
+        const ei = mk('div', 'event-item');
+        // Meta: date + location
+        const metaParts = [];
+        if (e.date && !isNaN(e.date)) {
+          const diff = daysUntil(e.date);
+          let dayLabel;
+          if      (diff ===  0) dayLabel = tr.today;
+          else if (diff === -1) dayLabel = tr.yesterday;
+          else if (diff  >  -7) dayLabel = tr.days[e.date.getDay()]; // within the past week: day name only
+          else {
+            const d = e.date;
+            dayLabel = tr.days[d.getDay()] + ' ' + d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
+          }
+          const cap = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+          metaParts.push(cap + ' ' + tr.at_time + ' ' + formatTime(e.date));
         }
-        const cap = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
-        metaParts.push(cap + ' ' + tr.at_time + ' ' + formatTime(e.date));
-      }
-      if (show.location !== false && e.location) metaParts.push(e.location);
-      if (metaParts.length) ei.appendChild(mk('div', 'event-meta', metaParts.join(' · ')));
-      ei.appendChild(mk('div', 'event-text', ensurePeriod(e.text)));
-      detail.appendChild(ei);
-    });
+        if (show.location !== false && e.location) metaParts.push(e.location);
+        if (metaParts.length) ei.appendChild(mk('div', 'event-meta', metaParts.join(' · ')));
+        const eventText = ensurePeriod(e.text);
+        const textEl = mk('div', 'event-text', eventText);
+        ei.appendChild(textEl);
+        // Only genuinely untranslated carrier text (see resolveCanonicalEvents
+        // and the `parcel` integration's own _map) goes into the batch --
+        // events built from the already-localized canonical status line
+        // would get corrupted by round-tripping them through translation.
+        if (e.translatable) toTranslate.push({ el: textEl, text: eventText });
+        detail.appendChild(ei);
+      });
+      if (show.translate_events) translateEventTexts(toTranslate, hass?.language);
+    }
 
     // Package size
     if (item.packageSize) {
@@ -2801,6 +3097,18 @@ function renderRow(item, show, tr, openItems, hass) {
   }
 
   row.appendChild(right);
+
+  // Deliberately last, after the timeline batch above: line1 is very often
+  // the same carrier sentence as the newest event, so by the time this runs
+  // that text is already in flight from the timeline's own (bigger) request
+  // and this just attaches to it -- no second request, and a plain cache hit
+  // on later renders. Same function, same two caches, same in-flight dedup
+  // as the timeline; only text flagged line1Translatable is offered, since
+  // anything else on this line is already localized through TRANSLATIONS
+  // (see resolveCanonicalDeliverySlot).
+  if (show.translate_events && item.line1Translatable && line1El) {
+    translateEventTexts([{ el: line1El, text: item.line1 }], hass?.language);
+  }
 
   // Wrap row + detail together so detail sits below the row as a sibling
   if (hasDetails) {
@@ -4138,6 +4446,9 @@ class PackageTrackerCardEditor extends HTMLElement {
     const behavGroup = document.createElement('div'); behavGroup.className = 'settings-group';
     behavGroup.appendChild(mkShow(uiTr.dim_delivered,  'dim_delivered',  uiTr.dim_delivered_desc));
     behavGroup.appendChild(mkShow(uiTr.hide_when_empty,'hide_when_empty', uiTr.hide_when_empty_desc));
+    behavGroup.appendChild(this._mkToggleRow(uiTr.translate_events, show.translate_events === true, uiTr.translate_events_desc,
+      (val) => this._fireAndRender({ ...c, show: { ...show, translate_events: val } })
+    ));
     root.appendChild(behavGroup);
   }
 

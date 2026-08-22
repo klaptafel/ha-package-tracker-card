@@ -28,3 +28,5 @@ jobs:
         run: node --check package-tracker-card.js
       - name: Translation completeness report
         run: node scripts/check-translations.js
+      - name: translate_events tests
+        run: node scripts/test-translate-events.js
