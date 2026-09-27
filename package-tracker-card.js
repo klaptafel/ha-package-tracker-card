@@ -1059,10 +1059,14 @@ function rawStatusLine(p) {
 // `receiver` yet, confirmed missing on DPD's outgoing sensor specifically
 // (see dpd_outgoing's own comment; DPD's incoming/delivered data does have
 // it, see detectRecipient below, a different question).
+// `raw.content_title` (Vinted Go): the only name-shaped field it exposes at
+// all, confirmed live (#8) -- it has no sender/receiver of its own for
+// either direction, so every parcel used to show a plain dash instead of
+// something to actually recognize it by.
 function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
-    : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || '').trim();
+    : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title || '').trim();
 }
 
 // Same `receiver` field resolveCanonicalName already reads for an outgoing
