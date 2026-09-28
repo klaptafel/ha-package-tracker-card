@@ -1063,10 +1063,17 @@ function rawStatusLine(p) {
 // all, confirmed live (#8) -- it has no sender/receiver of its own for
 // either direction, so every parcel used to show a plain dash instead of
 // something to actually recognize it by.
+// `barcode` (the parcel's own tracking code, every carrier in the suite
+// always sets it): last resort of all, confirmed live (#8) on a real
+// Dragonfly parcel with none of the above either -- not a human-readable
+// name, but still something to actually tell parcels apart by, better
+// than the plain dash showing nothing at all left otherwise.
 function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
-    : (p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title || '').trim();
+    : (
+        p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title || p.barcode || ''
+      ).trim();
 }
 
 // Same `receiver` field resolveCanonicalName already reads for an outgoing
