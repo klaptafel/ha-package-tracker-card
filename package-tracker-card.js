@@ -1,4 +1,4 @@
-const CARD_VERSION = '2.4.0';
+const CARD_VERSION = '2.4.1';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
