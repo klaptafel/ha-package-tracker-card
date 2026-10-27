@@ -504,7 +504,7 @@ const TRANSLATIONS = {
     lang: 'nl',
     days: ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],
     months: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],
-    today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren', at_time: 'om',
+    today: 'vandaag', tomorrow: 'morgen', yesterday: 'gisteren', day_before_yesterday: 'eergisteren', at_time: 'om',
     days_ago: (n) => n + ' dagen geleden',
     delivered_today: 'Vandaag bezorgd.',
     letter_name_prefix: 'Poststuk van ',
@@ -545,7 +545,7 @@ const TRANSLATIONS = {
     parcel_row_label: 'Ruwe data',
     letterbox: 'Past door de brievenbus',
     rerouted: 'Levering op een afhaalpunt.',
-    service_point: (carrier) => 'Levering op een ' + (carrier || 'afhaal') + '-punt.',
+    service_point: (carrier) => 'Levering op een ' + (carrier ? carrier + '-punt' : 'afhaalpunt') + '.',
     entity_hint_postnl_canonical_incoming: 'Zoek naar de sensor met een parcels attribuut genaamd incoming_parcels.',
     entity_hint_postnl_canonical_delivered: 'Zoek naar de sensor met een parcels attribuut genaamd delivered_parcels. Optioneel: voegt recente bezorggeschiedenis toe.',
     entity_hint_postnl_canonical_outgoing: 'Zoek naar de sensor met een parcels attribuut genaamd outgoing_parcels.',
@@ -588,7 +588,7 @@ const TRANSLATIONS = {
     days: ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'],
     months: ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'],
     day_num_suffix: '.',
-    today: 'dnes', tomorrow: 'zítra', yesterday: 'včera', at_time: 'v',
+    today: 'dnes', tomorrow: 'zítra', yesterday: 'včera', day_before_yesterday: 'předevčírem', at_time: 'v',
     days_ago: (n) => n === 1 ? 'před 1 dnem' : 'před ' + n + ' dny',
     delivered_today: 'Doručeno dnes.',
     letter_name_prefix: 'Dopis od ',
@@ -671,21 +671,22 @@ const TRANSLATIONS = {
     lang: 'de',
     days: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
     months: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
-    today: 'heute', tomorrow: 'morgen', yesterday: 'gestern', at_time: 'um',
-    days_ago: (n) => n === 1 ? 'vor 1 Tag' : 'vor ' + n + ' Tagen',
+    day_num_suffix: '.',
+    today: 'heute', tomorrow: 'morgen', yesterday: 'gestern', day_before_yesterday: 'vorgestern', at_time: 'um',
+    days_ago: (n) => n === 1 ? 'vor einem Tag' : 'vor ' + n + ' Tagen',
     delivered_today: 'Heute zugestellt.',
-    letter_name_prefix: 'Postsendung von ',
+    letter_name_prefix: 'Sendung vom ',
     delivered_yesterday: 'Gestern zugestellt.',
     delivered_on: (day) => day.charAt(0).toUpperCase() + day.slice(1) + ' zugestellt.',
     slot_any_moment: 'Lieferung wird jeden Moment erwartet.',
-    slot_all_day: (day) => 'Lieferung erwartet ' + day + '.',
-    slot_late: (day, time) => 'Lieferung wurde ' + (day === 'heute' ? '' : day + ' ') + 'vor ' + time + ' erwartet.',
+    slot_all_day: (day) => 'Lieferung erwartet ' + dayDe(day) + '.',
+    slot_late: (day, time) => 'Lieferung wurde ' + (day === 'heute' ? '' : dayDe(day) + ' ') + 'vor ' + time + ' erwartet.',
     slot_within_minutes: (m) => 'Lieferung erwartet innerhalb von ' + m + ' ' + pl(m, 'Minute', 'Minuten') + '.',
     slot_within_hour: (h) => 'Lieferung erwartet innerhalb von ' + h + ' ' + pl(h, 'Stunde', 'Stunden') + '.',
     slot_within: (h, m) => 'Lieferung erwartet innerhalb von ' + h + ' ' + pl(h, 'Stunde', 'Stunden') + ' und ' + m + ' ' + pl(m, 'Minute', 'Minuten') + '.',
-    delivery_between: (day, from, to) => 'Lieferung ' + day + ' zwischen ' + from + ' - ' + to + '.',
-    delivery_before: (day, to) => 'Lieferung ' + day + ' vor ' + to + '.',
-    delivery_on: (day) => 'Lieferung ' + day + '.',
+    delivery_between: (day, from, to) => 'Lieferung ' + dayDe(day) + ' zwischen ' + from + ' - ' + to + '.',
+    delivery_before: (day, to) => 'Lieferung ' + dayDe(day) + ' vor ' + to + '.',
+    delivery_on: (day) => 'Lieferung ' + dayDe(day) + '.',
     no_packages: 'Keine Pakete',
     not_found: ': nicht gefunden',
     source_repo_link: 'Integration ansehen', source_repo_link_desc: 'GitHub-Seite dieser Integration öffnen',
@@ -694,9 +695,9 @@ const TRANSLATIONS = {
     recipient: 'Empfänger', recipient_desc: 'Empfänger-Chip neben dem Namen des Zustelldienstes',
     carrier_logo: 'Logo des Zustelldienstes', carrier_logo_desc: 'Logo des Zustelldienstes neben dem Namen.', carrier_logo_link: 'Erfordert custom-brand-icons',
     carrier_logo_requires_carrier: 'Aktiviere Zustelldienst, um diese Einstellung zu nutzen.',
-    badge: 'Abzeichen', badge_desc: 'Tage bis zur Lieferung, auf dem Icon angezeigt',
+    badge: 'Badge', badge_desc: 'Tage bis zur Lieferung, auf dem Icon angezeigt',
     details: 'Ausklappbare Details', details_desc: 'Zeigt den Pfeil mit zusätzlichen Infos pro Paket: Ereigniszeitachse, Sendungsnummer, Paketgröße oder Brief-Scan',
-    dim_delivered: 'Zugestellte Pakete abdunkeln', dim_delivered_desc: 'Zugestellte Pakete mit reduzierter Deckkraft anzeigen',
+    dim_delivered: 'Zugestellte Pakete ausgrauen', dim_delivered_desc: 'Zugestellte Pakete mit reduzierter Deckkraft anzeigen',
     location: 'Standort', location_desc: 'Letzter bekannter Standort, falls verfügbar',
     layout: 'Karte', single_card: 'Einzelne Karte', split_cards: 'Getrennte Karten',
     max_packages: 'Maximale Anzahl Pakete',
@@ -711,8 +712,8 @@ const TRANSLATIONS = {
     hide_when_empty: 'Bei leer ausblenden', hide_when_empty_desc: 'Karte ausblenden, wenn keine Pakete anzuzeigen sind',
     parcel_row_label: 'Rohdaten',
     letterbox: 'Passt in deinen Briefkasten',
-    rerouted: 'Lieferung an eine Abhol-Station.',
-    service_point: (carrier) => 'Lieferung an eine ' + (carrier || 'Abhol') + '-Station.',
+    rerouted: 'Lieferung an eine Abholstation.',
+    service_point: (carrier) => 'Lieferung an eine ' + (carrier ? carrier + '-Abholstation' : 'Abholstation') + '.',
     entity_hint_postnl_canonical_incoming: 'Suche den Sensor mit einem parcels-Attribut namens incoming_parcels.',
     entity_hint_postnl_canonical_delivered: 'Suche den Sensor mit einem parcels-Attribut namens delivered_parcels. Optional: fügt die letzte Zustellhistorie hinzu.',
     entity_hint_postnl_canonical_outgoing: 'Suche den Sensor mit einem parcels-Attribut namens outgoing_parcels.',
@@ -741,13 +742,13 @@ const TRANSLATIONS = {
     dragonfly_incoming_label: 'Unterwegs (aktiv)', dragonfly_delivered_label: 'Zugestellt (Historie)',
     advanced: 'Erweitert',
     sources_auto_detect_notice: 'Quellen werden automatisch aus deinen Home Assistant Integrationen erkannt. Füge die gewünschten hinzu.',
-    sources_none_configured_notice: 'Wenn unten nichts hinzugefügt wird, zeigt die Karte bereits alles an, was sie erkennt; nutze den Filter-Tab, um das einzugrenzen, oder füge hier bestimmte Quellen hinzu, um dich darauf zu beschränken.',
+    sources_none_configured_notice: 'Wenn unten nichts hinzugefügt wird, zeigt die Karte bereits alles an, was sie erkennt; nutze den Filter-Tab, um dies einzugrenzen, oder füge hier bestimmte Quellen hinzu, um die Anzeige darauf zu beschränken.',
     sources_empty_notice: 'Noch keine unterstützten Integrationen erkannt.',
     sources_empty_link: 'Siehe, was diese Karte unterstützt',
     source_unnamed_device: 'Konto',
     source_recipient: 'Empfänger',
     source_recipient_desc: 'Optional. Überschreibt den automatisch erkannten Empfänger für die Pakete dieses Kontos.',
-    sources_orphaned_notice: 'Diese waren konfiguriert, aber ihre Entity existiert nicht mehr (entfernt oder umbenannt). Entferne sie, oder füge die Entity unter ihrem ursprünglichen Namen wieder hinzu, um sie weiter zu nutzen.',
+    sources_orphaned_notice: 'Diese waren konfiguriert, aber ihre Entitäten existieren nicht mehr (entfernt oder umbenannt). Entferne sie, oder füge die Entitäten unter ihrem ursprünglichen Namen wieder hinzu, um sie weiter zu nutzen.',
     sources_tab: 'Quellen', filter_tab: 'Filter', display_tab: 'Darstellung',
   },
 };
@@ -790,6 +791,15 @@ function dayCs(day) {
   if (!map[head]) return day;
   return map[head] + (i === -1 ? '' : day.slice(i));
 }
+// dayDe(day): prefixes German weekday names with "am" ("am Montag",
+// "am Montag 20. Oktober"); passes heute/morgen/gestern/vorgestern and
+// "vor n Tagen" through unchanged, since those take no preposition.
+function dayDe(day) {
+  const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const i = day.indexOf(' ');
+  const head = i === -1 ? day : day.slice(0, i);
+  return days.includes(head) ? 'am ' + day : day;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -804,6 +814,7 @@ function formatDay(date, tr) {
   if (diff ===  0) return tr.today;
   if (diff ===  1) return tr.tomorrow;
   if (diff === -1) return tr.yesterday;
+  if (diff === -2 && tr.day_before_yesterday) return tr.day_before_yesterday;
   if (diff > 1 && diff < 7) return tr.days[d.getDay()];
   if (diff < 0) return tr.days_ago(Math.abs(diff));
   return tr.days[d.getDay()] + ' ' + d.getDate() + (tr.day_num_suffix || '') + ' ' + tr.months[d.getMonth()];
@@ -2837,6 +2848,7 @@ function renderRow(item, show, tr, openItems, hass) {
         let dayLabel;
         if      (diff ===  0) dayLabel = tr.today;
         else if (diff === -1) dayLabel = tr.yesterday;
+        else if (diff === -2 && tr.day_before_yesterday) dayLabel = tr.day_before_yesterday;
         else if (diff  >  -7) dayLabel = tr.days[e.date.getDay()]; // within the past week: day name only
         else {
           const d = e.date;

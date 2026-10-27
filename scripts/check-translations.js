@@ -19,6 +19,7 @@
 // requiring, so it's intentionally absent from English.
 const LOCALE_SPECIFIC_KEYS = new Set([
   'day_num_suffix', // ordinal-dot suffix after a day number, e.g. Czech "20. srpna"
+  'day_before_yesterday', // single word for -2 days (eergisteren, vorgestern, předevčírem); English falls back to "2 days ago"
 ]);
 
 const fs = require('fs');
