@@ -834,6 +834,12 @@ function formatTime(d) {
 
 function ensurePeriod(s) { const t = (s || '').trimEnd(); return t && !t.endsWith('.') ? t + '.' : t; }
 
+// DHL Germany's raw_status can include inline HTML markup (e.g. a Packstation
+// link). Rendered with textContent elsewhere in this card, which is already
+// safe against it executing, but still shows the markup itself as literal
+// text, so it's stripped at the source here instead.
+function stripHtmlTags(s) { return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(); }
+
 // Shared by bestStatusLine/rawStatusLine/resolveCanonicalEvents below: is
 // this raw_status a DHL NL/DPD-style machine code (SCREAMING_SNAKE) rather
 // than an already human-readable sentence (PostNL's own raw_status)?
@@ -1082,7 +1088,7 @@ function canonicalParcelStatusLine(status, tr) {
 // rawStatusLine), so this can't show a raw enum value as the primary line.
 function bestStatusLine(status, rawStatus, tr) {
   if (rawStatus && !isMachineCodeStatus(rawStatus)) {
-    return ensurePeriod(rawStatus);
+    return ensurePeriod(stripHtmlTags(rawStatus));
   }
   return canonicalParcelStatusLine(status, tr);
 }
@@ -1235,7 +1241,7 @@ function resolveCanonicalEvents(p, tr) {
     const date = h.timestamp ? new Date(h.timestamp) : null;
     let text;
     if (h.raw_status && !isMachineCodeStatus(h.raw_status)) {
-      text = ensurePeriod(h.raw_status);
+      text = ensurePeriod(stripHtmlTags(h.raw_status));
     } else {
       text = canonicalParcelStatusLine(h.status, tr);
       if (h.raw_status && normalizeStatusForCompare(h.raw_status) !== normalizeStatusForCompare(h.status)) {
