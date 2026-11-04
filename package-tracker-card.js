@@ -266,7 +266,7 @@ const CARRIERS = [
   { id: "posthas", name: "Post Haste", icon: null, codes: { parcel: ["posthas"] } },
   { id: "posti", name: "Posti Finland - Itella", icon: null, codes: { parcel: ["posti"] } },
   { id: "postnord", name: "Postnord Logistics", short: "PostNord", icon: "phu:postnord", codes: { parcel: ["postnord"] } },
-  { id: "ppl", name: "PPL", icon: null, codes: { parcel: ["ppl"] } },
+  { id: "ppl", name: "PPL", icon: "phu:ppl", codes: { parcel: ["ppl"], ppl: ["ppl"] } },
   { id: "ppx", name: "PPX (RR Donnelley)", icon: null, codes: { parcel: ["ppx"] } },
   { id: "prfc", name: "Parcelforce", icon: null, codes: { parcel: ["prfc"] } },
   { id: "ptl", name: "P&T Luxembourg", icon: null, codes: { parcel: ["ptl"] } },
