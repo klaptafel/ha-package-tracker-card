@@ -76,7 +76,10 @@ const CARRIERS = [
   { id: "cdl", name: "CDL Last Mile", icon: null, codes: { parcel: ["cdl"] } },
   { id: "celeritas", name: "Celeritas", icon: null, codes: { parcel: ["celeritas"] } },
   { id: "cems", name: "China Post EMS", icon: null, codes: { parcel: ["cems"] } },
-  { id: "ceska", name: "Česká pošta", icon: null, codes: { parcel: ["ceska"] } },
+  // ceska_posta: ha-parcel-integrations' own Česká pošta integration (platform
+  // "ceska_posta") stamps that same raw slug, not a display name, on every
+  // item's `carrier` field -- see canonicalSourceInfo for where it's resolved.
+  { id: "ceska", name: "Česká pošta", icon: "phu:ceska-posta", codes: { parcel: ["ceska"], ceska_posta: ["ceska_posta"] } },
   { id: "ceva", name: "Ceva Logistics", icon: null, codes: { parcel: ["ceva"] } },
   { id: "chilex", name: "Chilexpress", icon: null, codes: { parcel: ["chilex"] } },
   { id: "china", name: "China Post", icon: null, codes: { parcel: ["china"] } },
@@ -1937,7 +1940,12 @@ function canonicalSourceInfo(entityId, hass) {
   const bucket = hass?.entities?.[entityId]?.translation_key;
   if (!BUCKET_DIRECTION[bucket]) return null;
   const platform = hass?.entities?.[entityId]?.platform;
-  const carrier = attrs.parcels[0]?.carrier || prettifyPlatformName(platform) || platform || null;
+  // Most family members put a display name in `carrier` ("Packeta", "DHL"),
+  // but some stamp their raw platform slug instead (Česká pošta: "ceska_posta").
+  // carrierName() resolves such a slug to its curated CARRIERS name and
+  // returns any other value unchanged, so display names pass through as-is.
+  const rawCarrier = attrs.parcels[0]?.carrier;
+  const carrier = (rawCarrier && carrierName(platform, rawCarrier)) || prettifyPlatformName(platform) || platform || null;
   // carrierGroup: platform, not a display name -- for every current family
   // member this is exactly the same string mkCanonicalEntry's own
   // hand-written entries already use as their carrierGroup (postnl, dhl_nl,
