@@ -975,7 +975,7 @@ function parseExpected(ts, fallback) {
 function mkItem(overrides) {
   const item = {
     name: '', line1: null, line2: null, location: null,
-    icon: null, color: 'grey',
+    icon: null, color: 'var(--grey-color, #9E9E9E)',
     deliveryDate: null, slotActive: false, delivered: false,
     carrierCode: null, carrier: null, brandIcon: null,
     tapUrl: null, direction: 'incoming', slotEnd: null, trackingCode: null, letterbox: false, rerouted: false, servicePoint: false, pickupPoint: null, events: [], imageUrl: null, imageEntityId: null, packageSize: null, packageSizeIcon: null,
@@ -1006,16 +1006,16 @@ function mkItem(overrides) {
 // integration reported it.
 const STATUS_STYLE = {
   expected:            { icon: 'mdi:clock-outline',                color: 'var(--amber-color, #FFC107)' },
-  registered:          { icon: 'mdi:package-variant-closed',       color: 'grey'   },
-  in_transit:          { icon: 'mdi:package-variant',              color: 'blue'   },
-  out_for_delivery:    { icon: 'mdi:truck-fast',                   color: 'orange' },
-  at_pickup_point:     { icon: 'mdi:store-marker',                 color: 'purple' },
-  delivered:           { icon: 'mdi:package-variant-closed-check', color: 'green'  },
-  delivered_neighbour: { icon: 'mdi:home-account',                 color: 'green'  },
-  missed:              { icon: 'mdi:account-alert',                color: 'red'    },
-  returning:           { icon: 'mdi:package-variant-closed-remove', color: 'red'   },
-  problem:             { icon: 'mdi:alert-circle-outline',         color: 'red'    },
-  unknown:             { icon: 'mdi:package-variant',              color: 'grey'   },
+  registered:          { icon: 'mdi:package-variant-closed',       color: 'var(--grey-color, #9E9E9E)'   },
+  in_transit:          { icon: 'mdi:package-variant',              color: 'var(--blue-color, #2196F3)'   },
+  out_for_delivery:    { icon: 'mdi:truck-fast',                   color: 'var(--orange-color, #FF9800)' },
+  at_pickup_point:     { icon: 'mdi:store-marker',                 color: 'var(--purple-color, #926BC7)' },
+  delivered:           { icon: 'mdi:package-variant-closed-check', color: 'var(--green-color, #4CAF50)'  },
+  delivered_neighbour: { icon: 'mdi:home-account',                 color: 'var(--green-color, #4CAF50)'  },
+  missed:              { icon: 'mdi:account-alert',                color: 'var(--red-color, #F44336)'    },
+  returning:           { icon: 'mdi:package-variant-closed-remove', color: 'var(--red-color, #F44336)'   },
+  problem:             { icon: 'mdi:alert-circle-outline',         color: 'var(--red-color, #F44336)'    },
+  unknown:             { icon: 'mdi:package-variant',              color: 'var(--grey-color, #9E9E9E)'   },
 };
 
 function parcelStatus(code) {
@@ -1403,7 +1403,8 @@ function mapPostnlLetter(letter, tr, imageMap) {
   return mkItem({
     name: tr.letter_name_prefix + dateLabel,
     line1,
-    icon: delivered ? 'mdi:email-check-outline' : 'mdi:email-outline', color: delivered ? 'green' : 'blue',
+    icon: delivered ? 'mdi:email-check-outline' : 'mdi:email-outline',
+    color: delivered ? 'var(--green-color, #4CAF50)' : 'var(--blue-color, #2196F3)',
     deliveryDate: validDate ? d : null,
     delivered,
     carrierCode: 'postnl', carrier: carrierName('postnl', 'postnl'), brandIcon: getBrandIcon('postnl', 'postnl'),
