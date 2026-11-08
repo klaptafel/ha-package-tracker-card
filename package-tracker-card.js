@@ -905,7 +905,12 @@ function formatTimeRemaining(toDate, tr, fromDate) {
 function computeDeliverySlot(fromStr, toStr, tr, statusLine) {
   const from = new Date(fromStr);
   if (isNaN(from)) return null;
-  const to = toStr ? new Date(toStr) : null;
+  // A window that starts and ends at the exact same instant (confirmed live:
+  // DHL Germany reporting planned_from === planned_to) carries no more
+  // information than a single date, so treat it the same as no "to" at all
+  // rather than rendering a useless "between 00:00 - 00:00".
+  let to = toStr ? new Date(toStr) : null;
+  if (to && to.getTime() === from.getTime()) to = null;
   const slotActive = to ? isSlotActive(fromStr, toStr) : false;
   const pastSlot = to && !slotActive && new Date() > to;
   let line2;
