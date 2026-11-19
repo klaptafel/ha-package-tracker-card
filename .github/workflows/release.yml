@@ -1,0 +1,32 @@
+name: Release
+
+# HACS/Marketplace only shows a download count for a repository when its
+# current release has an asset whose name matches hacs.json's own
+# "filename" (confirmed against hacs/integration's own base.py,
+# _find_target_asset/download_count). content_in_root still controls how
+# the file itself gets installed, this just gives GitHub something to
+# count downloads on, same reasoning as update-manager's own release.yml
+# but a single plain file here, not a zip.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  attach-asset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Attach it to the release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            package-tracker-card.js \
+            --repo "${{ github.repository }}" \
+            --clobber
