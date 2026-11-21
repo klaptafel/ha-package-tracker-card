@@ -931,14 +931,30 @@ function computeDeliverySlot(fromStr, toStr, tr, statusLine) {
 const _MONTH_NL = {januari:1,februari:2,maart:3,april:4,mei:5,juni:6,juli:7,augustus:8,september:9,oktober:10,november:11,december:12};
 const _MONTH_EN = {january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
 
+// A date-only string (no time at all) means UTC midnight once turned into
+// an ISO string and handed to `new Date()`, per the JS Date spec, not local
+// midnight the way a full date-time string without an explicit zone does.
+// Confirmed live: the "parcel" integration's own event for an Amazon
+// Logistics shipment with no time of its own ("vrijdag 20 november ") showed
+// an hour later than ha-amazon's own precise timestamp for that exact same
+// real event, Amsterdam's winter UTC+1 offset (would be two hours off in
+// summer, UTC+2). Building the date via the numeric Date constructor
+// instead always means local time, with or without a time component,
+// avoiding that silent per-viewer shift entirely.
+function makeLocalDate(year, monthIndex, day, hhmm) {
+  const [hh, mm] = hhmm ? hhmm.split(':').map(Number) : [0, 0];
+  const d = new Date(year, monthIndex, day, hh, mm);
+  return isNaN(d) ? null : d;
+}
+
 function parseDate(str) {
   if (!str) return null;
   const s = str.trim();
   // DD.MM.YYYY HH:MM
   const dot = s.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}:\d{2}))?$/);
   if (dot) {
-    const iso = dot[3] + '-' + dot[2] + '-' + dot[1] + (dot[4] ? 'T' + dot[4] : '');
-    const d = new Date(iso); if (!isNaN(d)) return d;
+    const d = makeLocalDate(Number(dot[3]), Number(dot[2]) - 1, Number(dot[1]), dot[4]);
+    if (d) return d;
   }
   // 'dinsdag 31 maart 19:44' or 'Tuesday 31 March 19:44'
   const verbal = s.match(/^\w+\s+(\d{1,2})\s+(\w+)(?:\s+(\d{2}:\d{2}))?$/);
@@ -946,8 +962,8 @@ function parseDate(str) {
     const month = _MONTH_NL[verbal[2].toLowerCase()] || _MONTH_EN[verbal[2].toLowerCase()];
     if (month) {
       const year = new Date().getFullYear();
-      const iso  = year + '-' + String(month).padStart(2,'0') + '-' + String(verbal[1]).padStart(2,'0') + (verbal[3] ? 'T' + verbal[3] : '');
-      const d = new Date(iso); if (!isNaN(d)) return d;
+      const d = makeLocalDate(year, month - 1, Number(verbal[1]), verbal[3]);
+      if (d) return d;
     }
   }
   const d = new Date(s); return isNaN(d) ? null : d;
