@@ -1,4 +1,4 @@
-const CARD_VERSION = '2.5.3';
+const CARD_VERSION = '2.6.0';
 
 // ─── Carriers ─────────────────────────────────────────────────────────────────
 // Canonical carrier list: one entry per real-world carrier, each with its
@@ -1182,11 +1182,30 @@ function rawStatusLine(p) {
 // Dragonfly parcel with none of the above either -- not a human-readable
 // name, but still something to actually tell parcels apart by, better
 // than the plain dash showing nothing at all left otherwise.
+// ha-amazon's own raw.items: each entry is that shipment's full product
+// listing title, often with marketing bullet points and an "order placed"
+// date appended after a comma (confirmed messy on real data: "SONOFF TRVZB
+// thermostatische radiatorkraan 4 Stuck, slimme thermostaat met app-
+// functionaliteit, ..., Bestelling geplaatst 19 november 2026"). Taking
+// just the text before the first comma reliably yields a short, readable
+// product name regardless of language, since Amazon's own titles
+// consistently lead with the real name before any such detail; only the
+// first entry is used; multiple entries have turned out to sometimes just
+// be differently-localized titles for the same single item, not distinct
+// products, so joining them risked showing the same product name twice.
+function firstAmazonItemName(items) {
+  const first = Array.isArray(items) ? items[0] : null;
+  if (!first) return null;
+  const name = String(first).split(',')[0].trim();
+  return name || String(first).trim() || null;
+}
+
 function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
     : (
-        p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title || p.barcode || ''
+        p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title
+        || firstAmazonItemName(p.raw?.items) || p.barcode || ''
       ).trim();
 }
 
@@ -1251,7 +1270,17 @@ function resolveCanonicalPackageSize(p) {
 // already a sentence, it's inherently more specific than the generic
 // canonical text ("In transit.") and is used directly instead.
 function resolveCanonicalEvents(p, tr) {
-  return Array.isArray(p.history) ? [...p.history].reverse().map(h => {
+  if (!Array.isArray(p.history)) return [];
+  // The canonical `history` field itself never carries a location, but some
+  // family members also expose a raw per-event list that does (confirmed on
+  // ha-amazon's own raw.events, matched 1:1 by timestamp against its own
+  // canonical history). Harmless no-op for every carrier whose raw lacks a
+  // matching entry, or has no raw.events at all.
+  const rawLocationByTime = new Map();
+  if (Array.isArray(p.raw?.events)) {
+    for (const e of p.raw.events) if (e?.timestamp) rawLocationByTime.set(e.timestamp, e.location || null);
+  }
+  return [...p.history].reverse().map(h => {
     const date = h.timestamp ? new Date(h.timestamp) : null;
     let text;
     if (h.raw_status && !isMachineCodeStatus(h.raw_status)) {
@@ -1263,8 +1292,9 @@ function resolveCanonicalEvents(p, tr) {
         if (raw) text = text.replace(/\.$/, '') + ' (' + raw.replace(/\.$/, '').toLowerCase() + ').';
       }
     }
-    return { date: date && !isNaN(date) ? date : null, text, location: null };
-  }) : [];
+    const location = h.timestamp ? (rawLocationByTime.get(h.timestamp) || null) : null;
+    return { date: date && !isNaN(date) ? date : null, text, location };
+  });
 }
 
 // `status` is the authoritative signal (the integration itself documents
@@ -1300,6 +1330,15 @@ function resolveCanonicalDeliverySlot(p, tr) {
   }
   if (!line1) line1 = bestStatusLine(status, p.raw_status, tr);
   if (!line2) line2 = rawStatusLine(p);
+  // ha-amazon's own raw.order_status is a human delivery estimate ("Wordt
+  // morgen bezorgd") that exists specifically for the case planned_from/
+  // planned_to stay null (its own tracking page predicts a day, not a
+  // precise window); only shown pre-delivery, since the delivered branch
+  // above already has its own, more specific formatDeliveredText line.
+  // Harmless no-op for every carrier without this raw field.
+  if (!line2 && !delivered && p.raw?.order_status) {
+    line2 = ensurePeriod(String(p.raw.order_status).trim());
+  }
 
   return { status, delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd };
 }
@@ -1310,7 +1349,7 @@ function resolveCanonicalDeliverySlot(p, tr) {
 // Shared mapper for the whole "canonical parcel" family (DHL NL, DPD, and in
 // the future PostNL 4.0.0), same normalised shape across all of them, only
 // the carrier identity and direction differ per source.
-function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming' }) {
+function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'incoming', hass }) {
   const { delivered, icon, color, deliveryDate, line1, line2, slotActive, slotEnd } =
     resolveCanonicalDeliverySlot(p, tr);
 
@@ -1323,6 +1362,16 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
   // (DHL NL, DPD) that don't have an equivalent raw field.
   const shipmentType = p.raw?.shipment_type;
   const addressType  = p.raw?.delivery_address_type;
+
+  // Proof-of-delivery photo: confirmed on ha-amazon, whose raw field carries
+  // the real image.* entity_id directly, unlike PostNL's own letter scan
+  // (which only has an opaque id and needs buildPostnlImageMap's own lookup
+  // table). Harmless no-op for every carrier without this raw field, or
+  // before hass has that entity's state yet.
+  const photoEntityId = p.raw?.delivery_photo_entity_id || null;
+  const photoState    = photoEntityId ? hass?.states?.[photoEntityId] : null;
+  const imageUrl      = photoState?.attributes?.entity_picture || null;
+  const imageEntityId = imageUrl ? photoEntityId : null;
 
   const { packageSize, packageSizeIcon } = resolveCanonicalPackageSize(p);
   const events = resolveCanonicalEvents(p, tr);
@@ -1342,6 +1391,16 @@ function mapCanonicalParcel(p, tr, { carrierGroup, carrierCode, direction = 'inc
     packageSize,
     packageSizeIcon,
     events,
+    imageUrl,
+    imageEntityId,
+    // Amazon's own order_id+shipment_id pair (confirmed on ha-amazon's own
+    // raw fields) matches what the Parcel integration's own tracking_number+
+    // extra_information pair reports for the exact same shipment (see the
+    // "parcel" integration's own _map); combining both instead of just
+    // order_id avoids wrongly merging two different shipments from the same
+    // multi-shipment order into one row. Gracefully absent for every other
+    // carrier, same principle as shipmentType/addressType above.
+    dedupKey: (p.raw?.order_id && p.raw?.shipment_id) ? `${p.raw.order_id}:${p.raw.shipment_id}` : undefined,
   });
 }
 
@@ -1473,7 +1532,7 @@ function mkCanonicalEntry({
     ...(parcelWins ? { carrierGroup, parcelWins } : {}),
     hasAttrs: (a) => Array.isArray(a.parcels),
     collect(attrs, ctx) {
-      return (attrs.parcels || []).map((p) => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction }));
+      return (attrs.parcels || []).map((p) => mapCanonicalParcel(p, ctx.tr, { carrierGroup, carrierCode, direction, hass: ctx.hass }));
     },
   };
 }
@@ -1662,7 +1721,22 @@ const INTEGRATIONS = {
           date: e.date ? parseDate(String(e.date)) : null,
           text: e.event || '',
           location: e.location || null,
-        })).filter(e => e.text) });
+        })).filter(e => e.text),
+        // Parcel's own tracking_number for Amazon Logistics shipments is
+        // actually Amazon's order id, not a conventional tracking number
+        // (confirmed against real paired data, 2026-11-21: the same value
+        // shows up as ha-amazon's own raw.order_id for the identical
+        // shipment); extra_information carries the shipment id for these,
+        // matching ha-amazon's own raw.shipment_id (see mapCanonicalParcel's
+        // own dedupKey). Combine both, not just tracking_number, so a
+        // multi-shipment order can't get wrongly merged into one row.
+        // Narrowly scoped to Amazon's own carrier codes: extra_information
+        // means something else entirely for other carriers.
+        dedupKey: (carrierCode && (carrierCode.startsWith('amzl') || carrierCode.startsWith('amship'))
+          && item.tracking_number && item.extra_information)
+          ? `${item.tracking_number}:${item.extra_information}`
+          : undefined,
+      });
     },
   },
 
@@ -2165,7 +2239,7 @@ function collectGenericSourceItems(entityId, attrs, tr, hass) {
   if (!info) return null;
   const direction = BUCKET_DIRECTION[info.bucket];
   return attrs.parcels.map(p => ({
-    ...mapCanonicalParcel(p, tr, { carrierGroup: info.carrierGroup, carrierCode: info.carrier, direction }),
+    ...mapCanonicalParcel(p, tr, { carrierGroup: info.carrierGroup, carrierCode: info.carrier, direction, hass }),
     // mapCanonicalParcel's own getBrandIcon(carrierGroup, carrierCode) call
     // still misses here (carrierCode is a display name, not a curated code)
     // -- see genericCarrierIcon's own comment for why this needs its own,
