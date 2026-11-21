@@ -3059,6 +3059,28 @@ const ENRICHMENT_FIELDS = ['packageSize', 'pickupPoint', 'letterbox', 'rerouted'
 function backfill(target, fallback) {
   for (const f of ENRICHMENT_FIELDS) if (!target[f] && fallback[f]) target[f] = fallback[f];
 }
+// deliveryDate/slotActive/slotEnd/line2 (the "when" estimate) are a bundle
+// resolveCanonicalDeliverySlot computes together, not independent
+// enrichment fields, so they're not just added to ENRICHMENT_FIELDS above:
+// a side that ends up structurally winning the merge may simply not have a
+// delivery estimate at all for this particular parcel (confirmed live:
+// ha-amazon's own raw.delivery_window stays null until Amazon's own
+// tracking page actually predicts one), while the other side does (here,
+// the "parcel" integration's own date_expected for the exact same
+// shipment). Keep that real estimate instead of showing nothing, same
+// reasoning PARCEL_WINS_FOR is already built on, just scoped to this one
+// field pair instead of a whole carrier. line1 (the status text) is left
+// alone deliberately: unlike the date estimate, the structurally-winning
+// side's own current status is not inherently worse just because it has
+// no date to go with it.
+function rescueDeliveryEstimate(winner, loser) {
+  if (!winner.deliveryDate && loser.deliveryDate) {
+    winner.deliveryDate = loser.deliveryDate;
+    winner.slotActive   = loser.slotActive;
+    winner.slotEnd      = loser.slotEnd;
+    winner.line2        = loser.line2;
+  }
+}
 // Now that DPD/DHL NL/PostNL can optionally report their own `history`
 // (in addition to Parcel's event log), the same real-world delivery can
 // show up as events from both sources: same moments, different wording
@@ -3245,6 +3267,7 @@ class PackageTrackerCard extends HTMLElement {
             const mergedEvents = mergeEventTimelines(parcelItem.events, otherItem.events);
             if (kept !== parcelItem) Object.assign(kept, parcelItem);
             kept.events = mergedEvents;
+            rescueDeliveryEstimate(kept, otherItem);
           } else {
             // The dedicated carrier integration wins structurally; capture
             // Parcel's name *before* any assign below, since if parcelItem
@@ -3255,6 +3278,7 @@ class PackageTrackerCard extends HTMLElement {
             if (kept !== otherItem) Object.assign(kept, otherItem);
             if (parcelName) kept.name = parcelName;
             kept.events = mergedEvents;
+            rescueDeliveryEstimate(kept, parcelItem);
           }
         }
         // Whichever branch ran (or didn't), backfill any enrichment field
