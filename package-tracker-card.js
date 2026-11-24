@@ -1175,6 +1175,17 @@ function rawStatusLine(p) {
   return text;
 }
 
+// `contents` (ha-parcel-integrations' own canonical field, added to its
+// contract 2026-11): a plain string, or null when nothing is known, already
+// the integration's own best single answer to "what's in this parcel" --
+// your own text (set via the update_contents action, or track_parcel's own
+// contents field) first, then a name you gave the parcel in the carrier's
+// own account (Canada Post), then carrier-sent text (Vinted Go, Amazon's
+// own joined item titles). Tried before any of the carrier-specific raw
+// digging below: it's the integration's own already-prioritized answer to
+// the exact same question this whole fallback chain is trying to guess at
+// per carrier, so there's nothing more specific left to prefer over it once
+// it's actually set.
 // Prefer the most specific name available in `raw`; its shape differs per
 // carrier (PostNL: raw.name is the webshop; DHL NL: raw.sender.name; DPD:
 // raw.senderName), so we try each known path before falling back to the
@@ -1220,7 +1231,7 @@ function resolveCanonicalName(p, direction) {
   return (direction === 'outgoing' && p.receiver)
     ? p.receiver.trim()
     : (
-        p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title
+        p.contents || p.raw?.name || p.raw?.sender?.name || p.raw?.senderName || p.sender || p.raw?.content_title
         || firstAmazonItemName(p.raw?.items) || p.barcode || ''
       ).trim();
 }
@@ -2118,17 +2129,25 @@ function discoverCanonicalSources(hass) {
   // per device instead, preferring whichever bucket has a real item to read
   // from; only fall back to the platform name if every bucket on this
   // device is currently empty.
-  // PostNL's own Letters feature (see postnl_canonical_letters's own
-  // comment: structurally nothing like a parcel, no carrier field, not
-  // covered by canonicalSourceInfo at all) still belongs to the exact same
-  // account/device as that account's own canonical parcel buckets, and is
-  // folded in here so it shows up alongside them instead of as a
+  // A carrier's own "announced mail, with a scan photo" feature (PostNL's
+  // own MyMail, confirmed also built the same way for USPS's own Informed
+  // Delivery, same `letters` translation_key and `{id, date, image_url}`
+  // shape, 2026-11-21: structurally nothing like a parcel, no carrier field,
+  // not covered by canonicalSourceInfo at all) still belongs to the exact
+  // same account/device as that account's own canonical parcel buckets, and
+  // is folded in here so it shows up alongside them instead of as a
   // disconnected section -- confirmed via direct user feedback, 2026-07-30:
   // with two PostNL accounts configured, each account's own Letters entity
   // is expected under that same account, not lumped into one generic row.
-  // Its config still keeps the old `{ type, entity }` shape (see
-  // sourceForBucket below); only the rendering is merged here, not the
-  // underlying detection/collection, which stays registry-driven.
+  // Detected by translation_key + shape, the same way canonicalSourceInfo
+  // detects every other bucket, not by platform: PostNL was this feature's
+  // only member when postnl_canonical_letters was first written, but
+  // nothing about mapPostnlLetter/buildPostnlImageMap below is actually
+  // PostNL-specific (buildPostnlImageMap already scans every image.*
+  // entity, regardless of platform). Its config still keeps the old
+  // `{ type, entity }` shape (see sourceForBucket below); only the
+  // rendering is merged here, not the underlying detection/collection,
+  // which stays registry-driven.
   const lettersDef = INTEGRATIONS.postnl_canonical_letters;
 
   const byDevice = new Map(); // deviceId -> { deviceName, carrier, buckets: Map(bucket -> entityId) }
@@ -2138,7 +2157,7 @@ function discoverCanonicalSources(hass) {
     const attrs = hass.states[entityId]?.attributes;
 
     const info = canonicalSourceInfo(entityId, hass);
-    const isLetters = !info && attrs && lettersDef.platforms.some(p => (entry?.platform || '').includes(p)) && lettersDef.hasAttrs(attrs);
+    const isLetters = !info && attrs && entry?.translation_key === 'letters' && lettersDef.hasAttrs(attrs);
     if (!info && !isLetters) continue;
 
     const deviceId = entry?.device_id || entityId;
@@ -2280,7 +2299,16 @@ function* platformMatchingEntities(type, hass) {
   if (!def) return;
   for (const entry of Object.entries(hass.entities || {})) {
     const info = entry[1];
-    if (def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p))) yield entry;
+    const platformMatch = def.platforms?.some(p => (info.platform || '').toLowerCase().includes(p));
+    // postnl_canonical_letters: a carrier's own announced-mail-with-photo
+    // feature (see discoverCanonicalSources's own comment), not actually
+    // tied to one specific carrier despite the historical name and its
+    // platforms list above; matched by translation_key + shape here too,
+    // the same way discoverCanonicalSources's own auto-detection already
+    // does, so the editor's own "+ add" tile recognizes it for any carrier
+    // that has it (confirmed on USPS, 2026-11-21), not just PostNL.
+    const lettersMatch = type === 'postnl_canonical_letters' && info.translation_key === 'letters';
+    if (platformMatch || lettersMatch) yield entry;
   }
 }
 
