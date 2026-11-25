@@ -1,5 +1,7 @@
 [![Made for Home Assistant](https://img.shields.io/badge/Made%20for-Home%20Assistant-blue?style=for-the-badge&logo=homeassistant)](https://www.home-assistant.io/)
 [![marketplace_badge](https://img.shields.io/badge/Marketplace-Custom-orange.svg?style=for-the-badge)](https://contributors.home-assistant.io/marketplace/)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/klaptafel/ha-package-tracker-card/total?style=for-the-badge)
+
 
 # Package Tracker Card: Home Assistant parcel tracking card
 
